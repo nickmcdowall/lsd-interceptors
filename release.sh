@@ -1,4 +1,7 @@
-# To bump the minor version use:
+#!/bin/bash
+set -e
+
+# To bump versions use:
 # ./gradlew markNextVersion -Prelease.incrementer=incrementMinor
 
 # Bumpt patch version for release version by default
