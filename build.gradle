@@ -1,0 +1,74 @@
+plugins {
+    id 'java-library'
+    id 'maven'
+    id 'pl.allegro.tech.build.axion-release' version '1.10.0'
+    id "com.jfrog.bintray" version "1.8.5"
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+group = 'com.github.nickmcdowall'
+sourceCompatibility = '11'
+project.version = scmVersion.version
+
+
+ext {
+    junitJupiter = '5.6.0'
+    junitPlatformVersion = '1.3.2'
+}
+
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.12'
+    implementation 'com.github.nickmcdowall:yatspec:2020.1.8'
+    implementation 'org.springframework:spring-web:5.1.11.RELEASE'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+
+    testCompileOnly 'org.springframework:spring-web:5.1.11.RELEASE'
+    testCompileOnly 'org.projectlombok:lombok:1.18.12'
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-api:$junitJupiter"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-params:$junitJupiter"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiter"
+    testImplementation 'org.assertj:assertj-core:3.15.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.3.3'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    configurations = ['archives']
+    pkg {
+        repo = 'nkm'
+        name = 'yatspec-lsd-interceptors'
+        override = false
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/nickmcdowall/yatspec-lsd-interceptors.git'
+        publish = true
+        publicDownloadNumbers = true
+        version {
+            name = project.version
+        }
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives jar
+    archives sourcesJar
+}
+
+wrapper {
+    gradleVersion = "5.3"
+}
