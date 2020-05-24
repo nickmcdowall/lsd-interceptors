@@ -21,7 +21,7 @@ import static java.lang.String.format;
 @RequiredArgsConstructor
 public class RestTemplateInterceptor implements ClientHttpRequestInterceptor {
 
-    public static final String REQUEST_TEMPLATE = "%s from %s to %s";
+    public static final String REQUEST_TEMPLATE = "%s %s from %s to %s";
     public static final String RESPONSE_TEMPLATE = "%s response from %s to %s";
 
     private final TestState interactions;
@@ -41,7 +41,7 @@ public class RestTemplateInterceptor implements ClientHttpRequestInterceptor {
     }
 
     private void captureRequest(HttpRequest request, byte[] body, String path, String destinationName) {
-        interactions.log(format(REQUEST_TEMPLATE, request.getMethodValue() + " " + path, sourceName, destinationName), body);
+        interactions.log(format(REQUEST_TEMPLATE, request.getMethodValue(), path, sourceName, destinationName), body);
     }
 
     private void captureResponse(String destinationName, ClientHttpResponse response) throws IOException {

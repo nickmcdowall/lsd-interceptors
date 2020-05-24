@@ -1,5 +1,6 @@
 package com.googlecode.nickmcdowall.interceptor.rest;
 
+import com.googlecode.nickmcdowall.interceptor.rest.StubHttpRequest.StubHttpRequestBuilder;
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
 
@@ -19,27 +19,31 @@ import java.net.URI;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.EMPTY;
+import static org.springframework.http.HttpStatus.OK;
 
 @ExtendWith(MockitoExtension.class)
 class RestTemplateInterceptorTest {
 
-    public static final String METHOD_VALUE = "GET";
+    private final String methodValue = "GET";
+    private final URI uri = URI.create("/price/watch");
+    private final byte[] requestBodyBytes = toBytes("a request body");
+    private final StubHttpRequest stubHttpRequest = aStubbedRequest().build();
+
+    private final String responseBodyString = "a response body";
+    private final InputStream responseBodyStream = new ByteArrayInputStream(responseBodyString.getBytes());
+    private final ClientHttpResponse httpResponse = aStubbedOkResponse().build();
+
     @Mock
     private TestState interactions = new TestState();
 
     @Mock
     private ClientHttpRequestExecution execution;
 
-    private URI uri = URI.create("/price/watch");
-    private byte[] requestBodyBytes = toBytes("a request body");
-    private final String responseBodyString = "a response body";
-    private InputStream responseBodyStream = new ByteArrayInputStream(responseBodyString.getBytes());
     private RestTemplateInterceptor interceptor;
-    private ClientHttpResponse httpResponse = aStubOkResponse(responseBodyStream);
 
     @BeforeEach
     void setUp() throws IOException {
@@ -49,7 +53,7 @@ class RestTemplateInterceptorTest {
 
     @Test
     void passActualRequestToExecutor() throws IOException {
-        HttpRequest request = aStubRequest(METHOD_VALUE, uri);
+        HttpRequest request = stubHttpRequest;
 
         interceptor.intercept(request, requestBodyBytes, execution);
 
@@ -58,7 +62,7 @@ class RestTemplateInterceptorTest {
 
     @Test
     void returnsActualResponse() throws IOException {
-        HttpRequest request = aStubRequest(METHOD_VALUE, uri);
+        HttpRequest request = stubHttpRequest;
 
         ClientHttpResponse interceptedResponse = interceptor.intercept(request, requestBodyBytes, execution);
 
@@ -67,7 +71,7 @@ class RestTemplateInterceptorTest {
 
     @Test
     void logRequestInteraction() throws IOException {
-        HttpRequest request = aStubRequest(METHOD_VALUE, uri);
+        HttpRequest request = stubHttpRequest;
 
         interceptor.intercept(request, requestBodyBytes, execution);
 
@@ -76,7 +80,7 @@ class RestTemplateInterceptorTest {
 
     @Test
     void logResponseInteraction() throws IOException {
-        HttpRequest request = aStubRequest(METHOD_VALUE, uri);
+        HttpRequest request = stubHttpRequest;
 
         interceptor.intercept(request, requestBodyBytes, execution);
 
@@ -85,7 +89,7 @@ class RestTemplateInterceptorTest {
 
     @Test
     void doesNotConsumeResponseStream() throws IOException {
-        HttpRequest request = aStubRequest(METHOD_VALUE, uri);
+        HttpRequest request = stubHttpRequest;
 
         ClientHttpResponse response = interceptor.intercept(request, requestBodyBytes, execution);
 
@@ -94,7 +98,7 @@ class RestTemplateInterceptorTest {
 
     @Test
     void handleUnknownDestinationMapping() throws IOException {
-        HttpRequest request = aStubRequest(METHOD_VALUE, URI.create("/another/path"));
+        HttpRequest request = aStubbedRequest().uri(URI.create("/another/path")).build();
 
         interceptor.intercept(request, requestBodyBytes, execution);
 
@@ -102,59 +106,32 @@ class RestTemplateInterceptorTest {
         verify(interactions).log("200 OK response from Other to App", responseBodyString);
     }
 
+    @Test
+    void emptyStringOnZeroLengthResponse() throws IOException {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentLength(0);
+
+        when(execution.execute(any(), any())).thenReturn(aStubbedOkResponse().headers(httpHeaders).build());
+
+        interceptor.intercept(stubHttpRequest, requestBodyBytes, execution);
+
+        verify(interactions).log("200 OK response from PriceService to App", "");
+    }
+
+    private StubClientHttpResponse.StubClientHttpResponseBuilder aStubbedOkResponse() {
+        return StubClientHttpResponse.builder()
+                .body(responseBodyStream)
+                .statusCode(OK)
+                .headers(EMPTY);
+    }
+
+    private StubHttpRequestBuilder aStubbedRequest() {
+        return StubHttpRequest.builder()
+                .uri(uri).methodValue(methodValue).httpHeaders(EMPTY);
+    }
+
     private byte[] toBytes(String body) {
         return body.getBytes();
     }
 
-    private ClientHttpResponse aStubOkResponse(final InputStream body) {
-        return new ClientHttpResponse() {
-            @Override
-            public HttpStatus getStatusCode() {
-                return HttpStatus.OK;
-            }
-
-            @Override
-            public int getRawStatusCode() {
-                return 200;
-            }
-
-            @Override
-            public String getStatusText() {
-                return "200 OK";
-            }
-
-            @Override
-            public void close() {
-            }
-
-            @Override
-            public InputStream getBody() {
-                return body;
-            }
-
-            @Override
-            public HttpHeaders getHeaders() {
-                return HttpHeaders.EMPTY;
-            }
-        };
-    }
-
-    private HttpRequest aStubRequest(final String methodValue, final URI uri) {
-        return new HttpRequest() {
-            @Override
-            public HttpHeaders getHeaders() {
-                return HttpHeaders.EMPTY;
-            }
-
-            @Override
-            public String getMethodValue() {
-                return methodValue;
-            }
-
-            @Override
-            public URI getURI() {
-                return uri;
-            }
-        };
-    }
 }

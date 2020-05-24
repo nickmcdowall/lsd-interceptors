@@ -1,6 +1,9 @@
-# yatspec-lsd-interceptors
+# yatspec-lsd-interceptors [![Download](https://api.bintray.com/packages/nickmcdowall/nkm/yatspec-lsd-interceptors/images/download.svg) ](https://bintray.com/nickmcdowall/nkm/yatspec-lsd-interceptors/_latestVersion)
 
 A central library for various Yatspec interaction interceptors to live.
+
+Interceptors include:
+* `RestTemplateInterceptor` created for intercepting `org.springframework.web.client.RestTemplate`
 
 ## Requirements
 
@@ -12,14 +15,15 @@ IDE
 
 ## Build
 
-```shell script
+```
 ./gradlew clean build
 ```
 
 ## Release
 
 Run script
-```shell script
+
+```
 ./release.sh
 ```
 
