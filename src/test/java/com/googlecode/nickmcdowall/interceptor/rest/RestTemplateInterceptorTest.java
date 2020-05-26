@@ -30,7 +30,8 @@ class RestTemplateInterceptorTest {
 
     private final String methodValue = "GET";
     private final URI uri = URI.create("/price/watch");
-    private final byte[] requestBodyBytes = toBytes("a request body");
+    private final String requestBodyString= "a request body";
+    private final byte[] requestBodyBytes = toBytes(requestBodyString);
     private final StubHttpRequest stubHttpRequest = aStubbedRequest().build();
 
     private final String responseBodyString = "a response body";
@@ -75,7 +76,7 @@ class RestTemplateInterceptorTest {
 
         interceptor.intercept(request, requestBodyBytes, execution);
 
-        verify(interactions).log("GET " + uri + " from App to PriceService", requestBodyBytes);
+        verify(interactions).log("GET " + uri + " from App to PriceService", requestBodyString);
     }
 
     @Test
@@ -102,7 +103,7 @@ class RestTemplateInterceptorTest {
 
         interceptor.intercept(request, requestBodyBytes, execution);
 
-        verify(interactions).log("GET /another/path from App to Other", requestBodyBytes);
+        verify(interactions).log("GET /another/path from App to Other", requestBodyString);
         verify(interactions).log("200 OK response from Other to App", responseBodyString);
     }
 

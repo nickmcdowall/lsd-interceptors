@@ -41,7 +41,7 @@ public class RestTemplateInterceptor implements ClientHttpRequestInterceptor {
 
     private void captureRequest(HttpRequest request, byte[] body, String path, String destinationName) {
         String interactionMessage = requestOf(request.getMethodValue(), path, sourceName, destinationName);
-        interactions.log(interactionMessage, body);
+        interactions.log(interactionMessage, new String(body));
     }
 
     private void captureResponse(String destinationName, ClientHttpResponse response) throws IOException {
