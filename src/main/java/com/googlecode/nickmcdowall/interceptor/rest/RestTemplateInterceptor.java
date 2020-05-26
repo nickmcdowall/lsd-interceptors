@@ -12,7 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-import static java.lang.String.format;
+import static com.googlecode.nickmcdowall.interceptor.rest.HttpInteractionMessageTemplates.requestOf;
+import static com.googlecode.nickmcdowall.interceptor.rest.HttpInteractionMessageTemplates.responseOf;
 
 /**
  * Created to intercept rest template calls for Yatspec interactions.
@@ -21,8 +22,6 @@ import static java.lang.String.format;
 @RequiredArgsConstructor
 public class RestTemplateInterceptor implements ClientHttpRequestInterceptor {
 
-    public static final String REQUEST_TEMPLATE = "%s %s from %s to %s";
-    public static final String RESPONSE_TEMPLATE = "%s response from %s to %s";
 
     private final TestState interactions;
     private final String sourceName;
@@ -41,11 +40,13 @@ public class RestTemplateInterceptor implements ClientHttpRequestInterceptor {
     }
 
     private void captureRequest(HttpRequest request, byte[] body, String path, String destinationName) {
-        interactions.log(format(REQUEST_TEMPLATE, request.getMethodValue(), path, sourceName, destinationName), body);
+        String interactionMessage = requestOf(request.getMethodValue(), path, sourceName, destinationName);
+        interactions.log(interactionMessage, body);
     }
 
     private void captureResponse(String destinationName, ClientHttpResponse response) throws IOException {
-        interactions.log(format(RESPONSE_TEMPLATE, response.getStatusCode(), destinationName, sourceName), copyBodyToString(response));
+        String interactionMessage = responseOf(response.getStatusCode().toString(), destinationName, sourceName);
+        interactions.log(interactionMessage, copyBodyToString(response));
     }
 
     private String copyBodyToString(ClientHttpResponse response) throws IOException {

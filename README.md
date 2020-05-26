@@ -4,7 +4,7 @@ A central library for various Yatspec interaction interceptors to live.
 
 Interceptors include:
 * `RestTemplateInterceptor` created for intercepting `org.springframework.web.client.RestTemplate`
-
+* `OkHttpInterceptor`
 ## Requirements
 
 JDK
