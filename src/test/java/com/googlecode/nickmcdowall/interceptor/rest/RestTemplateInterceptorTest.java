@@ -16,8 +16,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Map;
 
+import static com.googlecode.nickmcdowall.interceptor.common.PathToDestinationNameMapper.destinationMappings;
+import static java.util.Map.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -28,18 +29,16 @@ import static org.springframework.http.HttpStatus.OK;
 @ExtendWith(MockitoExtension.class)
 class RestTemplateInterceptorTest {
 
-    private final String methodValue = "GET";
     private final URI uri = URI.create("/price/watch");
-    private final String requestBodyString= "a request body";
-    private final byte[] requestBodyBytes = toBytes(requestBodyString);
-    private final StubHttpRequest stubHttpRequest = aStubbedRequest().build();
-
+    private final String requestBodyString = "a request body";
+    private final byte[] requestBodyBytes = requestBodyString.getBytes();
+    private final StubHttpRequest stubHttpRequest = aGetRequest().build();
     private final String responseBodyString = "a response body";
     private final InputStream responseBodyStream = new ByteArrayInputStream(responseBodyString.getBytes());
     private final ClientHttpResponse httpResponse = aStubbedOkResponse().build();
 
     @Mock
-    private TestState interactions = new TestState();
+    private final TestState interactions = new TestState();
 
     @Mock
     private ClientHttpRequestExecution execution;
@@ -48,7 +47,7 @@ class RestTemplateInterceptorTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        interceptor = new RestTemplateInterceptor(interactions, "App", Map.of("/price", "PriceService"));
+        interceptor = new RestTemplateInterceptor(interactions, "App", destinationMappings(of("/price", "PriceService")));
         when(execution.execute(any(), any())).thenReturn(httpResponse);
     }
 
@@ -63,43 +62,35 @@ class RestTemplateInterceptorTest {
 
     @Test
     void returnsActualResponse() throws IOException {
-        HttpRequest request = stubHttpRequest;
-
-        ClientHttpResponse interceptedResponse = interceptor.intercept(request, requestBodyBytes, execution);
+        ClientHttpResponse interceptedResponse = interceptor.intercept(stubHttpRequest, requestBodyBytes, execution);
 
         assertThat(interceptedResponse).isEqualTo(httpResponse);
     }
 
     @Test
     void logRequestInteraction() throws IOException {
-        HttpRequest request = stubHttpRequest;
-
-        interceptor.intercept(request, requestBodyBytes, execution);
+        interceptor.intercept(stubHttpRequest, requestBodyBytes, execution);
 
         verify(interactions).log("GET " + uri + " from App to PriceService", requestBodyString);
     }
 
     @Test
     void logResponseInteraction() throws IOException {
-        HttpRequest request = stubHttpRequest;
-
-        interceptor.intercept(request, requestBodyBytes, execution);
+        interceptor.intercept(stubHttpRequest, requestBodyBytes, execution);
 
         verify(interactions).log("200 OK response from PriceService to App", responseBodyString);
     }
 
     @Test
     void doesNotConsumeResponseStream() throws IOException {
-        HttpRequest request = stubHttpRequest;
-
-        ClientHttpResponse response = interceptor.intercept(request, requestBodyBytes, execution);
+        ClientHttpResponse response = interceptor.intercept(stubHttpRequest, requestBodyBytes, execution);
 
         assertThat(response.getBody()).hasContent(responseBodyString);
     }
 
     @Test
     void handleUnknownDestinationMapping() throws IOException {
-        HttpRequest request = aStubbedRequest().uri(URI.create("/another/path")).build();
+        HttpRequest request = aGetRequest().uri(URI.create("/another/path")).build();
 
         interceptor.intercept(request, requestBodyBytes, execution);
 
@@ -126,13 +117,9 @@ class RestTemplateInterceptorTest {
                 .headers(EMPTY);
     }
 
-    private StubHttpRequestBuilder aStubbedRequest() {
+    private StubHttpRequestBuilder aGetRequest() {
         return StubHttpRequest.builder()
-                .uri(uri).methodValue(methodValue).httpHeaders(EMPTY);
-    }
-
-    private byte[] toBytes(String body) {
-        return body.getBytes();
+                .uri(uri).methodValue("GET").httpHeaders(EMPTY);
     }
 
 }

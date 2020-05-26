@@ -1,5 +1,6 @@
 package com.googlecode.nickmcdowall.interceptor.rest;
 
+import com.googlecode.nickmcdowall.interceptor.common.PathToDestinationNameMapper;
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import lombok.RequiredArgsConstructor;
 import okhttp3.Interceptor;
@@ -8,10 +9,9 @@ import okhttp3.Response;
 import okio.Buffer;
 
 import java.io.IOException;
-import java.util.Map;
 
-import static com.googlecode.nickmcdowall.interceptor.rest.HttpInteractionMessageTemplates.requestOf;
-import static com.googlecode.nickmcdowall.interceptor.rest.HttpInteractionMessageTemplates.responseOf;
+import static com.googlecode.nickmcdowall.interceptor.common.HttpInteractionMessageTemplates.requestOf;
+import static com.googlecode.nickmcdowall.interceptor.common.HttpInteractionMessageTemplates.responseOf;
 
 @RequiredArgsConstructor
 public class OkHttpInterceptor implements Interceptor {
@@ -19,7 +19,7 @@ public class OkHttpInterceptor implements Interceptor {
     public static final int RESPONSE_MAXY_BYTES = 10000;
     private final TestState interactions;
     private final String sourceName;
-    private final Map<String, String> destinationMapping;
+    private final PathToDestinationNameMapper destinationNames;
 
     @Override
     public Response intercept(Chain chain) throws IOException {
@@ -27,7 +27,7 @@ public class OkHttpInterceptor implements Interceptor {
         Request requestCopy = request.newBuilder().build();
         String path = request.url().encodedPath();
 
-        String destinationName = mapPathToDestination(path);
+        String destinationName = destinationNames.mapForPath(path);
 
         interactions.log(requestOf(request.method(), path, sourceName, destinationName), bodyToString(requestCopy));
 
@@ -43,16 +43,6 @@ public class OkHttpInterceptor implements Interceptor {
      */
     private String copyBodyString(Response response) throws IOException {
         return response.peekBody(RESPONSE_MAXY_BYTES).string();
-    }
-
-    private String mapPathToDestination(String path) {
-        String destinationkey = destinationMapping.entrySet().stream()
-                .filter(entry -> path.startsWith(entry.getKey()))
-                .map(Map.Entry::getKey)
-                .findFirst()
-                .orElse("default");
-
-        return destinationMapping.getOrDefault(destinationkey, "Other");
     }
 
     private String bodyToString(Request copy) throws IOException {

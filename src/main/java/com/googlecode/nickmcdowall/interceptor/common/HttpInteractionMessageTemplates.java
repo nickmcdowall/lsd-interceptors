@@ -1,4 +1,4 @@
-package com.googlecode.nickmcdowall.interceptor.rest;
+package com.googlecode.nickmcdowall.interceptor.common;
 
 /**
  * Useful to keep the interaction messages consistent across varios http interceptors.

@@ -17,7 +17,6 @@ public class StubClientHttpResponse implements ClientHttpResponse {
     private final HttpHeaders headers;
     private final HttpStatus statusCode;
 
-
     @Override
     public HttpStatus getStatusCode() {
         return statusCode;

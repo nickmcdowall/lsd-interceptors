@@ -1,5 +1,6 @@
 package com.googlecode.nickmcdowall.interceptor.rest;
 
+import com.googlecode.nickmcdowall.interceptor.common.PathToDestinationNameMapper;
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpRequest;
@@ -10,10 +11,9 @@ import org.springframework.http.client.ClientHttpResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
-import static com.googlecode.nickmcdowall.interceptor.rest.HttpInteractionMessageTemplates.requestOf;
-import static com.googlecode.nickmcdowall.interceptor.rest.HttpInteractionMessageTemplates.responseOf;
+import static com.googlecode.nickmcdowall.interceptor.common.HttpInteractionMessageTemplates.requestOf;
+import static com.googlecode.nickmcdowall.interceptor.common.HttpInteractionMessageTemplates.responseOf;
 
 /**
  * Created to intercept rest template calls for Yatspec interactions.
@@ -25,12 +25,12 @@ public class RestTemplateInterceptor implements ClientHttpRequestInterceptor {
 
     private final TestState interactions;
     private final String sourceName;
-    private final Map<String, String> destinationMapping;
+    private final PathToDestinationNameMapper destinationNames;
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
         String path = request.getURI().getPath();
-        String destinationName = determineDestinationName(path);
+        String destinationName = destinationNames.mapForPath(path);
 
         captureRequest(request, body, path, destinationName);
         ClientHttpResponse response = execution.execute(request, body);
@@ -59,14 +59,4 @@ public class RestTemplateInterceptor implements ClientHttpRequestInterceptor {
         return outputStream.toString();
     }
 
-    private String determineDestinationName(String path) {
-        return destinationMapping.getOrDefault(destinationNameKey(path), "Other");
-    }
-
-    private String destinationNameKey(String path) {
-        return destinationMapping.keySet().stream()
-                .filter(key -> path.startsWith(key))
-                .findFirst()
-                .orElse("");
-    }
 }
