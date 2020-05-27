@@ -27,7 +27,7 @@ import static org.springframework.http.HttpHeaders.EMPTY;
 import static org.springframework.http.HttpStatus.OK;
 
 @ExtendWith(MockitoExtension.class)
-class RestTemplateInterceptorTest {
+class RestTemplateLsdInterceptorTest {
 
     private final URI uri = URI.create("/price/watch");
     private final String requestBodyString = "a request body";
@@ -43,11 +43,11 @@ class RestTemplateInterceptorTest {
     @Mock
     private ClientHttpRequestExecution execution;
 
-    private RestTemplateInterceptor interceptor;
+    private RestTemplateLsdInterceptor interceptor;
 
     @BeforeEach
     void setUp() throws IOException {
-        interceptor = new RestTemplateInterceptor(interactions, "App", destinationMappings(of("/price", "PriceService")));
+        interceptor = new RestTemplateLsdInterceptor(interactions, "App", destinationMappings(of("/price", "PriceService")));
         when(execution.execute(any(), any())).thenReturn(httpResponse);
     }
 

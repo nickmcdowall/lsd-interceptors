@@ -36,14 +36,16 @@ class PathToDestinationNameMapperTest {
     }
 
     @Test
-    void picksFirstMatchingName() {
+    void picksMostSpecificMatch() {
         PathToDestinationNameMapper namingService = destinationMappings(of(
                 "/na", "FirstNamingService",
-                "/name", "SecondNamingService"
+                "/name/one", "MostSpecificNamingService",
+                "/name/one/other", "DifferentNamingService",
+                "/name", "MoreSpecificNamingService"
         ));
 
         String destinationName = namingService.mapForPath("/name/one");
 
-        assertThat(destinationName).isEqualTo("FirstNamingService");
+        assertThat(destinationName).isEqualTo("MostSpecificNamingService");
     }
 }

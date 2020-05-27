@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
+import static java.util.Comparator.reverseOrder;
+
 @RequiredArgsConstructor
 public class PathToDestinationNameMapper {
 
@@ -11,6 +13,7 @@ public class PathToDestinationNameMapper {
 
     public String mapForPath(String path) {
         String nameKey = destinationNames.keySet().stream()
+                .sorted(reverseOrder())
                 .filter(path::startsWith)
                 .findFirst()
                 .orElse("default");

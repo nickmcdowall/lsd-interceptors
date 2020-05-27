@@ -14,7 +14,7 @@ import static com.googlecode.nickmcdowall.interceptor.common.HttpInteractionMess
 import static com.googlecode.nickmcdowall.interceptor.common.HttpInteractionMessageTemplates.responseOf;
 
 @RequiredArgsConstructor
-public class OkHttpInterceptor implements Interceptor {
+public class OkHttpLsdInterceptor implements Interceptor {
 
     public static final int RESPONSE_MAXY_BYTES = 10000;
     private final TestState interactions;

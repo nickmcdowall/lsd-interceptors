@@ -20,7 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class OkHttpInterceptorTest {
+public class OkHttpLsdInterceptorTest {
 
     public static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
 
@@ -38,7 +38,7 @@ public class OkHttpInterceptorTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        okHttpInterceptor = new OkHttpInterceptor(interactions, "App", new PathToDestinationNameMapper(of("/user", "UserService")));
+        okHttpInterceptor = new OkHttpLsdInterceptor(interactions, "App", new PathToDestinationNameMapper(of("/user", "UserService")));
         when(chain.request()).thenReturn(aPutRequest());
         when(chain.proceed(any())).thenReturn(okResponse);
     }

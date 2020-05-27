@@ -20,7 +20,7 @@ import static com.googlecode.nickmcdowall.interceptor.common.HttpInteractionMess
  * Attempts to reset the input stream so that no data is lost on reading the reponse body
  */
 @RequiredArgsConstructor
-public class RestTemplateInterceptor implements ClientHttpRequestInterceptor {
+public class RestTemplateLsdInterceptor implements ClientHttpRequestInterceptor {
 
 
     private final TestState interactions;
