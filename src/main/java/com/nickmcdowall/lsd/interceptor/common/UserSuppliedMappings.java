@@ -1,4 +1,4 @@
-package com.googlecode.nickmcdowall.interceptor.common;
+package com.nickmcdowall.lsd.interceptor.common;
 
 import lombok.RequiredArgsConstructor;
 
@@ -7,10 +7,11 @@ import java.util.Map;
 import static java.util.Comparator.reverseOrder;
 
 @RequiredArgsConstructor
-public class PathToDestinationNameMapper {
+public class UserSuppliedMappings implements DestinationNamesMapper {
 
     private final Map<String, String> destinationNames;
 
+    @Override
     public String mapForPath(String path) {
         String nameKey = destinationNames.keySet().stream()
                 .sorted(reverseOrder())
@@ -21,8 +22,8 @@ public class PathToDestinationNameMapper {
         return destinationNames.getOrDefault(nameKey, "Other");
     }
 
-    public static PathToDestinationNameMapper destinationMappings(Map<String, String> destinationMapping) {
-        return new PathToDestinationNameMapper(destinationMapping);
+    public static UserSuppliedMappings userSuppliedMappings(Map<String, String> destinationMapping) {
+        return new UserSuppliedMappings(destinationMapping);
     }
 
 }

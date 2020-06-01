@@ -1,4 +1,4 @@
-package com.googlecode.nickmcdowall.interceptor.rest;
+package com.nickmcdowall.lsd.interceptor.rest;
 
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;

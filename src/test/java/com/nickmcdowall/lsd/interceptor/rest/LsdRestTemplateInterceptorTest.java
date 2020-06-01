@@ -1,6 +1,6 @@
-package com.googlecode.nickmcdowall.interceptor.rest;
+package com.nickmcdowall.lsd.interceptor.rest;
 
-import com.googlecode.nickmcdowall.interceptor.rest.StubHttpRequest.StubHttpRequestBuilder;
+import com.nickmcdowall.lsd.interceptor.rest.StubHttpRequest.StubHttpRequestBuilder;
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import static com.googlecode.nickmcdowall.interceptor.common.PathToDestinationNameMapper.destinationMappings;
+import static com.nickmcdowall.lsd.interceptor.common.UserSuppliedMappings.userSuppliedMappings;
 import static java.util.Map.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,7 +27,7 @@ import static org.springframework.http.HttpHeaders.EMPTY;
 import static org.springframework.http.HttpStatus.OK;
 
 @ExtendWith(MockitoExtension.class)
-class RestTemplateLsdInterceptorTest {
+class LsdRestTemplateInterceptorTest {
 
     private final URI uri = URI.create("/price/watch");
     private final String requestBodyString = "a request body";
@@ -43,11 +43,11 @@ class RestTemplateLsdInterceptorTest {
     @Mock
     private ClientHttpRequestExecution execution;
 
-    private RestTemplateLsdInterceptor interceptor;
+    private LsdRestTemplateInterceptor interceptor;
 
     @BeforeEach
     void setUp() throws IOException {
-        interceptor = new RestTemplateLsdInterceptor(interactions, "App", destinationMappings(of("/price", "PriceService")));
+        interceptor = new LsdRestTemplateInterceptor(interactions, "App", userSuppliedMappings(of("/price", "PriceService")));
         when(execution.execute(any(), any())).thenReturn(httpResponse);
     }
 

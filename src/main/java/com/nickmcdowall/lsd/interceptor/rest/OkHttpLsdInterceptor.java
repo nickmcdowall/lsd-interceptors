@@ -1,7 +1,8 @@
-package com.googlecode.nickmcdowall.interceptor.rest;
+package com.nickmcdowall.lsd.interceptor.rest;
 
-import com.googlecode.nickmcdowall.interceptor.common.PathToDestinationNameMapper;
+import com.nickmcdowall.lsd.interceptor.common.UserSuppliedMappings;
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.nickmcdowall.lsd.interceptor.common.HttpInteractionMessageTemplates;
 import lombok.RequiredArgsConstructor;
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -10,16 +11,13 @@ import okio.Buffer;
 
 import java.io.IOException;
 
-import static com.googlecode.nickmcdowall.interceptor.common.HttpInteractionMessageTemplates.requestOf;
-import static com.googlecode.nickmcdowall.interceptor.common.HttpInteractionMessageTemplates.responseOf;
-
 @RequiredArgsConstructor
 public class OkHttpLsdInterceptor implements Interceptor {
 
     public static final int RESPONSE_MAXY_BYTES = 10000;
     private final TestState interactions;
     private final String sourceName;
-    private final PathToDestinationNameMapper destinationNames;
+    private final UserSuppliedMappings destinationNames;
 
     @Override
     public Response intercept(Chain chain) throws IOException {
@@ -29,11 +27,11 @@ public class OkHttpLsdInterceptor implements Interceptor {
 
         String destinationName = destinationNames.mapForPath(path);
 
-        interactions.log(requestOf(request.method(), path, sourceName, destinationName), bodyToString(requestCopy));
+        interactions.log(HttpInteractionMessageTemplates.requestOf(request.method(), path, sourceName, destinationName), bodyToString(requestCopy));
 
         Response response = chain.proceed(request);
 
-        interactions.log(responseOf(response.code() + " " + response.message(), destinationName, sourceName), copyBodyString(response));
+        interactions.log(HttpInteractionMessageTemplates.responseOf(response.code() + " " + response.message(), destinationName, sourceName), copyBodyString(response));
 
         return response;
     }

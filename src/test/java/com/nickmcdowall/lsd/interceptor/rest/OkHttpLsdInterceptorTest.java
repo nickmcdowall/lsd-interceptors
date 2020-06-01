@@ -1,6 +1,6 @@
-package com.googlecode.nickmcdowall.interceptor.rest;
+package com.nickmcdowall.lsd.interceptor.rest;
 
-import com.googlecode.nickmcdowall.interceptor.common.PathToDestinationNameMapper;
+import com.nickmcdowall.lsd.interceptor.common.UserSuppliedMappings;
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import okhttp3.*;
 import okio.Buffer;
@@ -38,7 +38,7 @@ public class OkHttpLsdInterceptorTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        okHttpInterceptor = new OkHttpLsdInterceptor(interactions, "App", new PathToDestinationNameMapper(of("/user", "UserService")));
+        okHttpInterceptor = new OkHttpLsdInterceptor(interactions, "App", new UserSuppliedMappings(of("/user", "UserService")));
         when(chain.request()).thenReturn(aPutRequest());
         when(chain.proceed(any())).thenReturn(okResponse);
     }

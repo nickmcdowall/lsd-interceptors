@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.nickmcdowall.lsd.interceptor.autoconfigure.LsdDestinationNameMappingConfiguration,\
+  com.nickmcdowall.lsd.interceptor.autoconfigure.LsdRestTemplateAutoConfiguration,\
+  com.nickmcdowall.lsd.interceptor.autoconfigure.LsdTestRestTemplateAutoConfiguration
