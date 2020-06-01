@@ -8,11 +8,13 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * We need a way to name the different endpoints that the RestTemplate hits.
- *
+ * <p>
  * By default we can wire in a bean that uses regex to determine what to call the endpoint.
  */
 @Configuration
 public class LsdDestinationNameMappingConfiguration {
+
+    public static final DestinationNamesMapper APP_ONLY_DESTINATION = path -> "App";
 
     /**
      * Users can override this by supplying their own DestinationNamesMapper bean called
@@ -22,6 +24,19 @@ public class LsdDestinationNameMappingConfiguration {
     @ConditionalOnMissingBean(name = "restTemplateDestinationMappings")
     public DestinationNamesMapper restTemplateDestinationMappings() {
         return new RegexResolvingDestinationNameMapper();
+    }
+
+    /**
+     * Users can override this by supplying their own DestinationNamesMapper bean called
+     * 'testRestTemplateDestinationMappings` if they prefer to use an alternative strategy.
+     *
+     * Assumes the test rest template is for invoking the application as if it was a user hence the destination name
+     * defaults to 'App'.
+     */
+    @Bean
+    @ConditionalOnMissingBean(name = "testRestTemplateDestinationMappings")
+    public DestinationNamesMapper testRestTemplateDestinationMappings() {
+        return APP_ONLY_DESTINATION;
     }
 
 }

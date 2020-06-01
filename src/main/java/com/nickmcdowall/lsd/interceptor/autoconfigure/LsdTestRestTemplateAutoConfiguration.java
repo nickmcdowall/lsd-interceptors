@@ -26,11 +26,11 @@ public class LsdTestRestTemplateAutoConfiguration {
 
     private final TestState interactions;
     private final TestRestTemplate testRestTemplate;
-    private final DestinationNamesMapper restTemplateDestinationMappings;
+    private final DestinationNamesMapper testRestTemplateDestinationMappings;
 
     @PostConstruct
     public void configureInterceptor() {
-        addRestInterceptor(testRestTemplate.getRestTemplate(), new LsdRestTemplateInterceptor(interactions, "User", restTemplateDestinationMappings));
+        addRestInterceptor(testRestTemplate.getRestTemplate(), new LsdRestTemplateInterceptor(interactions, "User", testRestTemplateDestinationMappings));
     }
 
 }

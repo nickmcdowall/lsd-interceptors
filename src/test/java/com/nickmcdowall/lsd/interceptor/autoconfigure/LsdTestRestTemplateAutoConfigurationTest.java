@@ -1,7 +1,6 @@
 package com.nickmcdowall.lsd.interceptor.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.interceptor.common.RegexResolvingDestinationNameMapper;
 import com.nickmcdowall.lsd.interceptor.rest.LsdRestTemplateInterceptor;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -10,6 +9,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static com.nickmcdowall.lsd.interceptor.autoconfigure.LsdDestinationNameMappingConfiguration.APP_ONLY_DESTINATION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LsdTestRestTemplateAutoConfigurationTest {
@@ -33,7 +33,7 @@ class LsdTestRestTemplateAutoConfigurationTest {
         contextRunner.withUserConfiguration(UserConfigWithTestRestTemplate.class).run((context) -> {
             assertThat(context).hasSingleBean(TestRestTemplate.class);
             assertThat(context.getBean(TestRestTemplate.class).getRestTemplate().getInterceptors()).containsExactly(
-                    new LsdRestTemplateInterceptor(new TestState(), "User", new RegexResolvingDestinationNameMapper())
+                    new LsdRestTemplateInterceptor(new TestState(), "User", APP_ONLY_DESTINATION)
             );
         });
     }
