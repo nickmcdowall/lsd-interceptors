@@ -6,6 +6,7 @@ import com.nickmcdowall.lsd.interceptor.rest.LsdRestTemplateInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,11 +15,12 @@ import javax.annotation.PostConstruct;
 import static com.nickmcdowall.lsd.interceptor.common.RestTemplateModifier.addRestInterceptor;
 
 /**
- * If a TestRestTemplate and a TestState bean is available it will automatically autoconfig a RestTemplateLsdInterceptor
+ * If a TestRestTemplate class and a TestState bean is available it will automatically autoconfig a RestTemplateLsdInterceptor
  */
 @Configuration
-@ConditionalOnBean(value = {TestState.class, TestRestTemplate.class})
-@AutoConfigureAfter(LsdDestinationNameMappingConfiguration.class)
+@AutoConfigureAfter(value = {LsdDestinationNameMappingConfiguration.class})
+@ConditionalOnBean(value = {TestState.class})
+@ConditionalOnClass(value = TestRestTemplate.class)
 @RequiredArgsConstructor
 public class LsdTestRestTemplateAutoConfiguration {
 
