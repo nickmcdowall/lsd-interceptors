@@ -1,9 +1,10 @@
 package com.nickmcdowall.lsd.interceptor.rest;
 
-import com.nickmcdowall.lsd.interceptor.common.UserSuppliedMappings;
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.nickmcdowall.lsd.interceptor.common.DestinationNamesMapper;
 import com.nickmcdowall.lsd.interceptor.common.HttpInteractionMessageTemplates;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -11,13 +12,15 @@ import okio.Buffer;
 
 import java.io.IOException;
 
+@Value
 @RequiredArgsConstructor
-public class OkHttpLsdInterceptor implements Interceptor {
+public class LsdOkHttpInterceptor implements Interceptor {
 
     public static final int RESPONSE_MAXY_BYTES = 10000;
+
     private final TestState interactions;
     private final String sourceName;
-    private final UserSuppliedMappings destinationNames;
+    private final DestinationNamesMapper destinationNames;
 
     @Override
     public Response intercept(Chain chain) throws IOException {

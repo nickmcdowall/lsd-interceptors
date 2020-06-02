@@ -18,24 +18,24 @@ public class LsdDestinationNameMappingConfiguration {
 
     /**
      * Users can override this by supplying their own DestinationNamesMapper bean called
-     * 'restTemplateDestinationMappings` if they prefer to use an alternative strategy.
+     * 'defaultAppToDestinationNameMappings` if they prefer to use an alternative strategy.
      */
     @Bean
-    @ConditionalOnMissingBean(name = "restTemplateDestinationMappings")
-    public DestinationNamesMapper restTemplateDestinationMappings() {
+    @ConditionalOnMissingBean(name = "defaultAppToDestinationNameMappings")
+    public DestinationNamesMapper defaultAppToDestinationNameMappings() {
         return new RegexResolvingDestinationNameMapper();
     }
 
     /**
      * Users can override this by supplying their own DestinationNamesMapper bean called
-     * 'testRestTemplateDestinationMappings` if they prefer to use an alternative strategy.
+     * 'defaultUserToAppNameMapping` if they prefer to use an alternative strategy.
      *
      * Assumes the test rest template is for invoking the application as if it was a user hence the destination name
      * defaults to 'App'.
      */
     @Bean
-    @ConditionalOnMissingBean(name = "testRestTemplateDestinationMappings")
-    public DestinationNamesMapper testRestTemplateDestinationMappings() {
+    @ConditionalOnMissingBean(name = "defaultUserToAppNameMapping")
+    public DestinationNamesMapper defaultUserToAppNameMapping() {
         return APP_ONLY_DESTINATION;
     }
 

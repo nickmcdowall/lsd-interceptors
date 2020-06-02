@@ -20,7 +20,8 @@ class LsdDestinationNameMappingConfigurationTest {
     @Test
     public void aDestinationsBeanIsAddedWhenNoneExists() {
         contextRunner.withUserConfiguration(UserConfigWithNoDestinationMapping.class).run((context) -> {
-            assertThat(context).hasBean("testRestTemplateDestinationMappings");
+            assertThat(context).hasBean("defaultAppToDestinationNameMappings");
+            assertThat(context).hasBean("defaultUserToAppNameMapping");
         });
     }
 
