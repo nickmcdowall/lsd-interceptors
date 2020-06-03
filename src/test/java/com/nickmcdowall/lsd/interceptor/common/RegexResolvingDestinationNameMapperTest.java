@@ -15,7 +15,7 @@ public class RegexResolvingDestinationNameMapperTest {
             "/pricing-service?id=123&type=live, pricing_service"
     })
     void resolveDestinationNameByPath(String path, String name) {
-        DestinationNamesMapper nameMapper = new RegexResolvingDestinationNameMapper();
+        PathToNameMapper nameMapper = new RegexResolvingDestinationNameMapper();
 
         assertThat(nameMapper.mapForPath(path)).isEqualTo(name);
     }

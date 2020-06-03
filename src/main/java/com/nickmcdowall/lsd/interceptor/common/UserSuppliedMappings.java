@@ -7,7 +7,7 @@ import java.util.Map;
 import static java.util.Comparator.reverseOrder;
 
 @RequiredArgsConstructor
-public class UserSuppliedMappings implements DestinationNamesMapper {
+public class UserSuppliedMappings implements PathToNameMapper {
 
     private final Map<String, String> destinationNames;
 

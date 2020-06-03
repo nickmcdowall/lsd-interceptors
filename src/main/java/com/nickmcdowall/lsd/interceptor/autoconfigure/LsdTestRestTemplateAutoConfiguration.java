@@ -1,7 +1,7 @@
 package com.nickmcdowall.lsd.interceptor.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.interceptor.common.DestinationNamesMapper;
+import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
 import com.nickmcdowall.lsd.interceptor.rest.LsdRestTemplateInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -18,7 +18,7 @@ import static com.nickmcdowall.lsd.interceptor.common.RestTemplateModifier.addRe
  * If a TestRestTemplate class and a TestState bean is available it will automatically autoconfig a RestTemplateLsdInterceptor
  */
 @Configuration
-@AutoConfigureAfter(value = {LsdDestinationNameMappingConfiguration.class})
+@AutoConfigureAfter(value = {LsdNameMappingConfiguration.class})
 @ConditionalOnBean(value = {TestState.class})
 @ConditionalOnClass(value = TestRestTemplate.class)
 @RequiredArgsConstructor
@@ -26,13 +26,13 @@ public class LsdTestRestTemplateAutoConfiguration {
 
     private final TestState interactions;
     private final TestRestTemplate testRestTemplate;
-    private final DestinationNamesMapper defaultUserToAppNameMapping;
+    private final PathToNameMapper defaultTestRestTemplateSourceNameMapping;
+    private final PathToNameMapper defaultTestRestTemplateDestinationNameMapping;
 
     @PostConstruct
     public void configureInterceptor() {
         addRestInterceptor(testRestTemplate.getRestTemplate(),
-                new LsdRestTemplateInterceptor(interactions, "User", defaultUserToAppNameMapping)
-        );
+                new LsdRestTemplateInterceptor(interactions, defaultTestRestTemplateSourceNameMapping, defaultTestRestTemplateDestinationNameMapping));
     }
 
 }

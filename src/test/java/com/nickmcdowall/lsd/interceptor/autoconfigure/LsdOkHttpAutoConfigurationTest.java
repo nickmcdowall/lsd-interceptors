@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static com.nickmcdowall.lsd.interceptor.autoconfigure.LsdNameMappingConfiguration.ALWAYS_APP;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LsdOkHttpAutoConfigurationTest {
@@ -17,14 +18,15 @@ public class LsdOkHttpAutoConfigurationTest {
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
                     LsdOkHttpAutoConfiguration.class,
-                    LsdDestinationNameMappingConfiguration.class
+                    LsdNameMappingConfiguration.class
             ));
 
     @Test
     public void addsOkHttpBuilderWhen() {
         contextRunner.withUserConfiguration(UserConfigWithTestState.class).run((context) -> {
             assertThat(context).hasSingleBean(OkHttpClient.Builder.class);
-            assertThat(context.getBean(OkHttpClient.Builder.class).interceptors()).containsExactly(new LsdOkHttpInterceptor(new TestState(), "App", new RegexResolvingDestinationNameMapper()));
+            assertThat(context.getBean(OkHttpClient.Builder.class).interceptors()).containsExactly(
+                    new LsdOkHttpInterceptor(new TestState(), ALWAYS_APP, new RegexResolvingDestinationNameMapper()));
         });
     }
 

@@ -10,11 +10,13 @@ on the generated sequence diagrams.
 ### Available Interceptors
 
 - LsdRestTemplateInterceptor
+
 The `LsdRestTemplateInterceptor` is used by projects that use spring's `RestTemplate` to send messages downstream.
 This includes the `TestRestTemplate` which uses a RestTemplate internally.
 
-- OkHttpInterceptor
-The `OkHttpInterceptor` is useful when your app uses Feign clients and you choose to use OkHttp as the underlying client implementation.
+- LsdOkHttpInterceptor
+
+The `LsdOkHttpInterceptor` is useful when your app uses _Feign_ clients with _OkHttp_ as the underlying client implementation.
 
 ## Autoconfig
 
@@ -24,22 +26,33 @@ This library is designed to work well with `SpringBootTest` tests by wiring up d
 
 #### Interceptors
 
-For example when running a `SpringBootTest` with an application context that has both a `RestTemplate`
- and a `TestState` bean available then the `LsdRestTemplateInterceptor` will be injected automatically to capture interactions
- between the RestTemplate and downstream endpoints.
+Some Interceptors will be auto injected based on which beans and classes are available in the application context.
 
-If a `TestRestTemplate` bean is also available it too will have an `LsdRestTemplateInterceptor` configured to intercept
- interactions and it will be assumed to represent the calls from the `User` to the `App` being tested.
+For example when running a `SpringBootTest` with an application context that has `RestTemplate`, `TestRestTemplate`
+ and `TestState` beans available, the `LsdRestTemplateInterceptor` will be injected into both the `RestTemplate` and 
+ the `TestRestTemplate` beans automatically.
+  
+For projects that use `Feign` clients and have okHttp enabled, if a `OkHttpClient.Builder` bean is defined it will have
+an `LsdOkHttpInterceptor` auto injected into it's list of interceptors.
 
-(Additional autowiring will eventually be introduced to cover each of the available interceptors.)
+(Additional interceptors and auto configuration will be added over time).
 
-#### DestinationNamesMapper
-By default a `DestinationNamesMapper` which attempts to infer the downstream target names to use in the sequence diagrams based on the first part of the path.
-If you prefer to specify your own mappings simply create a `@Bean` of type `DestinationNamesMapper` named 
-`restTemplateDestinationMappings` to override the provided mapping. You may find the `UserSuppliedMappings` 
-implementation useful - this takes a map of path prefixes to allow more flexibility on the names used 
-(alternatively look into implementing `WithParticipants` and using alias names to change the names used in the diagrams).
+#### PathToNameMapper (http)
 
+Each http interceptor will be provided with default `PathToNameMapper` beans for resolving _source_ and _destination_ 
+names based on the endpoint path being invoked. The defaults are based on assumptions about how the client might be used which
+may not always match the reality. Therefore, it is possible to override the mappings by providing user defined path to name 
+mappings via a bean that matches the default bean name that would otherwise be provided. See LsdNameMappingConfiguration 
+class for further details.
+ 
+ For example it is assumed that TestRestTemplates are typically used in tests to invoke the application API for testing:
+ 
+    TestRestTemplate (`User`) --> Application API (`App`)
+ 
+ Within the application a RestTemplate is typically used to invoke downstream services:
+ 
+    RestTemplate (`App`) -->  (`OtherService`) - name derived by path or user supplied mappings.
+ 
 ## Build/Release
 
 ### Requirements

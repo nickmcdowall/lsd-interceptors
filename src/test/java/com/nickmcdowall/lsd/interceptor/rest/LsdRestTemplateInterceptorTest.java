@@ -1,7 +1,7 @@
 package com.nickmcdowall.lsd.interceptor.rest;
 
-import com.nickmcdowall.lsd.interceptor.rest.StubHttpRequest.StubHttpRequestBuilder;
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.nickmcdowall.lsd.interceptor.rest.StubHttpRequest.StubHttpRequestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
+import static com.nickmcdowall.lsd.interceptor.autoconfigure.LsdNameMappingConfiguration.ALWAYS_APP;
 import static com.nickmcdowall.lsd.interceptor.common.UserSuppliedMappings.userSuppliedMappings;
 import static java.util.Map.of;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,7 +48,7 @@ class LsdRestTemplateInterceptorTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        interceptor = new LsdRestTemplateInterceptor(interactions, "App", userSuppliedMappings(of("/price", "PriceService")));
+        interceptor = new LsdRestTemplateInterceptor(interactions, ALWAYS_APP, userSuppliedMappings(of("/price", "PriceService")));
         when(execution.execute(any(), any())).thenReturn(httpResponse);
     }
 

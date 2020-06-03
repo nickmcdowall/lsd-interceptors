@@ -1,6 +1,5 @@
 package com.nickmcdowall.lsd.interceptor.common;
 
-public interface DestinationNamesMapper {
-
+public interface PathToNameMapper {
     String mapForPath(String path);
 }

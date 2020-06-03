@@ -10,28 +10,28 @@ class UserSuppliedMappingsTest {
 
     @Test
     void usesPrefixToMatchNameToPath() {
-        UserSuppliedMappings names = userSuppliedMappings(of("/name", "NamingService"));
+        PathToNameMapper names = userSuppliedMappings(of("/name", "NamingService"));
 
         assertThat(names.mapForPath("/name/one")).isEqualTo("NamingService");
     }
 
     @Test
     void usesDefaultKeyIfNoMatch() {
-        UserSuppliedMappings names = userSuppliedMappings(of("default", "SomeService"));
+        PathToNameMapper names = userSuppliedMappings(of("default", "SomeService"));
 
         assertThat(names.mapForPath("/name/one")).isEqualTo("SomeService");
     }
 
     @Test
     void usesOtherIfNoDefaultSet() {
-        UserSuppliedMappings names = userSuppliedMappings(of());
+        PathToNameMapper names = userSuppliedMappings(of());
 
         assertThat(names.mapForPath("/name/one")).isEqualTo("Other");
     }
 
     @Test
     void picksMostSpecificMatch() {
-        UserSuppliedMappings mappings = userSuppliedMappings(of(
+        PathToNameMapper mappings = userSuppliedMappings(of(
                 "/na", "FirstNamingService",
                 "/name/one", "MostSpecificNamingService",
                 "/name/one/other", "DifferentNamingService",

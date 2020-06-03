@@ -1,7 +1,7 @@
 package com.nickmcdowall.lsd.interceptor.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.interceptor.common.DestinationNamesMapper;
+import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
 import com.nickmcdowall.lsd.interceptor.rest.LsdRestTemplateInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -18,17 +18,19 @@ import static com.nickmcdowall.lsd.interceptor.common.RestTemplateModifier.addRe
  */
 @Configuration
 @ConditionalOnBean(value = {TestState.class, RestTemplate.class})
-@AutoConfigureAfter(LsdDestinationNameMappingConfiguration.class)
+@AutoConfigureAfter(LsdNameMappingConfiguration.class)
 @RequiredArgsConstructor
 public class LsdRestTemplateAutoConfiguration {
 
     private final TestState interactions;
     private final RestTemplate restTemplate;
-    private final DestinationNamesMapper defaultAppToDestinationNameMappings;
+    private final PathToNameMapper defaultRestTemplateSourceNameMapping;
+    private final PathToNameMapper defaultRestTemplateDestinationNameMapping;
 
     @PostConstruct
     public void configureInterceptor() {
-        addRestInterceptor(restTemplate, new LsdRestTemplateInterceptor(interactions, "App", defaultAppToDestinationNameMappings));
+        addRestInterceptor(restTemplate,
+                new LsdRestTemplateInterceptor(interactions, defaultRestTemplateSourceNameMapping, defaultRestTemplateDestinationNameMapping));
     }
 
 }

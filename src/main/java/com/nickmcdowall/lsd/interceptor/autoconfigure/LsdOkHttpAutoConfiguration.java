@@ -1,7 +1,7 @@
 package com.nickmcdowall.lsd.interceptor.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.interceptor.common.DestinationNamesMapper;
+import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
 import com.nickmcdowall.lsd.interceptor.rest.LsdOkHttpInterceptor;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
@@ -18,18 +18,19 @@ import javax.annotation.PostConstruct;
  */
 @Configuration
 @ConditionalOnBean(value = {TestState.class, OkHttpClient.Builder.class})
-@AutoConfigureAfter(LsdDestinationNameMappingConfiguration.class)
+@AutoConfigureAfter(LsdNameMappingConfiguration.class)
 @RequiredArgsConstructor
 public class LsdOkHttpAutoConfiguration {
 
     private final TestState interactions;
     private final OkHttpClient.Builder okHttpClientBuilder;
-    private final DestinationNamesMapper defaultAppToDestinationNameMappings;
+    private final PathToNameMapper defaultOkHttpSourceNameMapping;
+    private final PathToNameMapper defaultOkHttpDestinationNameMapping;
 
     @PostConstruct
     public void configureInterceptor() {
         okHttpClientBuilder.addInterceptor(
-                new LsdOkHttpInterceptor(interactions, "App", defaultAppToDestinationNameMappings)
+                new LsdOkHttpInterceptor(interactions, defaultOkHttpSourceNameMapping, defaultOkHttpDestinationNameMapping)
         );
     }
 }

@@ -1,6 +1,5 @@
 package com.nickmcdowall.lsd.interceptor.rest;
 
-import com.nickmcdowall.lsd.interceptor.common.UserSuppliedMappings;
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import okhttp3.*;
 import okio.Buffer;
@@ -12,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 
+import static com.nickmcdowall.lsd.interceptor.common.UserSuppliedMappings.userSuppliedMappings;
 import static java.util.Map.of;
 import static okhttp3.RequestBody.create;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +38,7 @@ public class LsdOkHttpInterceptorTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        okHttpInterceptor = new LsdOkHttpInterceptor(interactions, "App", new UserSuppliedMappings(of("/user", "UserService")));
+        okHttpInterceptor = new LsdOkHttpInterceptor(interactions, path -> "App", userSuppliedMappings(of("/user", "UserService")));
         when(chain.request()).thenReturn(aPutRequest());
         when(chain.proceed(any())).thenReturn(okResponse);
     }

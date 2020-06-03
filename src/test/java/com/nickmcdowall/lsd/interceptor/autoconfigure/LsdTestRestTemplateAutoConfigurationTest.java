@@ -9,7 +9,8 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.nickmcdowall.lsd.interceptor.autoconfigure.LsdDestinationNameMappingConfiguration.APP_ONLY_DESTINATION;
+import static com.nickmcdowall.lsd.interceptor.autoconfigure.LsdNameMappingConfiguration.ALWAYS_APP;
+import static com.nickmcdowall.lsd.interceptor.autoconfigure.LsdNameMappingConfiguration.ALWAYS_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LsdTestRestTemplateAutoConfigurationTest {
@@ -17,7 +18,7 @@ class LsdTestRestTemplateAutoConfigurationTest {
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
                     LsdTestRestTemplateAutoConfiguration.class,
-                    LsdDestinationNameMappingConfiguration.class
+                    LsdNameMappingConfiguration.class
             ));
 
     @Test
@@ -33,7 +34,7 @@ class LsdTestRestTemplateAutoConfigurationTest {
         contextRunner.withUserConfiguration(UserConfigWithTestRestTemplate.class).run((context) -> {
             assertThat(context).hasSingleBean(TestRestTemplate.class);
             assertThat(context.getBean(TestRestTemplate.class).getRestTemplate().getInterceptors()).containsExactly(
-                    new LsdRestTemplateInterceptor(new TestState(), "User", APP_ONLY_DESTINATION)
+                    new LsdRestTemplateInterceptor(new TestState(), ALWAYS_USER, ALWAYS_APP)
             );
         });
     }
