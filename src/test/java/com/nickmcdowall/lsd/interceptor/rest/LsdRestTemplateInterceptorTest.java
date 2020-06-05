@@ -90,13 +90,13 @@ class LsdRestTemplateInterceptorTest {
     }
 
     @Test
-    void handleUnknownDestinationMapping() throws IOException {
+    void handleUnknownDestinationMappingByFallingBackToPathNameResolver() throws IOException {
         HttpRequest request = aGetRequest().uri(URI.create("/another/path")).build();
 
         interceptor.intercept(request, requestBodyBytes, execution);
 
-        verify(interactions).log("GET /another/path from App to Other", requestBodyString);
-        verify(interactions).log("200 OK response from Other to App", responseBodyString);
+        verify(interactions).log("GET /another/path from App to another", requestBodyString);
+        verify(interactions).log("200 OK response from another to App", responseBodyString);
     }
 
     @Test

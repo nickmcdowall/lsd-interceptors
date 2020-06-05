@@ -23,10 +23,10 @@ class UserSuppliedMappingsTest {
     }
 
     @Test
-    void usesOtherIfNoDefaultSet() {
+    void fallsBackToFirtPartOfPathIfNoMatchAndNoDefault() {
         PathToNameMapper names = userSuppliedMappings(of());
 
-        assertThat(names.mapForPath("/name/one")).isEqualTo("Other");
+        assertThat(names.mapForPath("/service-name/something")).isEqualTo("service_name");
     }
 
     @Test

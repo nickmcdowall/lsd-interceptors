@@ -10,6 +10,7 @@ import static java.util.Comparator.reverseOrder;
 public class UserSuppliedMappings implements PathToNameMapper {
 
     private final Map<String, String> destinationNames;
+    private final PathToNameMapper fallbackMapper;
 
     @Override
     public String mapForPath(String path) {
@@ -19,11 +20,11 @@ public class UserSuppliedMappings implements PathToNameMapper {
                 .findFirst()
                 .orElse("default");
 
-        return destinationNames.getOrDefault(nameKey, "Other");
+        return destinationNames.getOrDefault(nameKey, fallbackMapper.mapForPath(path));
     }
 
     public static UserSuppliedMappings userSuppliedMappings(Map<String, String> destinationMapping) {
-        return new UserSuppliedMappings(destinationMapping);
+        return new UserSuppliedMappings(destinationMapping, new RegexResolvingDestinationNameMapper());
     }
 
 }
