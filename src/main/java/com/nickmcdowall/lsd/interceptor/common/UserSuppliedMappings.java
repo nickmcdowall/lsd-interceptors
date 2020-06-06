@@ -1,11 +1,13 @@
 package com.nickmcdowall.lsd.interceptor.common;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 
 import java.util.Map;
 
 import static java.util.Comparator.reverseOrder;
 
+@Value
 @RequiredArgsConstructor
 public class UserSuppliedMappings implements PathToNameMapper {
 
