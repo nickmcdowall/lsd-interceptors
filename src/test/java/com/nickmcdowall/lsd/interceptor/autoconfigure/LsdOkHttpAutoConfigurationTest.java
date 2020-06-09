@@ -25,33 +25,48 @@ public class LsdOkHttpAutoConfigurationTest {
             ));
 
     @Test
-    public void noBeansAutoLoaded() {
-        contextRunner.withUserConfiguration(UserConfigWithoutRequiredBeans.class).run((context) -> {
-            assertThat(context).doesNotHaveBean("defaultOkHttpSourceNameMapping");
-            assertThat(context).doesNotHaveBean("defaultOkHttpDestinationNameMapping");
-            assertThat(context).doesNotHaveBean(OkHttpClient.Builder.class);
-        });
+    public void noBeansAutoLoadedWhenRequiredBeansMissing() {
+        contextRunner.withUserConfiguration(UserConfigWithoutRequiredBeans.class)
+                .withPropertyValues("com.lsd.intercept.okhttp=true")
+                .run((context) -> {
+                    assertThat(context).doesNotHaveBean("defaultOkHttpSourceNameMapping");
+                    assertThat(context).doesNotHaveBean("defaultOkHttpDestinationNameMapping");
+                    assertThat(context).doesNotHaveBean(OkHttpClient.Builder.class);
+                });
     }
 
     @Test
-    public void addsOkHttpBuilderWhen() {
+    public void addsOkHttpBuilderWhenPropertySetAndRequiredBeansAvailable() {
+        contextRunner.withUserConfiguration(UserConfigWithRequiredBeans.class)
+                .withPropertyValues("com.lsd.intercept.okhttp=true")
+                .run((context) -> {
+                    assertThat(context).hasBean("defaultOkHttpSourceNameMapping");
+                    assertThat(context).hasBean("defaultOkHttpDestinationNameMapping");
+                    assertThat(context).hasSingleBean(OkHttpClient.Builder.class);
+                    assertThat(context.getBean(OkHttpClient.Builder.class).interceptors()).containsExactly(
+                            new LsdOkHttpInterceptor(new TestState(), ALWAYS_APP, new RegexResolvingDestinationNameMapper()));
+                });
+    }
+
+    @Test
+    public void noInterceptorWhenPropertyNotSet() {
         contextRunner.withUserConfiguration(UserConfigWithRequiredBeans.class).run((context) -> {
-            assertThat(context).hasBean("defaultOkHttpSourceNameMapping");
-            assertThat(context).hasBean("defaultOkHttpDestinationNameMapping");
-            assertThat(context).hasSingleBean(OkHttpClient.Builder.class);
-            assertThat(context.getBean(OkHttpClient.Builder.class).interceptors()).containsExactly(
-                    new LsdOkHttpInterceptor(new TestState(), ALWAYS_APP, new RegexResolvingDestinationNameMapper()));
+            assertThat(context).doesNotHaveBean("defaultOkHttpSourceNameMapping");
+            assertThat(context).doesNotHaveBean("defaultOkHttpDestinationNameMapping");
+            assertThat(context.getBean(OkHttpClient.Builder.class).interceptors()).isEmpty();
         });
     }
 
     @Test
     void userCanOverrideNameMappings() {
-        contextRunner.withUserConfiguration(UserConfigWithNameMappingOverrides.class).run((context) -> {
-            assertThat(context).getBean("defaultOkHttpSourceNameMapping", PathToNameMapper.class)
-                    .isEqualTo(userSuppliedMappings(of("/source", "Source")));
-            assertThat(context).getBean("defaultOkHttpDestinationNameMapping", PathToNameMapper.class)
-                    .isEqualTo(userSuppliedMappings(of("/destination", "Destination")));
-        });
+        contextRunner.withUserConfiguration(UserConfigWithNameMappingOverrides.class)
+                .withPropertyValues("com.lsd.intercept.okhttp=true")
+                .run((context) -> {
+                    assertThat(context).getBean("defaultOkHttpSourceNameMapping", PathToNameMapper.class)
+                            .isEqualTo(userSuppliedMappings(of("/source", "Source")));
+                    assertThat(context).getBean("defaultOkHttpDestinationNameMapping", PathToNameMapper.class)
+                            .isEqualTo(userSuppliedMappings(of("/destination", "Destination")));
+                });
     }
 
     @Configuration

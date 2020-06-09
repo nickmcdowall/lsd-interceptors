@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,6 +34,7 @@ import javax.annotation.PostConstruct;
  */
 @Configuration
 @ConditionalOnBean(value = {TestState.class, OkHttpClient.Builder.class})
+@ConditionalOnProperty(value = "com.lsd.intercept.okhttp", havingValue = "true")
 @RequiredArgsConstructor
 public class LsdOkHttpAutoConfiguration {
     public static final PathToNameMapper ALWAYS_APP = path -> "App";
