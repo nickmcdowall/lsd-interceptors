@@ -1,43 +1,37 @@
 # yatspec-lsd-interceptors [![Download](https://api.bintray.com/packages/nickmcdowall/nkm/yatspec-lsd-interceptors/images/download.svg) ](https://bintray.com/nickmcdowall/nkm/yatspec-lsd-interceptors/_latestVersion)
 
-A central library for interceptors that can be used with Yatspec-LSD / [living sequence diagrams](https://github.com/nickmcdowall/yatspec).
+A central library for interceptors that can be used with [yatspec-lsd ](https://github.com/nickmcdowall/yatspec) (aka living sequence diagrams).
 
-## Interceptors
-
-The interceptors are used to capture messages that flow in and out of the App being tested so that they can be displayed 
-on the generated sequence diagrams.
-
-### Available Interceptors
-
-- LsdRestTemplateInterceptor
-
-The `LsdRestTemplateInterceptor` is used by projects that use spring's `RestTemplate` to send messages downstream.
-This includes the `TestRestTemplate` which uses a RestTemplate internally.
-
-- LsdOkHttpInterceptor
-
-The `LsdOkHttpInterceptor` is useful when your app uses _Feign_ clients with _OkHttp_ as the underlying client implementation.
+The interceptors capture messages (requests/responses) that flow in and out of the App during tests so that they can be added
+to the TestState bean used by the [yatspec-lsd ](https://github.com/nickmcdowall/yatspec) framework to generate sequence diagrams.
 
 ## Autoconfig
 
-This library is designed to work well with `SpringBootTest` tests by wiring up default bean configurations for the most
- common use-cases to avoid the need for much boilerplate code with the ability to easily supply user defined @Bean overrides
- where necessary or desirable.
+This library is designed with `@SpringBootTest` in mind and attempts to minimise boilerplate code by wiring up 
+default bean configurations based on the beans and classes available in the project. The interceptors can be used outside of
+a spring project but will require 'manual' injection.
+ 
+### Available Interceptors
 
-#### Interceptors
+#### LsdRestTemplateInterceptor
+- For `RestTemplate` and `TestRestTemplate` clients.
+- Auto configured if a `TestState` bean exists along with `RestTemplate` and or `TestRestTemplate` beans.
 
-Some Interceptors will be auto injected based on which beans and classes are available in the application context.
+#### LsdFeignLoggerInterceptor
+- For `Feign` clients
+- Auto configured if a `TestState` bean exists and both `FeignClientBuilder` and `Logger.Level` classes are on the classpath.
+Note that if no feign `Logger.Level` bean exists one will be created (`Logger.Level.BASIC`) to enable the interceptor 
+to work. If one exists it will not be replaced. 
 
-For example when running a `SpringBootTest` with an application context that has `RestTemplate`, `TestRestTemplate`
- and `TestState` beans available, the `LsdRestTemplateInterceptor` will be injected into both the `RestTemplate` and 
- the `TestRestTemplate` beans automatically.
-  
-For projects that use `Feign` clients and have okHttp enabled, if a `OkHttpClient.Builder` bean is defined it will have
-an `LsdOkHttpInterceptor` auto injected into it's list of interceptors.
+#### LsdOkHttpInterceptor
+- For `OkHttpClient` clients.
+- Auto configured if `TestState` and `OkHttpClient.Builder` beans exists *and* has spring property `com.lsd.intercept.okhttp=true` 
+(requires explicit property to prevent clashing with `LsdFeignLoggerInterceptor` - as it is a popular client implementation 
+for `Feign` and the former interceptor should work across all Feign client implementations).
 
 (Additional interceptors and auto configuration will be added over time).
 
-#### PathToNameMapper (http)
+### PathToNameMapper (http)
 
 Each http interceptor will be provided with default `PathToNameMapper` beans for resolving _source_ and _destination_ 
 names based on the endpoint path being invoked. The defaults are based on assumptions about how the client might be used which
