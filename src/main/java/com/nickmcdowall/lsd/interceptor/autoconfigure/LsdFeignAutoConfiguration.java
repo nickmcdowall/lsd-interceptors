@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnBean(value = {TestState.class})
 @ConditionalOnClass(value = {FeignClientBuilder.class, Logger.Level.class})
-@AutoConfigureAfter(SourceAndDestinationNamesAutoConfiguration.class)
+@AutoConfigureAfter(LsdSourceAndDestinationNamesAutoConfiguration.class)
 @RequiredArgsConstructor
 public class LsdFeignAutoConfiguration {
     public static final PathToNameMapper ALWAYS_APP = path -> "App";

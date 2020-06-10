@@ -10,11 +10,11 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SourceAndDestinationNamesAutoConfigurationTest {
+class LsdSourceAndDestinationNamesAutoConfigurationTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
-                    SourceAndDestinationNamesAutoConfiguration.class
+                    LsdSourceAndDestinationNamesAutoConfiguration.class
             ));
 
     @Test

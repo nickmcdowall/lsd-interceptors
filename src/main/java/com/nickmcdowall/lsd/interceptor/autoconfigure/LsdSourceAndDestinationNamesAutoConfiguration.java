@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.toMap;
  */
 @Configuration
 @ConditionalOnBean(value = {TestState.class, RequestMappingHandlerMapping.class})
-class SourceAndDestinationNamesAutoConfiguration {
+class LsdSourceAndDestinationNamesAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "defaultSourceNameMapping")
     public PathToNameMapper defaultSourceNameMapping(final RequestMappingHandlerMapping handlerMapping) {
