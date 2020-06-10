@@ -44,6 +44,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.4.2'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:2.2.3.RELEASE'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
+    implementation 'org.springframework:spring-webmvc:5.2.5.RELEASE'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.33'
 }
 
 test {

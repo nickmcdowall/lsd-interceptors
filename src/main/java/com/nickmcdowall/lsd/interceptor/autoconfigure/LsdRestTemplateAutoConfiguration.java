@@ -2,7 +2,7 @@ package com.nickmcdowall.lsd.interceptor.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
-import com.nickmcdowall.lsd.interceptor.common.RegexResolvingDestinationNameMapper;
+import com.nickmcdowall.lsd.interceptor.common.RegexResolvingNameMapper;
 import com.nickmcdowall.lsd.interceptor.rest.LsdRestTemplateInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -24,7 +24,7 @@ import static com.nickmcdowall.lsd.interceptor.common.RestTemplateModifier.addRe
  * <p>
  * It is assumed that if a {@link RestTemplate} bean exists is will be used to invoke downstream endpoints from within the app.
  * Therefore the <em>source</em> name will default to <em>'App'</em> and the <em>destination</em> name will be derived using a
- * {@link RegexResolvingDestinationNameMapper} by default.
+ * {@link RegexResolvingNameMapper} by default.
  * </p>
  * <br/>
  * <p>
@@ -60,7 +60,7 @@ public class LsdRestTemplateAutoConfiguration {
         @Bean
         @ConditionalOnMissingBean(name = "defaultRestTemplateDestinationNameMapping")
         public PathToNameMapper defaultRestTemplateDestinationNameMapping() {
-            return new RegexResolvingDestinationNameMapper();
+            return new RegexResolvingNameMapper();
         }
     }
 

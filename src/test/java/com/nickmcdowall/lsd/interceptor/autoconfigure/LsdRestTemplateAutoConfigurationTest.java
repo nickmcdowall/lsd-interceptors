@@ -2,7 +2,7 @@ package com.nickmcdowall.lsd.interceptor.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
-import com.nickmcdowall.lsd.interceptor.common.RegexResolvingDestinationNameMapper;
+import com.nickmcdowall.lsd.interceptor.common.RegexResolvingNameMapper;
 import com.nickmcdowall.lsd.interceptor.rest.LsdRestTemplateInterceptor;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -47,7 +47,7 @@ class LsdRestTemplateAutoConfigurationTest {
             assertThat(context).hasBean("defaultRestTemplateSourceNameMapping");
             assertThat(context).hasBean("defaultRestTemplateDestinationNameMapping");
             assertThat(context.getBean(RestTemplate.class).getInterceptors()).containsExactly(
-                    new LsdRestTemplateInterceptor(new TestState(), ALWAYS_APP, new RegexResolvingDestinationNameMapper())
+                    new LsdRestTemplateInterceptor(new TestState(), ALWAYS_APP, new RegexResolvingNameMapper())
             );
         });
     }

@@ -11,22 +11,22 @@ import static java.util.Comparator.reverseOrder;
 @RequiredArgsConstructor
 public class UserSuppliedMappings implements PathToNameMapper {
 
-    private final Map<String, String> destinationNames;
+    private final Map<String, String> mappings;
     private final PathToNameMapper fallbackMapper;
 
     @Override
     public String mapForPath(String path) {
-        String nameKey = destinationNames.keySet().stream()
+        String nameKey = mappings.keySet().stream()
                 .sorted(reverseOrder())
                 .filter(path::startsWith)
                 .findFirst()
                 .orElse("default");
 
-        return destinationNames.getOrDefault(nameKey, fallbackMapper.mapForPath(path));
+        return mappings.getOrDefault(nameKey, fallbackMapper.mapForPath(path));
     }
 
-    public static UserSuppliedMappings userSuppliedMappings(Map<String, String> destinationMapping) {
-        return new UserSuppliedMappings(destinationMapping, new RegexResolvingDestinationNameMapper());
+    public static UserSuppliedMappings userSuppliedMappings(Map<String, String> mappings) {
+        return new UserSuppliedMappings(mappings, new RegexResolvingNameMapper());
     }
 
 }

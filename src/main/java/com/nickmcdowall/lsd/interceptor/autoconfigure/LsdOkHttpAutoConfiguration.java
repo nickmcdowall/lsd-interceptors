@@ -2,7 +2,7 @@ package com.nickmcdowall.lsd.interceptor.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
-import com.nickmcdowall.lsd.interceptor.common.RegexResolvingDestinationNameMapper;
+import com.nickmcdowall.lsd.interceptor.common.RegexResolvingNameMapper;
 import com.nickmcdowall.lsd.interceptor.rest.LsdOkHttpInterceptor;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
@@ -24,7 +24,7 @@ import javax.annotation.PostConstruct;
  * <p>
  * It is assumed that the {@link okhttp3.OkHttpClient} will be used to invoke downstream endpoints from within the app.
  * Therefore the <em>source</em> name will default to <em>'App'</em> and the <em>destination</em> name will be derived via
- * a {@link RegexResolvingDestinationNameMapper} by default.
+ * a {@link RegexResolvingNameMapper} by default.
  * </p>
  * <br/>
  * <p>
@@ -62,7 +62,7 @@ public class LsdOkHttpAutoConfiguration {
         @Bean
         @ConditionalOnMissingBean(name = "defaultOkHttpDestinationNameMapping")
         public PathToNameMapper defaultOkHttpDestinationNameMapping() {
-            return new RegexResolvingDestinationNameMapper();
+            return new RegexResolvingNameMapper();
         }
     }
 }

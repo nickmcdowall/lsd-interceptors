@@ -2,7 +2,7 @@ package com.nickmcdowall.lsd.interceptor.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
-import com.nickmcdowall.lsd.interceptor.common.RegexResolvingDestinationNameMapper;
+import com.nickmcdowall.lsd.interceptor.common.RegexResolvingNameMapper;
 import com.nickmcdowall.lsd.interceptor.rest.LsdOkHttpInterceptor;
 import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ public class LsdOkHttpAutoConfigurationTest {
                     assertThat(context).hasBean("defaultOkHttpDestinationNameMapping");
                     assertThat(context).hasSingleBean(OkHttpClient.Builder.class);
                     assertThat(context.getBean(OkHttpClient.Builder.class).interceptors()).containsExactly(
-                            new LsdOkHttpInterceptor(new TestState(), ALWAYS_APP, new RegexResolvingDestinationNameMapper()));
+                            new LsdOkHttpInterceptor(new TestState(), ALWAYS_APP, new RegexResolvingNameMapper()));
                 });
     }
 

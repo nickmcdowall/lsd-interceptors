@@ -5,7 +5,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RegexResolvingDestinationNameMapperTest {
+public class RegexResolvingNameMapperTest {
 
     @ParameterizedTest
     @CsvSource(value = {
@@ -15,7 +15,7 @@ public class RegexResolvingDestinationNameMapperTest {
             "/pricing-service?id=123&type=live, pricing_service"
     })
     void resolveDestinationNameByPath(String path, String name) {
-        PathToNameMapper nameMapper = new RegexResolvingDestinationNameMapper();
+        PathToNameMapper nameMapper = new RegexResolvingNameMapper();
 
         assertThat(nameMapper.mapForPath(path)).isEqualTo(name);
     }

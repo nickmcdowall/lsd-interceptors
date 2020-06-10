@@ -2,6 +2,7 @@ package com.nickmcdowall.lsd.interceptor.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
+import com.nickmcdowall.lsd.interceptor.common.UserSuppliedMappings;
 import com.nickmcdowall.lsd.interceptor.rest.LsdFeignLoggerInterceptor;
 import feign.Logger;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class LsdFeignAutoConfigurationTest {
 
+    public static final UserSuppliedMappings SOURCE_NAMES_OVERRIDE = userSuppliedMappings(of("/source", "Source"));
+    public static final UserSuppliedMappings DESTINATION_NAMES_OVERRIDE = userSuppliedMappings(of("/destination", "Destination"));
+
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
                     LsdFeignAutoConfiguration.class
@@ -24,8 +28,8 @@ class LsdFeignAutoConfigurationTest {
     @Test
     public void noBeansAutoLoadedWhenRequiredBeansMissing() {
         contextRunner.withUserConfiguration(UserConfigWithoutRequiredBeans.class).run((context) -> {
-            assertThat(context).doesNotHaveBean("defaultFeignSourceNameMapping");
-            assertThat(context).doesNotHaveBean("defaultFeignDestinationNameMapping");
+            assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
+            assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
             assertThat(context).doesNotHaveBean(Logger.Level.class);
             assertThat(context).doesNotHaveBean(LsdFeignLoggerInterceptor.class);
         });
@@ -34,8 +38,8 @@ class LsdFeignAutoConfigurationTest {
     @Test
     void loadsBeansWhenTestStateIsAvailable() {
         contextRunner.withUserConfiguration(UserConfigWithRequiredBeans.class).run((context) -> {
-            assertThat(context).hasBean("defaultFeignSourceNameMapping");
-            assertThat(context).hasBean("defaultFeignDestinationNameMapping");
+            assertThat(context).hasBean("defaultSourceNameMapping");
+            assertThat(context).hasBean("defaultDestinationNameMapping");
             assertThat(context).hasSingleBean(Logger.Level.class);
             assertThat(context).hasSingleBean(LsdFeignLoggerInterceptor.class);
         });
@@ -52,10 +56,10 @@ class LsdFeignAutoConfigurationTest {
     @Test
     void userCanOverrideNameMappings() {
         contextRunner.withUserConfiguration(UserConfigWithNameMappingOverrides.class).run((context) -> {
-            assertThat(context).getBean("defaultFeignSourceNameMapping", PathToNameMapper.class)
-                    .isEqualTo(userSuppliedMappings(of("/source", "Source")));
-            assertThat(context).getBean("defaultFeignDestinationNameMapping", PathToNameMapper.class)
-                    .isEqualTo(userSuppliedMappings(of("/destination", "Destination")));
+            assertThat(context).getBean("defaultSourceNameMapping", PathToNameMapper.class)
+                    .isEqualTo(SOURCE_NAMES_OVERRIDE);
+            assertThat(context).getBean("defaultDestinationNameMapping", PathToNameMapper.class)
+                    .isEqualTo(DESTINATION_NAMES_OVERRIDE);
         });
     }
 
@@ -79,13 +83,13 @@ class LsdFeignAutoConfigurationTest {
         }
 
         @Bean
-        public PathToNameMapper defaultFeignSourceNameMapping() {
-            return userSuppliedMappings(of("/source", "Source"));
+        public PathToNameMapper defaultSourceNameMapping() {
+            return SOURCE_NAMES_OVERRIDE;
         }
 
         @Bean
-        public PathToNameMapper defaultFeignDestinationNameMapping() {
-            return userSuppliedMappings(of("/destination", "Destination"));
+        public PathToNameMapper defaultDestinationNameMapping() {
+            return DESTINATION_NAMES_OVERRIDE;
         }
     }
 
