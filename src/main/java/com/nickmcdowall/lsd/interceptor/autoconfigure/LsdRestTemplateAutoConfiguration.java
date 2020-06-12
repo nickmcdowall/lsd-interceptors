@@ -3,23 +3,24 @@ package com.nickmcdowall.lsd.interceptor.autoconfigure;
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
 import com.nickmcdowall.lsd.interceptor.common.RegexResolvingNameMapper;
+import com.nickmcdowall.lsd.interceptor.common.LsdRestTemplateCustomizer;
 import com.nickmcdowall.lsd.interceptor.rest.LsdRestTemplateInterceptor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
-
-import static com.nickmcdowall.lsd.interceptor.common.RestTemplateModifier.addRestInterceptor;
 
 /**
  * <p>
- * If a {@link RestTemplate} and a {@link TestState} bean is available it will automatically autoconfig
+ * If a {@link RestTemplate} class and a {@link TestState} bean is available it will automatically autoconfig
  * a {@link LsdRestTemplateInterceptor}
- *</p>
+ * </p>
  * <br/>
  * <p>
  * It is assumed that if a {@link RestTemplate} bean exists is will be used to invoke downstream endpoints from within the app.
@@ -34,32 +35,33 @@ import static com.nickmcdowall.lsd.interceptor.common.RestTemplateModifier.addRe
  * </p>
  */
 @Configuration
-@ConditionalOnBean(value = {TestState.class, RestTemplate.class})
+@ConditionalOnBean(value = {TestState.class})
+@ConditionalOnClass(value = {RestTemplate.class})
+@AutoConfigureAfter(LsdSourceAndDestinationNamesAutoConfiguration.class)
 @RequiredArgsConstructor
 public class LsdRestTemplateAutoConfiguration {
     public static final PathToNameMapper ALWAYS_APP = path -> "App";
 
     private final TestState interactions;
-    private final RestTemplate restTemplate;
-    private final PathToNameMapper defaultRestTemplateSourceNameMapping;
-    private final PathToNameMapper defaultRestTemplateDestinationNameMapping;
+    private final PathToNameMapper defaultSourceNameMapping;
+    private final PathToNameMapper defaultDestinationNameMapping;
 
-    @PostConstruct
-    public void configureInterceptor() {
-        addRestInterceptor(restTemplate,
-                new LsdRestTemplateInterceptor(interactions, defaultRestTemplateSourceNameMapping, defaultRestTemplateDestinationNameMapping));
+    @Bean
+    public RestTemplateCustomizer restTemplateCustomizer() {
+        return new LsdRestTemplateCustomizer(
+                new LsdRestTemplateInterceptor(interactions, defaultSourceNameMapping, defaultDestinationNameMapping));
     }
 
     static class NamingConfig {
         @Bean
-        @ConditionalOnMissingBean(name = "defaultRestTemplateSourceNameMapping")
-        public PathToNameMapper defaultRestTemplateSourceNameMapping() {
+        @ConditionalOnMissingBean(name = "defaultSourceNameMapping")
+        public PathToNameMapper defaultSourceNameMapping() {
             return ALWAYS_APP;
         }
 
         @Bean
-        @ConditionalOnMissingBean(name = "defaultRestTemplateDestinationNameMapping")
-        public PathToNameMapper defaultRestTemplateDestinationNameMapping() {
+        @ConditionalOnMissingBean(name = "defaultDestinationNameMapping")
+        public PathToNameMapper defaultDestinationNameMapping() {
             return new RegexResolvingNameMapper();
         }
     }

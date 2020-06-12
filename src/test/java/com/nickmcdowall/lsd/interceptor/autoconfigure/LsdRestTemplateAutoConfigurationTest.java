@@ -3,6 +3,8 @@ package com.nickmcdowall.lsd.interceptor.autoconfigure;
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
 import com.nickmcdowall.lsd.interceptor.common.RegexResolvingNameMapper;
+import com.nickmcdowall.lsd.interceptor.common.LsdRestTemplateCustomizer;
+import com.nickmcdowall.lsd.interceptor.common.UserSuppliedMappings;
 import com.nickmcdowall.lsd.interceptor.rest.LsdRestTemplateInterceptor;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -17,6 +19,8 @@ import static java.util.Map.of;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LsdRestTemplateAutoConfigurationTest {
+    private static final UserSuppliedMappings SOURCE_NAMES_OVERRIDE = userSuppliedMappings(of("/source", "Source"));
+    private static final UserSuppliedMappings DESTINATION_NAMES_OVERRIDE = userSuppliedMappings(of("/destination", "Destination"));
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
@@ -26,8 +30,8 @@ class LsdRestTemplateAutoConfigurationTest {
     @Test
     public void noBeansAutoLoadedWhenRequiredBeansMissing() {
         contextRunner.withUserConfiguration(UserConfigWithoutRequiredBeans.class).run((context) -> {
-            assertThat(context).doesNotHaveBean("defaultRestTemplateSourceNameMapping");
-            assertThat(context).doesNotHaveBean("defaultRestTemplateDestinationNameMapping");
+            assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
+            assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
             assertThat(context).doesNotHaveBean(RestTemplate.class);
         });
     }
@@ -44,21 +48,20 @@ class LsdRestTemplateAutoConfigurationTest {
     void restTemplateInterceptorAdded() {
         contextRunner.withUserConfiguration(UserConfigWithRequiredBeans.class).run((context) -> {
             assertThat(context).hasSingleBean(RestTemplate.class);
-            assertThat(context).hasBean("defaultRestTemplateSourceNameMapping");
-            assertThat(context).hasBean("defaultRestTemplateDestinationNameMapping");
-            assertThat(context.getBean(RestTemplate.class).getInterceptors()).containsExactly(
-                    new LsdRestTemplateInterceptor(new TestState(), ALWAYS_APP, new RegexResolvingNameMapper())
-            );
+            assertThat(context).hasBean("defaultSourceNameMapping");
+            assertThat(context).hasBean("defaultDestinationNameMapping");
+            assertThat(context).getBean(LsdRestTemplateCustomizer.class).isEqualTo(
+                    new LsdRestTemplateCustomizer(new LsdRestTemplateInterceptor(new TestState(), ALWAYS_APP, new RegexResolvingNameMapper())));
         });
     }
 
     @Test
     void userCanOverrideNameMappings() {
         contextRunner.withUserConfiguration(UserConfigWithNameMappingOverrides.class).run((context) -> {
-            assertThat(context).getBean("defaultRestTemplateSourceNameMapping", PathToNameMapper.class)
-                    .isEqualTo(userSuppliedMappings(of("/source", "Source")));
-            assertThat(context).getBean("defaultRestTemplateDestinationNameMapping", PathToNameMapper.class)
-                    .isEqualTo(userSuppliedMappings(of("/destination", "Destination")));
+            assertThat(context).getBean("defaultSourceNameMapping", PathToNameMapper.class)
+                    .isEqualTo(SOURCE_NAMES_OVERRIDE);
+            assertThat(context).getBean("defaultDestinationNameMapping", PathToNameMapper.class)
+                    .isEqualTo(DESTINATION_NAMES_OVERRIDE);
         });
     }
 
@@ -100,13 +103,13 @@ class LsdRestTemplateAutoConfigurationTest {
         }
 
         @Bean
-        public PathToNameMapper defaultRestTemplateSourceNameMapping() {
-            return userSuppliedMappings(of("/source", "Source"));
+        public PathToNameMapper defaultSourceNameMapping() {
+            return SOURCE_NAMES_OVERRIDE;
         }
 
         @Bean
-        public PathToNameMapper defaultRestTemplateDestinationNameMapping() {
-            return userSuppliedMappings(of("/destination", "Destination"));
+        public PathToNameMapper defaultDestinationNameMapping() {
+            return DESTINATION_NAMES_OVERRIDE;
         }
     }
 

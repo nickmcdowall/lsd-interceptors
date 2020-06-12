@@ -18,13 +18,13 @@ import java.io.InputStream;
  * Created to intercept rest template calls for Yatspec interactions.
  * Attempts to reset the input stream so that no data is lost on reading the reponse body
  */
-@RequiredArgsConstructor
 @Value
+@RequiredArgsConstructor
 public class LsdRestTemplateInterceptor implements ClientHttpRequestInterceptor {
 
-    private final TestState interactions;
-    private final PathToNameMapper sourceNameMappings;
-    private final PathToNameMapper destinationNameMappings;
+    TestState interactions;
+    PathToNameMapper sourceNameMappings;
+    PathToNameMapper destinationNameMappings;
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
@@ -56,7 +56,6 @@ public class LsdRestTemplateInterceptor implements ClientHttpRequestInterceptor 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         InputStream inputStream = response.getBody();
         inputStream.transferTo(outputStream);
-        inputStream.reset();
         return outputStream.toString();
     }
 

@@ -15,7 +15,8 @@ a spring project but will require 'manual' injection.
 
 #### LsdRestTemplateInterceptor
 - For `RestTemplate` and `TestRestTemplate` clients.
-- Auto configured if a `TestState` bean exists along with `RestTemplate` and or `TestRestTemplate` beans.
+- Auto configured if a `TestState` bean exists and a `RestTemplate` class is on the classpath.
+- Uses a `RestTemplateCustomizer` to add an interceptor and set a `BufferingClientHttpRequestFactory` to preserve the response stream after reads
 
 #### LsdFeignLoggerInterceptor
 - For `Feign` clients

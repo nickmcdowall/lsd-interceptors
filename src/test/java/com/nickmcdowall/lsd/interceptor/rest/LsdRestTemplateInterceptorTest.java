@@ -83,13 +83,6 @@ class LsdRestTemplateInterceptorTest {
     }
 
     @Test
-    void doesNotConsumeResponseStream() throws IOException {
-        ClientHttpResponse response = interceptor.intercept(stubHttpRequest, requestBodyBytes, execution);
-
-        assertThat(response.getBody()).hasContent(responseBodyString);
-    }
-
-    @Test
     void handleUnknownDestinationMappingByFallingBackToPathNameResolver() throws IOException {
         HttpRequest request = aGetRequest().uri(URI.create("/another/path")).build();
 
