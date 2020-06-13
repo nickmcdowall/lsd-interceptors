@@ -40,7 +40,6 @@ import org.springframework.web.client.RestTemplate;
 @ConditionalOnBean(value = {TestState.class})
 @ConditionalOnClass(value = {RestTemplate.class})
 @AutoConfigureAfter(LsdSourceAndDestinationNamesAutoConfiguration.class)
-@AutoConfigureBefore(RestTemplateAutoConfiguration.class)
 @RequiredArgsConstructor
 public class LsdRestTemplateAutoConfiguration {
     public static final PathToNameMapper ALWAYS_APP = path -> "App";
