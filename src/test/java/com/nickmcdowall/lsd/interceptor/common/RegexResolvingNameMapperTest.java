@@ -1,5 +1,7 @@
 package com.nickmcdowall.lsd.interceptor.common;
 
+import com.nickmcdowall.lsd.interceptor.naming.DestinationNameMappings;
+import com.nickmcdowall.lsd.interceptor.naming.RegexResolvingNameMapper;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -15,7 +17,7 @@ public class RegexResolvingNameMapperTest {
             "/pricing-service?id=123&type=live, pricing_service"
     })
     void resolveDestinationNameByPath(String path, String name) {
-        PathToNameMapper nameMapper = new RegexResolvingNameMapper();
+        DestinationNameMappings nameMapper = new RegexResolvingNameMapper();
 
         assertThat(nameMapper.mapForPath(path)).isEqualTo(name);
     }

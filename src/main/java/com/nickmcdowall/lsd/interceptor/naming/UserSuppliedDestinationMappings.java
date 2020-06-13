@@ -1,4 +1,4 @@
-package com.nickmcdowall.lsd.interceptor.common;
+package com.nickmcdowall.lsd.interceptor.naming;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -9,10 +9,10 @@ import static java.util.Comparator.reverseOrder;
 
 @Value
 @RequiredArgsConstructor
-public class UserSuppliedMappings implements PathToNameMapper {
+public class UserSuppliedDestinationMappings implements DestinationNameMappings {
 
     private final Map<String, String> mappings;
-    private final PathToNameMapper fallbackMapper;
+    private final DestinationNameMappings fallbackMapper;
 
     @Override
     public String mapForPath(String path) {
@@ -25,8 +25,8 @@ public class UserSuppliedMappings implements PathToNameMapper {
         return mappings.getOrDefault(nameKey, fallbackMapper.mapForPath(path));
     }
 
-    public static UserSuppliedMappings userSuppliedMappings(Map<String, String> mappings) {
-        return new UserSuppliedMappings(mappings, new RegexResolvingNameMapper());
+    public static DestinationNameMappings userSuppliedDestinationMappings(Map<String, String> mappings) {
+        return new UserSuppliedDestinationMappings(mappings, new RegexResolvingNameMapper());
     }
 
 }

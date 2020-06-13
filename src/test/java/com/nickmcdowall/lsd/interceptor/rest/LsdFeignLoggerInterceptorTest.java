@@ -12,7 +12,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
-import static com.nickmcdowall.lsd.interceptor.common.UserSuppliedMappings.userSuppliedMappings;
+import static com.nickmcdowall.lsd.interceptor.naming.UserSuppliedDestinationMappings.userSuppliedDestinationMappings;
+import static com.nickmcdowall.lsd.interceptor.naming.UserSuppliedSourceMappings.userSuppliedSourceMappings;
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.Charset.defaultCharset;
 import static java.util.Collections.emptyMap;
@@ -28,12 +29,12 @@ import static org.mockito.Mockito.verify;
 public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
 
     private final Map<String, Collection<String>> headers = emptyMap();
-    private Level level = Level.BASIC;
+    private final Level level = Level.BASIC;
 
     public LsdFeignLoggerInterceptorTest() {
         super(mock(TestState.class),
-                userSuppliedMappings(of("/app-endpoint", "User")),
-                userSuppliedMappings(of("/app-endpoint", "App"))
+                userSuppliedSourceMappings(of("/app-endpoint", "User")),
+                userSuppliedDestinationMappings(of("/app-endpoint", "App"))
         );
     }
 

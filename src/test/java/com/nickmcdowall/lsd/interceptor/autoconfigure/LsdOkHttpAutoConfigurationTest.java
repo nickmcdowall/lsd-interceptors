@@ -1,8 +1,9 @@
 package com.nickmcdowall.lsd.interceptor.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
-import com.nickmcdowall.lsd.interceptor.common.RegexResolvingNameMapper;
+import com.nickmcdowall.lsd.interceptor.naming.DestinationNameMappings;
+import com.nickmcdowall.lsd.interceptor.naming.RegexResolvingNameMapper;
+import com.nickmcdowall.lsd.interceptor.naming.SourceNameMappings;
 import com.nickmcdowall.lsd.interceptor.rest.LsdOkHttpInterceptor;
 import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Test;
@@ -12,8 +13,9 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.nickmcdowall.lsd.interceptor.autoconfigure.LsdOkHttpAutoConfiguration.ALWAYS_APP;
-import static com.nickmcdowall.lsd.interceptor.common.UserSuppliedMappings.userSuppliedMappings;
+import static com.nickmcdowall.lsd.interceptor.naming.SourceNameMappings.ALWAYS_APP;
+import static com.nickmcdowall.lsd.interceptor.naming.UserSuppliedDestinationMappings.userSuppliedDestinationMappings;
+import static com.nickmcdowall.lsd.interceptor.naming.UserSuppliedSourceMappings.userSuppliedSourceMappings;
 import static java.util.Map.of;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,8 +31,8 @@ public class LsdOkHttpAutoConfigurationTest {
         contextRunner.withUserConfiguration(UserConfigWithoutRequiredBeans.class)
                 .withPropertyValues("com.lsd.intercept.okhttp=true")
                 .run((context) -> {
-                    assertThat(context).doesNotHaveBean("defaultOkHttpSourceNameMapping");
-                    assertThat(context).doesNotHaveBean("defaultOkHttpDestinationNameMapping");
+                    assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
+                    assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
                     assertThat(context).doesNotHaveBean(OkHttpClient.Builder.class);
                 });
     }
@@ -40,8 +42,8 @@ public class LsdOkHttpAutoConfigurationTest {
         contextRunner.withUserConfiguration(UserConfigWithRequiredBeans.class)
                 .withPropertyValues("com.lsd.intercept.okhttp=true")
                 .run((context) -> {
-                    assertThat(context).hasBean("defaultOkHttpSourceNameMapping");
-                    assertThat(context).hasBean("defaultOkHttpDestinationNameMapping");
+                    assertThat(context).hasBean("defaultSourceNameMapping");
+                    assertThat(context).hasBean("defaultDestinationNameMapping");
                     assertThat(context).hasSingleBean(OkHttpClient.Builder.class);
                     assertThat(context.getBean(OkHttpClient.Builder.class).interceptors()).containsExactly(
                             new LsdOkHttpInterceptor(new TestState(), ALWAYS_APP, new RegexResolvingNameMapper()));
@@ -51,8 +53,8 @@ public class LsdOkHttpAutoConfigurationTest {
     @Test
     public void noInterceptorWhenPropertyNotSet() {
         contextRunner.withUserConfiguration(UserConfigWithRequiredBeans.class).run((context) -> {
-            assertThat(context).doesNotHaveBean("defaultOkHttpSourceNameMapping");
-            assertThat(context).doesNotHaveBean("defaultOkHttpDestinationNameMapping");
+            assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
+            assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
             assertThat(context.getBean(OkHttpClient.Builder.class).interceptors()).isEmpty();
         });
     }
@@ -62,10 +64,10 @@ public class LsdOkHttpAutoConfigurationTest {
         contextRunner.withUserConfiguration(UserConfigWithNameMappingOverrides.class)
                 .withPropertyValues("com.lsd.intercept.okhttp=true")
                 .run((context) -> {
-                    assertThat(context).getBean("defaultOkHttpSourceNameMapping", PathToNameMapper.class)
-                            .isEqualTo(userSuppliedMappings(of("/source", "Source")));
-                    assertThat(context).getBean("defaultOkHttpDestinationNameMapping", PathToNameMapper.class)
-                            .isEqualTo(userSuppliedMappings(of("/destination", "Destination")));
+                    assertThat(context).getBean("defaultSourceNameMapping", SourceNameMappings.class)
+                            .isEqualTo(userSuppliedSourceMappings(of("/source", "Source")));
+                    assertThat(context).getBean("defaultDestinationNameMapping", DestinationNameMappings.class)
+                            .isEqualTo(userSuppliedDestinationMappings(of("/destination", "Destination")));
                 });
     }
 
@@ -90,14 +92,14 @@ public class LsdOkHttpAutoConfigurationTest {
     static class UserConfigWithNameMappingOverrides {
 
         @Bean
-        @ConditionalOnMissingBean(name = "defaultOkHttpSourceNameMapping")
-        public PathToNameMapper defaultOkHttpSourceNameMapping() {
-            return userSuppliedMappings(of("/source", "Source"));
+        @ConditionalOnMissingBean(name = "defaultSourceNameMapping")
+        public SourceNameMappings defaultSourceNameMapping() {
+            return userSuppliedSourceMappings(of("/source", "Source"));
         }
 
         @Bean
-        public PathToNameMapper defaultOkHttpDestinationNameMapping() {
-            return userSuppliedMappings(of("/destination", "Destination"));
+        public DestinationNameMappings defaultDestinationNameMapping() {
+            return userSuppliedDestinationMappings(of("/destination", "Destination"));
         }
 
         @Bean

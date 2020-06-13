@@ -32,22 +32,21 @@ for `Feign` and the former interceptor should work across all Feign client imple
 
 (Additional interceptors and auto configuration will be added over time).
 
-### PathToNameMapper (http)
+### Naming (http)
 
-Each http interceptor will be provided with default `PathToNameMapper` beans for resolving _source_ and _destination_ 
-names based on the endpoint path being invoked. The defaults are based on assumptions about how the client might be used which
-may not always match the reality. Therefore, it is possible to override the mappings by providing user defined path to name 
-mappings via a bean that matches the default bean name that would otherwise be provided. See LsdNameMappingConfiguration 
-class for further details.
+There are three main entity types to worry about naming for the sequence diagrams.
+ Firstly the person or thing invoking the application under test which is reffered to as `User`.
+ Then there is the application under test which is referred to as `App`.
+ Downstream services have no fixed default name but instead the path prefix is used to derive a name for the downstream service.
  
- For example it is assumed that TestRestTemplates are typically used in tests to invoke the application API for testing:
+To autoconfigure the naming of each entity, every http interceptor will be provided with default `SourceNameMappings`  and `DestinationNameMappings` beans for 
+resolving the _source_ and _destination_ names to use on the sequence diagrams.
+
+Users can override either or both of the default name mappings by supplying their own `SourceNameMappings` or
+`DestinationNameMappings` beans and naming them `defaultSourceNameMapping` and `defaultDestinationNameMapping`.
  
-    TestRestTemplate (`User`) --> Application API (`App`)
- 
- Within the application a RestTemplate is typically used to invoke downstream services:
- 
-    RestTemplate (`App`) -->  (`OtherService`) - name derived by path or user supplied mappings.
- 
+_TODO_ examples on overriding defaults and when autoconfig is not an option
+
 ## Build/Release
 
 ### Requirements

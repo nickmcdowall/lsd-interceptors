@@ -1,7 +1,8 @@
 package com.nickmcdowall.lsd.interceptor.rest;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
+import com.nickmcdowall.lsd.interceptor.naming.DestinationNameMappings;
+import com.nickmcdowall.lsd.interceptor.naming.SourceNameMappings;
 import feign.Logger;
 import feign.Request;
 import feign.Response;
@@ -20,10 +21,10 @@ public class LsdFeignLoggerInterceptor extends Logger.JavaLogger {
     public static final String EXTRACT_PATH = "https?://.*?(/.*)";
 
     protected final TestState testState;
-    protected final PathToNameMapper sourceNames;
-    protected final PathToNameMapper destinationNames;
+    protected final SourceNameMappings sourceNames;
+    protected final DestinationNameMappings destinationNames;
 
-    public LsdFeignLoggerInterceptor(TestState testState, PathToNameMapper sourceNames, PathToNameMapper destinationNames) {
+    public LsdFeignLoggerInterceptor(TestState testState, SourceNameMappings sourceNames, DestinationNameMappings destinationNames) {
         super(LsdFeignLoggerInterceptor.class);
         this.testState = testState;
         this.sourceNames = sourceNames;

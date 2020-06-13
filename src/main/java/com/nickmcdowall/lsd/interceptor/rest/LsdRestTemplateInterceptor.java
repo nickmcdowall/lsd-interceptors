@@ -1,8 +1,9 @@
 package com.nickmcdowall.lsd.interceptor.rest;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.nickmcdowall.lsd.interceptor.naming.DestinationNameMappings;
 import com.nickmcdowall.lsd.interceptor.common.HttpInteractionMessageTemplates;
-import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
+import com.nickmcdowall.lsd.interceptor.naming.SourceNameMappings;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.springframework.http.HttpRequest;
@@ -23,8 +24,8 @@ import java.io.InputStream;
 public class LsdRestTemplateInterceptor implements ClientHttpRequestInterceptor {
 
     TestState interactions;
-    PathToNameMapper sourceNameMappings;
-    PathToNameMapper destinationNameMappings;
+    SourceNameMappings sourceNameMappings;
+    DestinationNameMappings destinationNameMappings;
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {

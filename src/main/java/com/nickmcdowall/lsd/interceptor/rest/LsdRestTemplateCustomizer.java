@@ -1,4 +1,4 @@
-package com.nickmcdowall.lsd.interceptor.common;
+package com.nickmcdowall.lsd.interceptor.rest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Value;

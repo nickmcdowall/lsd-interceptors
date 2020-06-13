@@ -1,8 +1,9 @@
 package com.nickmcdowall.lsd.interceptor.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
-import com.nickmcdowall.lsd.interceptor.common.RegexResolvingNameMapper;
+import com.nickmcdowall.lsd.interceptor.naming.DestinationNameMappings;
+import com.nickmcdowall.lsd.interceptor.naming.RegexResolvingNameMapper;
+import com.nickmcdowall.lsd.interceptor.naming.SourceNameMappings;
 import com.nickmcdowall.lsd.interceptor.rest.LsdFeignLoggerInterceptor;
 import feign.Logger;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * <p>
- * If a {@link TestState} bean is available it will automatically autoconfig
- * a {@link LsdFeignLoggerInterceptor}
+ * If a {@link TestState} bean is available it will automatically autoconfig a {@link LsdFeignLoggerInterceptor}
  * </p>
  * <br/>
  * <p>
@@ -27,9 +27,8 @@ import org.springframework.context.annotation.Configuration;
  * </p>
  * <br/>
  * <p>
- * Users can override the default name mappings by supplying their own {@link PathToNameMapper} beans and calling it
- * <em>'defaultSourceNameMapping`</em> for source names and <em>'defaultDestinationNameMapping`</em>
- * for destination names.
+ * Users can override either or both of the default name mappings by supplying their own {@link SourceNameMappings} or
+ * {@link DestinationNameMappings} beans and naming them <em>'defaultSourceNameMapping`</em> and <em>'defaultDestinationNameMapping`</em>.
  * </p>
  */
 @Configuration
@@ -38,11 +37,10 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter(LsdSourceAndDestinationNamesAutoConfiguration.class)
 @RequiredArgsConstructor
 public class LsdFeignAutoConfiguration {
-    public static final PathToNameMapper ALWAYS_APP = path -> "App";
 
     private final TestState interactions;
-    private final PathToNameMapper defaultSourceNameMapping;
-    private final PathToNameMapper defaultDestinationNameMapping;
+    private final SourceNameMappings defaultSourceNameMapping;
+    private final DestinationNameMappings defaultDestinationNameMapping;
 
     @Bean
     public LsdFeignLoggerInterceptor lsdFeignLoggerInterceptor() {
@@ -58,13 +56,13 @@ public class LsdFeignAutoConfiguration {
     static class NamingConfig {
         @Bean
         @ConditionalOnMissingBean(name = "defaultSourceNameMapping")
-        public PathToNameMapper defaultSourceNameMapping() {
-            return ALWAYS_APP;
+        public SourceNameMappings defaultSourceNameMapping() {
+            return SourceNameMappings.ALWAYS_APP;
         }
 
         @Bean
         @ConditionalOnMissingBean(name = "defaultDestinationNameMapping")
-        public PathToNameMapper defaultDestinationNameMapping() {
+        public DestinationNameMappings defaultDestinationNameMapping() {
             return new RegexResolvingNameMapper();
         }
     }

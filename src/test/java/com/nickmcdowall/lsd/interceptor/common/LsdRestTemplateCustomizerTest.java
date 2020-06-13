@@ -1,6 +1,7 @@
 package com.nickmcdowall.lsd.interceptor.common;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.nickmcdowall.lsd.interceptor.rest.LsdRestTemplateCustomizer;
 import com.nickmcdowall.lsd.interceptor.rest.LsdRestTemplateInterceptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

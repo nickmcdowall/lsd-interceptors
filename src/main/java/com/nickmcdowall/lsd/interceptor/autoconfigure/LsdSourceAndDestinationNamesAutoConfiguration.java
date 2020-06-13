@@ -1,16 +1,21 @@
 package com.nickmcdowall.lsd.interceptor.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
+import com.nickmcdowall.lsd.interceptor.naming.DestinationNameMappings;
+import com.nickmcdowall.lsd.interceptor.naming.SourceNameMappings;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import static com.nickmcdowall.lsd.interceptor.common.RequestMappingExtractor.extractPathPrefixes;
-import static com.nickmcdowall.lsd.interceptor.common.UserSuppliedMappings.userSuppliedMappings;
+import java.util.Collection;
+import java.util.Set;
+
+import static com.nickmcdowall.lsd.interceptor.naming.UserSuppliedDestinationMappings.userSuppliedDestinationMappings;
+import static com.nickmcdowall.lsd.interceptor.naming.UserSuppliedSourceMappings.userSuppliedSourceMappings;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * <p>
@@ -22,20 +27,31 @@ import static java.util.stream.Collectors.toMap;
 @Configuration
 @ConditionalOnBean(value = {TestState.class, RequestMappingHandlerMapping.class})
 class LsdSourceAndDestinationNamesAutoConfiguration {
+
+    public static final String PREFIX_UNTIL_VARIABLES = "^(/?.*?)([{?].*|$)";
+
     @Bean
     @ConditionalOnMissingBean(name = "defaultSourceNameMapping")
-    public PathToNameMapper defaultSourceNameMapping(final RequestMappingHandlerMapping handlerMapping) {
-        return mapMatchingPathToName(handlerMapping, "User");
+    public SourceNameMappings defaultSourceNameMapping(final RequestMappingHandlerMapping handlerMapping) {
+        return userSuppliedSourceMappings(extractPathPrefixes(handlerMapping).stream()
+                .collect(toMap(path -> path, path -> "User")));
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "defaultDestinationNameMapping")
-    public PathToNameMapper defaultDestinationNameMapping(final RequestMappingHandlerMapping handlerMapping) {
-        return mapMatchingPathToName(handlerMapping, "App");
+    public DestinationNameMappings defaultDestinationNameMapping(final RequestMappingHandlerMapping handlerMapping) {
+        return userSuppliedDestinationMappings(
+                extractPathPrefixes(handlerMapping).stream()
+                        .collect(toMap(path -> path, path -> "App"))
+        );
     }
 
-    private PathToNameMapper mapMatchingPathToName(RequestMappingHandlerMapping handlerMapping, String name) {
-        return userSuppliedMappings(extractPathPrefixes(handlerMapping).stream()
-                .collect(toMap(path -> path, path -> name)));
+    private Set<String> extractPathPrefixes(RequestMappingHandlerMapping handlerMapping) {
+        return handlerMapping.getHandlerMethods().keySet().stream()
+                .map(requestMappingInfo -> requestMappingInfo.getPatternsCondition().getPatterns())
+                .flatMap(Collection::stream)
+                .map(s -> s.replaceAll(PREFIX_UNTIL_VARIABLES, "$1"))
+                .collect(toSet());
     }
+
 }

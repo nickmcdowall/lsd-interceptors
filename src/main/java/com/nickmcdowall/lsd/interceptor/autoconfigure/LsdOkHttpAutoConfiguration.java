@@ -1,11 +1,13 @@
 package com.nickmcdowall.lsd.interceptor.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
-import com.nickmcdowall.lsd.interceptor.common.RegexResolvingNameMapper;
+import com.nickmcdowall.lsd.interceptor.naming.DestinationNameMappings;
+import com.nickmcdowall.lsd.interceptor.naming.RegexResolvingNameMapper;
+import com.nickmcdowall.lsd.interceptor.naming.SourceNameMappings;
 import com.nickmcdowall.lsd.interceptor.rest.LsdOkHttpInterceptor;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -13,6 +15,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
+
+import static com.nickmcdowall.lsd.interceptor.naming.SourceNameMappings.ALWAYS_APP;
 
 /**
  * <p>
@@ -28,40 +32,40 @@ import javax.annotation.PostConstruct;
  * </p>
  * <br/>
  * <p>
- * Users can override either or both of the default mappings by supplying their own {@link PathToNameMapper} beans and naming them
- * <em>'defaultOkHttpSourceNameMapping`</em> for source names and <em>'defaultOkHttpDestinationNameMapping`</em> for destination names.
+ * Users can override either or both of the default name mappings by supplying their own {@link SourceNameMappings} or
+ * {@link DestinationNameMappings} beans and naming them <em>'defaultSourceNameMapping`</em> and <em>'defaultDestinationNameMapping`</em>.
  * </p>
  */
 @Configuration
 @ConditionalOnBean(value = {TestState.class, OkHttpClient.Builder.class})
 @ConditionalOnProperty(value = "com.lsd.intercept.okhttp", havingValue = "true")
+@AutoConfigureAfter(LsdSourceAndDestinationNamesAutoConfiguration.class)
 @RequiredArgsConstructor
 public class LsdOkHttpAutoConfiguration {
-    public static final PathToNameMapper ALWAYS_APP = path -> "App";
 
     private final TestState interactions;
     private final OkHttpClient.Builder okHttpClientBuilder;
-    private final PathToNameMapper defaultOkHttpSourceNameMapping;
-    private final PathToNameMapper defaultOkHttpDestinationNameMapping;
+    private final SourceNameMappings defaultSourceNameMapping;
+    private final DestinationNameMappings defaultDestinationNameMapping;
 
     @PostConstruct
     public void configureInterceptor() {
         okHttpClientBuilder.addInterceptor(
-                new LsdOkHttpInterceptor(interactions, defaultOkHttpSourceNameMapping, defaultOkHttpDestinationNameMapping)
+                new LsdOkHttpInterceptor(interactions, defaultSourceNameMapping, defaultDestinationNameMapping)
         );
     }
 
     @Configuration
     static class NameMapping {
         @Bean
-        @ConditionalOnMissingBean(name = "defaultOkHttpSourceNameMapping")
-        public PathToNameMapper defaultOkHttpSourceNameMapping() {
+        @ConditionalOnMissingBean(name = "defaultSourceNameMapping")
+        public SourceNameMappings defaultSourceNameMapping() {
             return ALWAYS_APP;
         }
 
         @Bean
-        @ConditionalOnMissingBean(name = "defaultOkHttpDestinationNameMapping")
-        public PathToNameMapper defaultOkHttpDestinationNameMapping() {
+        @ConditionalOnMissingBean(name = "defaultDestinationNameMapping")
+        public DestinationNameMappings defaultDestinationNameMapping() {
             return new RegexResolvingNameMapper();
         }
     }

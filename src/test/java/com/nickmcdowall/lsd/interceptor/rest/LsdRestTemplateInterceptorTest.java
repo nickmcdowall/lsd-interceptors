@@ -17,8 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import static com.nickmcdowall.lsd.interceptor.autoconfigure.LsdRestTemplateAutoConfiguration.ALWAYS_APP;
-import static com.nickmcdowall.lsd.interceptor.common.UserSuppliedMappings.userSuppliedMappings;
+import static com.nickmcdowall.lsd.interceptor.naming.SourceNameMappings.ALWAYS_APP;
+import static com.nickmcdowall.lsd.interceptor.naming.UserSuppliedDestinationMappings.userSuppliedDestinationMappings;
 import static java.util.Map.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,7 +48,7 @@ class LsdRestTemplateInterceptorTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        interceptor = new LsdRestTemplateInterceptor(interactions, ALWAYS_APP, userSuppliedMappings(of("/price", "PriceService")));
+        interceptor = new LsdRestTemplateInterceptor(interactions, ALWAYS_APP, userSuppliedDestinationMappings(of("/price", "PriceService")));
         when(execution.execute(any(), any())).thenReturn(httpResponse);
     }
 

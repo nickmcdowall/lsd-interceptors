@@ -1,10 +1,10 @@
 package com.nickmcdowall.lsd.interceptor.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
-import com.nickmcdowall.lsd.interceptor.common.RegexResolvingNameMapper;
-import com.nickmcdowall.lsd.interceptor.common.LsdRestTemplateCustomizer;
-import com.nickmcdowall.lsd.interceptor.common.UserSuppliedMappings;
+import com.nickmcdowall.lsd.interceptor.naming.DestinationNameMappings;
+import com.nickmcdowall.lsd.interceptor.rest.LsdRestTemplateCustomizer;
+import com.nickmcdowall.lsd.interceptor.naming.RegexResolvingNameMapper;
+import com.nickmcdowall.lsd.interceptor.naming.SourceNameMappings;
 import com.nickmcdowall.lsd.interceptor.rest.LsdRestTemplateInterceptor;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -13,14 +13,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
-import static com.nickmcdowall.lsd.interceptor.autoconfigure.LsdRestTemplateAutoConfiguration.ALWAYS_APP;
-import static com.nickmcdowall.lsd.interceptor.common.UserSuppliedMappings.userSuppliedMappings;
+import static com.nickmcdowall.lsd.interceptor.naming.SourceNameMappings.ALWAYS_APP;
+import static com.nickmcdowall.lsd.interceptor.naming.UserSuppliedDestinationMappings.userSuppliedDestinationMappings;
+import static com.nickmcdowall.lsd.interceptor.naming.UserSuppliedSourceMappings.userSuppliedSourceMappings;
 import static java.util.Map.of;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LsdRestTemplateAutoConfigurationTest {
-    private static final UserSuppliedMappings SOURCE_NAMES_OVERRIDE = userSuppliedMappings(of("/source", "Source"));
-    private static final UserSuppliedMappings DESTINATION_NAMES_OVERRIDE = userSuppliedMappings(of("/destination", "Destination"));
+    private static final SourceNameMappings SOURCE_NAMES_OVERRIDE = userSuppliedSourceMappings(of("/source", "Source"));
+    private static final DestinationNameMappings DESTINATION_NAMES_OVERRIDE = userSuppliedDestinationMappings(of("/destination", "Destination"));
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
@@ -58,9 +59,9 @@ class LsdRestTemplateAutoConfigurationTest {
     @Test
     void userCanOverrideNameMappings() {
         contextRunner.withUserConfiguration(UserConfigWithNameMappingOverrides.class).run((context) -> {
-            assertThat(context).getBean("defaultSourceNameMapping", PathToNameMapper.class)
+            assertThat(context).getBean("defaultSourceNameMapping", SourceNameMappings.class)
                     .isEqualTo(SOURCE_NAMES_OVERRIDE);
-            assertThat(context).getBean("defaultDestinationNameMapping", PathToNameMapper.class)
+            assertThat(context).getBean("defaultDestinationNameMapping", DestinationNameMappings.class)
                     .isEqualTo(DESTINATION_NAMES_OVERRIDE);
         });
     }
@@ -103,12 +104,12 @@ class LsdRestTemplateAutoConfigurationTest {
         }
 
         @Bean
-        public PathToNameMapper defaultSourceNameMapping() {
+        public SourceNameMappings defaultSourceNameMapping() {
             return SOURCE_NAMES_OVERRIDE;
         }
 
         @Bean
-        public PathToNameMapper defaultDestinationNameMapping() {
+        public DestinationNameMappings defaultDestinationNameMapping() {
             return DESTINATION_NAMES_OVERRIDE;
         }
     }

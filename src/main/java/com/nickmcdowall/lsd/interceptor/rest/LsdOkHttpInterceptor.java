@@ -1,8 +1,9 @@
 package com.nickmcdowall.lsd.interceptor.rest;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.nickmcdowall.lsd.interceptor.naming.DestinationNameMappings;
 import com.nickmcdowall.lsd.interceptor.common.HttpInteractionMessageTemplates;
-import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
+import com.nickmcdowall.lsd.interceptor.naming.SourceNameMappings;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import okhttp3.Interceptor;
@@ -19,8 +20,8 @@ public class LsdOkHttpInterceptor implements Interceptor {
     public static final int RESPONSE_MAXY_BYTES = 10000;
 
     private final TestState interactions;
-    private final PathToNameMapper sourceNames;
-    private final PathToNameMapper destinationNames;
+    private final SourceNameMappings sourceNames;
+    private final DestinationNameMappings destinationNames;
 
     @Override
     public Response intercept(Chain chain) throws IOException {

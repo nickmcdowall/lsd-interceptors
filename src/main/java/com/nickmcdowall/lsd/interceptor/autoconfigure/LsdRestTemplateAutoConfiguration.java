@@ -1,21 +1,22 @@
 package com.nickmcdowall.lsd.interceptor.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.interceptor.common.PathToNameMapper;
-import com.nickmcdowall.lsd.interceptor.common.RegexResolvingNameMapper;
-import com.nickmcdowall.lsd.interceptor.common.LsdRestTemplateCustomizer;
+import com.nickmcdowall.lsd.interceptor.naming.DestinationNameMappings;
+import com.nickmcdowall.lsd.interceptor.rest.LsdRestTemplateCustomizer;
+import com.nickmcdowall.lsd.interceptor.naming.RegexResolvingNameMapper;
+import com.nickmcdowall.lsd.interceptor.naming.SourceNameMappings;
 import com.nickmcdowall.lsd.interceptor.rest.LsdRestTemplateInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
+
+import static com.nickmcdowall.lsd.interceptor.naming.SourceNameMappings.ALWAYS_APP;
 
 
 /**
@@ -31,9 +32,8 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * <br/>
  * <p>
- * Users can override the default name mappings by supplying their own {@link PathToNameMapper} beans and calling it
- * <em>'defaultRestTemplateSourceNameMapping`</em> for source names and <em>'defaultRestTemplateDestinationNameMapping`</em>
- * for destination names.
+ * Users can override either or both of the default name mappings by supplying their own {@link SourceNameMappings} or
+ * {@link DestinationNameMappings} beans and naming them <em>'defaultSourceNameMapping`</em> and <em>'defaultDestinationNameMapping`</em>.
  * </p>
  */
 @Configuration
@@ -42,11 +42,10 @@ import org.springframework.web.client.RestTemplate;
 @AutoConfigureAfter(LsdSourceAndDestinationNamesAutoConfiguration.class)
 @RequiredArgsConstructor
 public class LsdRestTemplateAutoConfiguration {
-    public static final PathToNameMapper ALWAYS_APP = path -> "App";
 
     private final TestState interactions;
-    private final PathToNameMapper defaultSourceNameMapping;
-    private final PathToNameMapper defaultDestinationNameMapping;
+    private final SourceNameMappings defaultSourceNameMapping;
+    private final DestinationNameMappings defaultDestinationNameMapping;
 
     @Bean
     public RestTemplateCustomizer restTemplateCustomizer() {
@@ -57,13 +56,13 @@ public class LsdRestTemplateAutoConfiguration {
     static class NamingConfig {
         @Bean
         @ConditionalOnMissingBean(name = "defaultSourceNameMapping")
-        public PathToNameMapper defaultSourceNameMapping() {
+        public SourceNameMappings defaultSourceNameMapping() {
             return ALWAYS_APP;
         }
 
         @Bean
         @ConditionalOnMissingBean(name = "defaultDestinationNameMapping")
-        public PathToNameMapper defaultDestinationNameMapping() {
+        public DestinationNameMappings defaultDestinationNameMapping() {
             return new RegexResolvingNameMapper();
         }
     }
