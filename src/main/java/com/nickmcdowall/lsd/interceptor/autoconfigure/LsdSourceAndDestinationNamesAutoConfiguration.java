@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import static com.nickmcdowall.lsd.interceptor.naming.UserSuppliedDestinationMappings.userSuppliedDestinationMappings;
@@ -20,7 +21,13 @@ import static java.util.stream.Collectors.toSet;
 /**
  * <p>
  * If a {@link TestState} and a {@link RequestMappingHandlerMapping} bean is available it will automatically autoconfig
- * a source and destination name mappings using the path prefixes contained in the {@link RequestMappingHandlerMapping} bean.
+ * a {@link SourceNameMappings} and {@link DestinationNameMappings} bean containing the path prefixes available
+ * in the {@link RequestMappingHandlerMapping} bean.
+ * </p>
+ * <br/>
+ * <p>
+ * Note that the {@link SourceNameMappings}, {@link DestinationNameMappings} and {@link ApplicationPaths} beans can all
+ * be overridden by the user if desired by simply supplying a bean of the same type and name.
  * </p>
  * <br/>
  */
@@ -30,23 +37,33 @@ class LsdSourceAndDestinationNamesAutoConfiguration {
 
     public static final String PREFIX_UNTIL_VARIABLES = "^(/?.*?)([{?].*|$)";
 
+    private final List<String> commonPathPrefixes = List.of("/actuator", "/swagger-ui.html");
+
+    @Bean
+    @ConditionalOnMissingBean(name = "applicationPaths")
+    public ApplicationPaths applicationPaths(final RequestMappingHandlerMapping handlerMapping) {
+        return new ApplicationPaths(commonPathPrefixes)
+                .addAll(extractDeclaredPathPrefixes(handlerMapping));
+    }
+
     @Bean
     @ConditionalOnMissingBean(name = "defaultSourceNameMapping")
-    public SourceNameMappings defaultSourceNameMapping(final RequestMappingHandlerMapping handlerMapping) {
-        return userSuppliedSourceMappings(extractPathPrefixes(handlerMapping).stream()
-                .collect(toMap(path -> path, path -> "User")));
+    public SourceNameMappings defaultSourceNameMapping(final ApplicationPaths applicationPaths) {
+        return userSuppliedSourceMappings(
+                applicationPaths.stream()
+                        .collect(toMap(path -> path, path -> "User")));
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "defaultDestinationNameMapping")
-    public DestinationNameMappings defaultDestinationNameMapping(final RequestMappingHandlerMapping handlerMapping) {
+    public DestinationNameMappings defaultDestinationNameMapping(final ApplicationPaths applicationPaths) {
         return userSuppliedDestinationMappings(
-                extractPathPrefixes(handlerMapping).stream()
+                applicationPaths.stream()
                         .collect(toMap(path -> path, path -> "App"))
         );
     }
 
-    private Set<String> extractPathPrefixes(RequestMappingHandlerMapping handlerMapping) {
+    private Set<String> extractDeclaredPathPrefixes(RequestMappingHandlerMapping handlerMapping) {
         return handlerMapping.getHandlerMethods().keySet().stream()
                 .map(requestMappingInfo -> requestMappingInfo.getPatternsCondition().getPatterns())
                 .flatMap(Collection::stream)

@@ -17,7 +17,9 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import java.util.Map;
 
+import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,47 +31,67 @@ class LsdSourceAndDestinationNamesAutoConfigurationTest {
     @Mock
     private RequestMappingHandlerMapping handlerMapping;
 
-    @Mock
-    private HandlerMethod handlerMethod;
-
     private LsdSourceAndDestinationNamesAutoConfiguration autoConfiguration = new LsdSourceAndDestinationNamesAutoConfiguration();
 
     @Test
-    void extractsHanlderMappingPathsForDestinationNames() {
-        RequestMappingInfo mappingInfo = RequestMappingInfo.paths(
-                "/product-details/{id}",
-                "/product-details/meta-data/{key}",
-                "/error",
-                "/a/b/c/{d}/e")
-                .build();
-        when(handlerMapping.getHandlerMethods()).thenReturn(Map.of(mappingInfo, handlerMethod));
+    void sourceNameIsUserIfPathIsAnApplicationPath() {
+        SourceNameMappings sourceNameMappings = autoConfiguration.defaultSourceNameMapping(new ApplicationPaths(of(
+                "/product-details/meta-data/",
+                "/error"
+        )));
 
-        DestinationNameMappings destinationNameMappings = autoConfiguration.defaultDestinationNameMapping(handlerMapping);
+        assertThat(sourceNameMappings.mapForPath("/product-details/meta-data/")).isEqualTo("User");
+        assertThat(sourceNameMappings.mapForPath("/error")).isEqualTo("User");
+    }
 
-        assertThat(destinationNameMappings.mapForPath("/product-details/")).isEqualTo("App");
+    @Test
+    void sourceNameIsAppIfPathIsNotAnApplicationPath() {
+        SourceNameMappings sourceNameMappings = autoConfiguration.defaultSourceNameMapping(new ApplicationPaths(of(
+        )));
+
+        assertThat(sourceNameMappings.mapForPath("/random")).isEqualTo("App");
+    }
+
+    @Test
+    void destinationNameIsAppIfPathIsAnApplicationPath() {
+        DestinationNameMappings destinationNameMappings = autoConfiguration.defaultDestinationNameMapping(new ApplicationPaths(of(
+                "/product-details/meta-data/",
+                "/error"
+        )));
+
         assertThat(destinationNameMappings.mapForPath("/product-details/meta-data/")).isEqualTo("App");
         assertThat(destinationNameMappings.mapForPath("/error")).isEqualTo("App");
-        assertThat(destinationNameMappings.mapForPath("/a/b/c/")).isEqualTo("App");
+    }
+
+    @Test
+    void destinationNameIsBasedOnPathIfPathIsNotAnApplicationPath() {
+        DestinationNameMappings destinationNameMappings = autoConfiguration.defaultDestinationNameMapping(new ApplicationPaths(of()));
+
         assertThat(destinationNameMappings.mapForPath("/random")).isEqualTo("random");
     }
 
     @Test
-    void extractsHanlderMappingPathsForSourceNames() {
-        RequestMappingInfo mappingInfo = RequestMappingInfo.paths(
-                "/product-details/{id}",
+    void extractsHandlerMappingPathPrefixesWithoutVariables() {
+        when(handlerMapping.getHandlerMethods()).thenReturn(aMapWithKey(RequestMappingInfo.paths(
                 "/product-details/meta-data/{key}",
-                "/error",
-                "/a/b/c/{d}/e")
-                .build();
-        when(handlerMapping.getHandlerMethods()).thenReturn(Map.of(mappingInfo, handlerMethod));
+                "/a/b/c/{d}/e"
+        ).build()));
 
-        SourceNameMappings destinationNameMappings = autoConfiguration.defaultSourceNameMapping(handlerMapping);
+        ApplicationPaths applicationPaths = autoConfiguration.applicationPaths(handlerMapping);
 
-        assertThat(destinationNameMappings.mapForPath("/product-details/")).isEqualTo("User");
-        assertThat(destinationNameMappings.mapForPath("/product-details/meta-data/")).isEqualTo("User");
-        assertThat(destinationNameMappings.mapForPath("/error")).isEqualTo("User");
-        assertThat(destinationNameMappings.mapForPath("/a/b/c/")).isEqualTo("User");
-        assertThat(destinationNameMappings.mapForPath("/random")).isEqualTo("App");
+        assertThat(applicationPaths.stream()).containsAll(of("/product-details/meta-data/", "/a/b/c/"));
+    }
+
+    @Test
+    void includesCommonApplicationPathPrefixesByDefault() {
+        when(handlerMapping.getHandlerMethods()).thenReturn(aMapWithKey(RequestMappingInfo.paths().build()));
+
+        ApplicationPaths applicationPaths = autoConfiguration.applicationPaths(handlerMapping);
+
+        assertThat(applicationPaths.stream()).containsAll(of(
+                "/actuator",
+                "/swagger-ui.html"
+        ));
     }
 
     @Test
@@ -103,5 +125,9 @@ class LsdSourceAndDestinationNamesAutoConfigurationTest {
         public RequestMappingHandlerMapping requestMappingHandlerMapping() {
             return new RequestMappingHandlerMapping();
         }
+    }
+
+    private Map<RequestMappingInfo, HandlerMethod> aMapWithKey(RequestMappingInfo mappingInfo) {
+        return Map.of(mappingInfo, mock(HandlerMethod.class));
     }
 }
