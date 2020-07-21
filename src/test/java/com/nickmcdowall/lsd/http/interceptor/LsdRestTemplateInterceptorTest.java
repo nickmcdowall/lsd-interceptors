@@ -33,7 +33,7 @@ class LsdRestTemplateInterceptorTest {
     private final URI uri = URI.create("/price/watch");
     private final String requestBodyString = "a request body";
     private final byte[] requestBodyBytes = requestBodyString.getBytes();
-    private final StubHttpRequest stubHttpRequest = aGetRequest().build();
+    private final StubHttpRequest stubHttpRequest = aGetRequest(uri).build();
     private final String responseBodyString = "a response body";
     private final InputStream responseBodyStream = new ByteArrayInputStream(responseBodyString.getBytes());
     private final ClientHttpResponse httpResponse = aStubbedOkResponse().build();
@@ -84,7 +84,7 @@ class LsdRestTemplateInterceptorTest {
 
     @Test
     void handleUnknownDestinationMappingByFallingBackToPathNameResolver() throws IOException {
-        HttpRequest request = aGetRequest().uri(URI.create("/another/path")).build();
+        HttpRequest request = aGetRequest(uri).uri(URI.create("/another/path")).build();
 
         interceptor.intercept(request, requestBodyBytes, execution);
 
@@ -104,6 +104,14 @@ class LsdRestTemplateInterceptorTest {
         verify(interactions).log("200 OK response from PriceService to App", "");
     }
 
+    @Test
+    void removesPathParametersFromUri() throws IOException {
+        interceptor.intercept(aGetRequest(URI.create("/cow?param=yes")).build(), requestBodyBytes, execution);
+
+        verify(interactions).log("GET /cow from App to cow", requestBodyString);
+        verify(interactions).log("200 OK response from cow to App", responseBodyString);
+    }
+
     private StubClientHttpResponse.StubClientHttpResponseBuilder aStubbedOkResponse() {
         return StubClientHttpResponse.builder()
                 .body(responseBodyStream)
@@ -111,7 +119,7 @@ class LsdRestTemplateInterceptorTest {
                 .headers(EMPTY);
     }
 
-    private StubHttpRequestBuilder aGetRequest() {
+    private StubHttpRequestBuilder aGetRequest(URI uri) {
         return StubHttpRequest.builder()
                 .uri(uri).methodValue("GET").httpHeaders(EMPTY);
     }

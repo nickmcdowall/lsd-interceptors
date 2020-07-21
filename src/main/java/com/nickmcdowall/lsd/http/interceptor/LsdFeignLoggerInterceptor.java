@@ -12,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import java.io.IOException;
 import java.util.Optional;
 
+import static com.nickmcdowall.lsd.http.common.HttpInteractionMessageTemplates.requestOf;
+import static com.nickmcdowall.lsd.http.common.HttpInteractionMessageTemplates.responseOf;
+
 /**
  * Intercepts Feign {@link Request} and {@link Response} messages to add them to the {@link TestState} bean.
  * <p>
@@ -48,17 +51,19 @@ public class LsdFeignLoggerInterceptor extends Logger.JavaLogger {
     private void captureRequestInteraction(Request request) {
         Optional<byte[]> bodyData = Optional.ofNullable(request.body());
         String body = bodyData.map(String::new).orElse("");
-        String path = derivePath(request.url());
+        String path = derivePathWithoutQueryParameters(request.url());
         String source = sourceNames.mapForPath(path);
         String destination = destinationNames.mapForPath(path);
-        testState.log(request.httpMethod().name() + " " + path + " from " + source + " to " + destination, body);
+
+        testState.log(requestOf(request.httpMethod().name(), path, source, destination), body);
     }
 
     private void captureResponseInteraction(Response response, String body) {
-        String path = derivePath(response.request().url());
+        String path = derivePathWithoutQueryParameters(response.request().url());
         String source = sourceNames.mapForPath(path);
         String destination = destinationNames.mapForPath(path);
-        testState.log(deriveStatus(response.status()) + " response from " + destination + " to " + source, body);
+
+        testState.log(responseOf(deriveStatus(response.status()), destination, source), body);
     }
 
     private String deriveStatus(int code) {
@@ -67,8 +72,8 @@ public class LsdFeignLoggerInterceptor extends Logger.JavaLogger {
                 .orElse(String.format("<unresolved status:%s>", code));
     }
 
-    private String derivePath(String url) {
-        return url.replaceAll(EXTRACT_PATH, "$1");
+    private String derivePathWithoutQueryParameters(String url) {
+        return url.split("\\?")[0].replaceAll(EXTRACT_PATH, "$1");
     }
 
     private String extractResponseBodyToString(Response response) throws IOException {

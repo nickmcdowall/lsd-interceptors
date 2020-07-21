@@ -53,6 +53,13 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
     }
 
     @Test
+    void handlesPathParameters() {
+        logRequest("configKey", level, requestWithParameter("/app-endpoint/something?someParam=hi,secondParam=yo"));
+
+        verify(testState).log("GET /app-endpoint/something from User to App", "");
+    }
+
+    @Test
     void capturesResponseInteraction() throws IOException {
         logAndRebufferResponse("configKey", level, Response.builder()
                 .request(requestWithBody("body"))
@@ -110,6 +117,15 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
                 GET,
                 protocol + "://localhost:8080/app-endpoint/something",
                 headers, null == body ? null : body.getBytes(),
+                defaultCharset(),
+                new RequestTemplate());
+    }
+
+    private Request requestWithParameter(final String pathWithParam) {
+        return Request.create(
+                GET,
+                "https://localhost:8080" + pathWithParam,
+                headers, null,
                 defaultCharset(),
                 new RequestTemplate());
     }
