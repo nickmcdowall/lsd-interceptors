@@ -110,6 +110,16 @@ class LsdSourceAndDestinationNamesAutoConfigurationTest {
         });
     }
 
+    @Test
+    void noBeansAutoLoadedWhenDisabledViaProperty() {
+        contextRunner.withUserConfiguration(UserConfigWithRequiredBeans.class)
+                .withPropertyValues("yatspec.lsd.interceptors.autoconfig.enabled=false")
+                .run((context) -> {
+                    assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
+                    assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
+                });
+    }
+
     @Configuration
     static class UserConfigWithoutRequiredBeans {
     }

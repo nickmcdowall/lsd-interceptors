@@ -1,8 +1,6 @@
 package com.nickmcdowall.lsd.http.interceptor;
 
-import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.http.naming.UserSuppliedDestinationMappings;
-import com.nickmcdowall.lsd.http.naming.UserSuppliedSourceMappings;
+import com.nickmcdowall.lsd.http.common.HttpInteractionHandler;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
@@ -12,12 +10,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.Charset.defaultCharset;
 import static java.util.Collections.emptyMap;
-import static java.util.Map.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -32,31 +30,34 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
     private final Level level = Level.BASIC;
 
     public LsdFeignLoggerInterceptorTest() {
-        super(mock(TestState.class),
-                UserSuppliedSourceMappings.userSuppliedSourceMappings(of("/app-endpoint", "User")),
-                UserSuppliedDestinationMappings.userSuppliedDestinationMappings(of("/app-endpoint", "App"))
-        );
+        super(List.of(mock(HttpInteractionHandler.class)));
     }
 
     @Test
     void logsRequest() {
         logRequest("configKey", level, requestWithBody("body"));
 
-        verify(testState).log("GET /app-endpoint/something from User to App", "body");
+        handlers.forEach(handler -> {
+            verify(handler).handleRequest("GET", "/app-endpoint/something", "body");
+        });
     }
 
     @Test
     void handlesEmptyBody() {
         logRequest("configKey", level, requestWithBody(null));
 
-        verify(testState).log("GET /app-endpoint/something from User to App", "");
+        handlers.forEach(handler -> {
+            verify(handler).handleRequest("GET", "/app-endpoint/something", "");
+        });
     }
 
     @Test
     void handlesPathParameters() {
         logRequest("configKey", level, requestWithParameter("/app-endpoint/something?someParam=hi,secondParam=yo"));
 
-        verify(testState).log("GET /app-endpoint/something from User to App", "");
+        handlers.forEach(handler -> {
+            verify(handler).handleRequest("GET", "/app-endpoint/something", "");
+        });
     }
 
     @Test
@@ -67,7 +68,9 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
                 .status(200)
                 .build(), 1);
 
-        verify(testState).log("200 OK response from App to User", "response body");
+        handlers.forEach(handler -> {
+            verify(handler).handleResponse("200 OK", "/app-endpoint/something", "response body");
+        });
     }
 
     @Test
@@ -78,7 +81,9 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
                 .status(200)
                 .build(), 1);
 
-        verify(testState).log("200 OK response from App to User", "response body");
+        handlers.forEach(handler -> {
+            verify(handler).handleResponse("200 OK", "/app-endpoint/something", "response body");
+        });
     }
 
     @Test
@@ -89,7 +94,9 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
                 .status(111)
                 .build(), 1);
 
-        verify(testState).log("<unresolved status:111> response from App to User", "response body");
+        handlers.forEach(handler -> {
+            verify(handler).handleResponse("<unresolved status:111>", "/app-endpoint/something", "response body");
+        });
     }
 
     @Test

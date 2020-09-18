@@ -13,6 +13,12 @@ default bean configurations based on the beans and classes available in the proj
 The interceptors can be used outside of a spring project but will require some manual setup. The classes in the 
 `com/nickmcdowall/lsd/interceptor/autoconfigure` package would be a good starting point for examples on how to configure 
 the interceptors when autowiring is not an option.
+
+To disable autoconfig so that the beans can be used in another library add the following property:
+
+```properties
+yatspec.lsd.interceptors.autoconfig.enabled=false
+```
  
 ### Available Interceptors
 
@@ -48,7 +54,7 @@ to work. If one exists it will not be replaced.
 
 #### LsdOkHttpInterceptor
 - For `OkHttpClient` clients.
-- Auto configured if `TestState` and `OkHttpClient.Builder` beans exists *and* has spring property `com.lsd.intercept.okhttp=true` 
+- Auto configured if `TestState` and `OkHttpClient.Builder` beans exists *and* has spring property `yatspec.lsd.interceptors.autoconfig.okhttp.enabled=true` 
 (requires explicit property to prevent clashing with `LsdFeignLoggerInterceptor` - as it is a popular client implementation 
 for `Feign` and the former interceptor should work across all Feign client implementations).
 

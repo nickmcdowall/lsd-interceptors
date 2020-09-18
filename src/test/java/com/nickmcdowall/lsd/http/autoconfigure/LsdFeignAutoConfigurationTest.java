@@ -28,12 +28,13 @@ class LsdFeignAutoConfigurationTest {
 
     @Test
     public void noBeansAutoLoadedWhenRequiredBeansMissing() {
-        contextRunner.withUserConfiguration(UserConfigWithoutRequiredBeans.class).run((context) -> {
-            assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
-            assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
-            assertThat(context).doesNotHaveBean(Logger.Level.class);
-            assertThat(context).doesNotHaveBean(LsdFeignLoggerInterceptor.class);
-        });
+        contextRunner.withUserConfiguration(UserConfigWithoutRequiredBeans.class)
+                .run((context) -> {
+                    assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
+                    assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
+                    assertThat(context).doesNotHaveBean(Logger.Level.class);
+                    assertThat(context).doesNotHaveBean(LsdFeignLoggerInterceptor.class);
+                });
     }
 
     @Test
@@ -44,6 +45,18 @@ class LsdFeignAutoConfigurationTest {
             assertThat(context).hasSingleBean(Logger.Level.class);
             assertThat(context).hasSingleBean(LsdFeignLoggerInterceptor.class);
         });
+    }
+
+    @Test
+    void noBeansAutoLoadedWhenInterceptorsDisabledViaPropertyEvenIfBeansAvailable() {
+        contextRunner.withUserConfiguration(UserConfigWithRequiredBeans.class)
+                .withPropertyValues("yatspec.lsd.interceptors.autoconfig.enabled=false")
+                .run((context) -> {
+                    assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
+                    assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
+                    assertThat(context).doesNotHaveBean(Logger.Level.class);
+                    assertThat(context).doesNotHaveBean(LsdFeignLoggerInterceptor.class);
+                });
     }
 
     @Test

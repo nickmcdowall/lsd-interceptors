@@ -1,6 +1,7 @@
 package com.nickmcdowall.lsd.http.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.nickmcdowall.lsd.http.common.DefaultHttpInteractionHandler;
 import com.nickmcdowall.lsd.http.interceptor.LsdOkHttpInterceptor;
 import com.nickmcdowall.lsd.http.naming.*;
 import okhttp3.OkHttpClient;
@@ -10,6 +11,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 import static java.util.Map.of;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +27,7 @@ public class LsdOkHttpAutoConfigurationTest {
     @Test
     public void noBeansAutoLoadedWhenRequiredBeansMissing() {
         contextRunner.withUserConfiguration(UserConfigWithoutRequiredBeans.class)
-                .withPropertyValues("com.lsd.intercept.okhttp=true")
+                .withPropertyValues("yatspec.lsd.interceptors.autoconfig.okhttp.enabled=true")
                 .run((context) -> {
                     assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
                     assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
@@ -35,13 +38,13 @@ public class LsdOkHttpAutoConfigurationTest {
     @Test
     public void addsOkHttpBuilderWhenPropertySetAndRequiredBeansAvailable() {
         contextRunner.withUserConfiguration(UserConfigWithRequiredBeans.class)
-                .withPropertyValues("com.lsd.intercept.okhttp=true")
+                .withPropertyValues("yatspec.lsd.interceptors.autoconfig.okhttp.enabled=true")
                 .run((context) -> {
                     assertThat(context).hasBean("defaultSourceNameMapping");
                     assertThat(context).hasBean("defaultDestinationNameMapping");
                     assertThat(context).hasSingleBean(OkHttpClient.Builder.class);
                     assertThat(context.getBean(OkHttpClient.Builder.class).interceptors()).containsExactly(
-                            new LsdOkHttpInterceptor(new TestState(), SourceNameMappings.ALWAYS_APP, new RegexResolvingNameMapper()));
+                            new LsdOkHttpInterceptor(List.of(new DefaultHttpInteractionHandler(new TestState(), SourceNameMappings.ALWAYS_APP, new RegexResolvingNameMapper()))));
                 });
     }
 
@@ -57,7 +60,7 @@ public class LsdOkHttpAutoConfigurationTest {
     @Test
     void userCanOverrideNameMappings() {
         contextRunner.withUserConfiguration(UserConfigWithNameMappingOverrides.class)
-                .withPropertyValues("com.lsd.intercept.okhttp=true")
+                .withPropertyValues("yatspec.lsd.interceptors.autoconfig.okhttp.enabled=true")
                 .run((context) -> {
                     assertThat(context).getBean("defaultSourceNameMapping", SourceNameMappings.class)
                             .isEqualTo(UserSuppliedSourceMappings.userSuppliedSourceMappings(of("/source", "Source")));

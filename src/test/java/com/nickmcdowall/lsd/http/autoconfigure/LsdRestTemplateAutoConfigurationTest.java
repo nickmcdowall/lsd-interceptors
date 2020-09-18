@@ -1,6 +1,7 @@
 package com.nickmcdowall.lsd.http.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.nickmcdowall.lsd.http.common.DefaultHttpInteractionHandler;
 import com.nickmcdowall.lsd.http.interceptor.LsdRestTemplateCustomizer;
 import com.nickmcdowall.lsd.http.interceptor.LsdRestTemplateInterceptor;
 import com.nickmcdowall.lsd.http.naming.*;
@@ -10,6 +11,8 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 import static java.util.Map.of;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,8 +50,22 @@ class LsdRestTemplateAutoConfigurationTest {
             assertThat(context).hasBean("defaultSourceNameMapping");
             assertThat(context).hasBean("defaultDestinationNameMapping");
             assertThat(context).getBean(LsdRestTemplateCustomizer.class).isEqualTo(
-                    new LsdRestTemplateCustomizer(new LsdRestTemplateInterceptor(new TestState(), SourceNameMappings.ALWAYS_APP, new RegexResolvingNameMapper())));
+                    new LsdRestTemplateCustomizer(new LsdRestTemplateInterceptor(
+                            List.of(new DefaultHttpInteractionHandler(new TestState(), SourceNameMappings.ALWAYS_APP, new RegexResolvingNameMapper())))));
+
         });
+    }
+
+    @Test
+    void noBeansWhenDisabledViaProperty() {
+        contextRunner.withUserConfiguration(UserConfigWithRequiredBeans.class)
+                .withPropertyValues("yatspec.lsd.interceptors.autoconfig.enabled=false")
+                .run((context) -> {
+                    assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
+                    assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
+                    assertThat(context).doesNotHaveBean("lsdRestTemplateInterceptor");
+
+                });
     }
 
     @Test

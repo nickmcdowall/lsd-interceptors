@@ -1,20 +1,25 @@
 package com.nickmcdowall.lsd.http.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.nickmcdowall.lsd.http.common.DefaultHttpInteractionHandler;
+import com.nickmcdowall.lsd.http.common.HttpInteractionHandler;
+import com.nickmcdowall.lsd.http.interceptor.LsdRestTemplateCustomizer;
+import com.nickmcdowall.lsd.http.interceptor.LsdRestTemplateInterceptor;
 import com.nickmcdowall.lsd.http.naming.DestinationNameMappings;
 import com.nickmcdowall.lsd.http.naming.RegexResolvingNameMapper;
 import com.nickmcdowall.lsd.http.naming.SourceNameMappings;
-import com.nickmcdowall.lsd.http.interceptor.LsdRestTemplateCustomizer;
-import com.nickmcdowall.lsd.http.interceptor.LsdRestTemplateInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 
 /**
@@ -35,20 +40,18 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  */
 @Configuration
+@ConditionalOnProperty(name = "yatspec.lsd.interceptors.autoconfig.enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnBean(value = {TestState.class})
 @ConditionalOnClass(value = {RestTemplate.class})
 @AutoConfigureAfter(LsdSourceAndDestinationNamesAutoConfiguration.class)
 @RequiredArgsConstructor
 public class LsdRestTemplateAutoConfiguration {
 
-    private final TestState interactions;
-    private final SourceNameMappings defaultSourceNameMapping;
-    private final DestinationNameMappings defaultDestinationNameMapping;
+    private final List<HttpInteractionHandler> httpInteractionHandlers;
 
     @Bean
     public RestTemplateCustomizer restTemplateCustomizer() {
-        return new LsdRestTemplateCustomizer(
-                new LsdRestTemplateInterceptor(interactions, defaultSourceNameMapping, defaultDestinationNameMapping));
+        return new LsdRestTemplateCustomizer(new LsdRestTemplateInterceptor(httpInteractionHandlers));
     }
 
     static class NamingConfig {
@@ -65,4 +68,16 @@ public class LsdRestTemplateAutoConfiguration {
         }
     }
 
+    @RequiredArgsConstructor
+    static class HttpHandlerConfig {
+        private final TestState testState;
+        private final SourceNameMappings defaultSourceNameMapping;
+        private final DestinationNameMappings defaultDestinationNameMapping;
+
+        @Bean
+        @ConditionalOnMissingBean
+        public List<HttpInteractionHandler> httpInteractionHandlers() {
+            return List.of(new DefaultHttpInteractionHandler(testState, defaultSourceNameMapping, defaultDestinationNameMapping));
+        }
+    }
 }

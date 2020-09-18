@@ -1,10 +1,8 @@
 package com.nickmcdowall.lsd.http.interceptor;
 
-import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.http.naming.DestinationNameMappings;
-import com.nickmcdowall.lsd.http.naming.SourceNameMappings;
-import com.nickmcdowall.lsd.http.common.HttpInteractionMessageTemplates;
+import com.nickmcdowall.lsd.http.common.HttpInteractionHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.Value;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -14,6 +12,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * Created to intercept rest template calls for Yatspec interactions.
@@ -23,35 +22,30 @@ import java.io.InputStream;
 @RequiredArgsConstructor
 public class LsdRestTemplateInterceptor implements ClientHttpRequestInterceptor {
 
-    TestState interactions;
-    SourceNameMappings sourceNameMappings;
-    DestinationNameMappings destinationNameMappings;
+    private final List<HttpInteractionHandler> handlers;
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
         String path = request.getURI().getPath();
 
-        String sourceName = sourceNameMappings.mapForPath(path);
-        String destinationName = destinationNameMappings.mapForPath(path);
+        handlers.forEach(handler ->
+                handler.handleRequest(request.getMethodValue(), path, new String(body)));
 
-        captureRequest(request, body, path, sourceName, destinationName);
         ClientHttpResponse response = execution.execute(request, body);
-        captureResponse(sourceName, destinationName, response);
+
+        handlers.forEach(handler ->
+                handler.handleResponse(deriveResponseStatus(response), path, copyBodyToString(response)));
 
         return response;
     }
 
-    private void captureRequest(HttpRequest request, byte[] body, String path, String sourceName, String destinationName) {
-        String interactionMessage = HttpInteractionMessageTemplates.requestOf(request.getMethodValue(), path, sourceName, destinationName);
-        interactions.log(interactionMessage, new String(body));
+    @SneakyThrows
+    private String deriveResponseStatus(ClientHttpResponse response) {
+        return response.getStatusCode().toString();
     }
 
-    private void captureResponse(String sourceName, String destinationName, ClientHttpResponse response) throws IOException {
-        String interactionMessage = HttpInteractionMessageTemplates.responseOf(response.getStatusCode().toString(), destinationName, sourceName);
-        interactions.log(interactionMessage, copyBodyToString(response));
-    }
-
-    private String copyBodyToString(ClientHttpResponse response) throws IOException {
+    @SneakyThrows
+    private String copyBodyToString(ClientHttpResponse response) {
         if (response.getHeaders().getContentLength() == 0)
             return "";
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

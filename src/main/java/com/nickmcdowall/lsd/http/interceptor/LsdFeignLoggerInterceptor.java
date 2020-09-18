@@ -1,8 +1,7 @@
 package com.nickmcdowall.lsd.http.interceptor;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.http.naming.DestinationNameMappings;
-import com.nickmcdowall.lsd.http.naming.SourceNameMappings;
+import com.nickmcdowall.lsd.http.common.HttpInteractionHandler;
 import feign.Logger;
 import feign.Request;
 import feign.Response;
@@ -10,10 +9,8 @@ import feign.Util;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
-
-import static com.nickmcdowall.lsd.http.common.HttpInteractionMessageTemplates.requestOf;
-import static com.nickmcdowall.lsd.http.common.HttpInteractionMessageTemplates.responseOf;
 
 /**
  * Intercepts Feign {@link Request} and {@link Response} messages to add them to the {@link TestState} bean.
@@ -23,15 +20,11 @@ import static com.nickmcdowall.lsd.http.common.HttpInteractionMessageTemplates.r
 public class LsdFeignLoggerInterceptor extends Logger.JavaLogger {
     public static final String EXTRACT_PATH = "https?://.*?(/.*)";
 
-    protected final TestState testState;
-    protected final SourceNameMappings sourceNames;
-    protected final DestinationNameMappings destinationNames;
+    protected final List<HttpInteractionHandler> handlers;
 
-    public LsdFeignLoggerInterceptor(TestState testState, SourceNameMappings sourceNames, DestinationNameMappings destinationNames) {
+    public LsdFeignLoggerInterceptor(List<HttpInteractionHandler> handlers) {
         super(LsdFeignLoggerInterceptor.class);
-        this.testState = testState;
-        this.sourceNames = sourceNames;
-        this.destinationNames = destinationNames;
+        this.handlers = handlers;
     }
 
     @Override
@@ -52,18 +45,15 @@ public class LsdFeignLoggerInterceptor extends Logger.JavaLogger {
         Optional<byte[]> bodyData = Optional.ofNullable(request.body());
         String body = bodyData.map(String::new).orElse("");
         String path = derivePathWithoutQueryParameters(request.url());
-        String source = sourceNames.mapForPath(path);
-        String destination = destinationNames.mapForPath(path);
 
-        testState.log(requestOf(request.httpMethod().name(), path, source, destination), body);
+        handlers.forEach(handler ->
+                handler.handleRequest(request.httpMethod().name(), path, body));
     }
 
     private void captureResponseInteraction(Response response, String body) {
         String path = derivePathWithoutQueryParameters(response.request().url());
-        String source = sourceNames.mapForPath(path);
-        String destination = destinationNames.mapForPath(path);
-
-        testState.log(responseOf(deriveStatus(response.status()), destination, source), body);
+        handlers.forEach(handler ->
+                handler.handleResponse(deriveStatus(response.status()), path, body));
     }
 
     private String deriveStatus(int code) {

@@ -1,10 +1,12 @@
 package com.nickmcdowall.lsd.http.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.http.naming.RegexResolvingNameMapper;
-import com.nickmcdowall.lsd.http.naming.DestinationNameMappings;
-import com.nickmcdowall.lsd.http.naming.SourceNameMappings;
+import com.nickmcdowall.lsd.http.common.DefaultHttpInteractionHandler;
+import com.nickmcdowall.lsd.http.common.HttpInteractionHandler;
 import com.nickmcdowall.lsd.http.interceptor.LsdOkHttpInterceptor;
+import com.nickmcdowall.lsd.http.naming.DestinationNameMappings;
+import com.nickmcdowall.lsd.http.naming.RegexResolvingNameMapper;
+import com.nickmcdowall.lsd.http.naming.SourceNameMappings;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -15,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 import static com.nickmcdowall.lsd.http.naming.SourceNameMappings.ALWAYS_APP;
 
@@ -38,21 +41,17 @@ import static com.nickmcdowall.lsd.http.naming.SourceNameMappings.ALWAYS_APP;
  */
 @Configuration
 @ConditionalOnBean(value = {TestState.class, OkHttpClient.Builder.class})
-@ConditionalOnProperty(value = "com.lsd.intercept.okhttp", havingValue = "true")
+@ConditionalOnProperty(value = "yatspec.lsd.interceptors.autoconfig.okhttp.enabled", havingValue = "true")
 @AutoConfigureAfter(LsdSourceAndDestinationNamesAutoConfiguration.class)
 @RequiredArgsConstructor
 public class LsdOkHttpAutoConfiguration {
 
-    private final TestState interactions;
+    private final List<HttpInteractionHandler> httpInteractionHandlers;
     private final OkHttpClient.Builder okHttpClientBuilder;
-    private final SourceNameMappings defaultSourceNameMapping;
-    private final DestinationNameMappings defaultDestinationNameMapping;
 
     @PostConstruct
     public void configureInterceptor() {
-        okHttpClientBuilder.addInterceptor(
-                new LsdOkHttpInterceptor(interactions, defaultSourceNameMapping, defaultDestinationNameMapping)
-        );
+        okHttpClientBuilder.addInterceptor(new LsdOkHttpInterceptor(httpInteractionHandlers));
     }
 
     @Configuration
@@ -67,6 +66,19 @@ public class LsdOkHttpAutoConfiguration {
         @ConditionalOnMissingBean(name = "defaultDestinationNameMapping")
         public DestinationNameMappings defaultDestinationNameMapping() {
             return new RegexResolvingNameMapper();
+        }
+    }
+
+    @RequiredArgsConstructor
+    static class HttpHandlerConfig {
+        private final TestState testState;
+        private final SourceNameMappings defaultSourceNameMapping;
+        private final DestinationNameMappings defaultDestinationNameMapping;
+
+        @Bean
+        @ConditionalOnMissingBean
+        public List<HttpInteractionHandler> httpInteractionHandlers() {
+            return List.of(new DefaultHttpInteractionHandler(testState, defaultSourceNameMapping, defaultDestinationNameMapping));
         }
     }
 }

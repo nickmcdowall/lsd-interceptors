@@ -6,6 +6,7 @@ import com.nickmcdowall.lsd.http.naming.DestinationNameMappings;
 import com.nickmcdowall.lsd.http.naming.SourceNameMappings;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -33,6 +34,7 @@ import static java.util.stream.Collectors.toSet;
  * <br/>
  */
 @Configuration
+@ConditionalOnProperty(name = "yatspec.lsd.interceptors.autoconfig.enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnBean(value = {TestState.class, RequestMappingHandlerMapping.class})
 class LsdSourceAndDestinationNamesAutoConfiguration {
 

@@ -1,8 +1,6 @@
 package com.nickmcdowall.lsd.http.interceptor;
 
-import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.http.naming.SourceNameMappings;
-import com.nickmcdowall.lsd.http.naming.UserSuppliedDestinationMappings;
+import com.nickmcdowall.lsd.http.common.HttpInteractionHandler;
 import okhttp3.*;
 import okio.Buffer;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,8 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.util.List;
 
-import static java.util.Map.of;
 import static okhttp3.RequestBody.create;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,29 +31,23 @@ public class LsdOkHttpInterceptorTest {
     private Interceptor.Chain chain;
 
     @Mock
-    private TestState interactions;
+    private HttpInteractionHandler handler;
 
     private Interceptor okHttpInterceptor;
 
     @BeforeEach
     void setUp() throws IOException {
-        okHttpInterceptor = new LsdOkHttpInterceptor(interactions, SourceNameMappings.ALWAYS_APP, UserSuppliedDestinationMappings.userSuppliedDestinationMappings(of("/user", "UserService")));
-        when(chain.request()).thenReturn(aPutRequest());
+        okHttpInterceptor = new LsdOkHttpInterceptor(List.of(handler));
+        when(chain.request()).thenReturn(requestFor("PUT", "/user"));
         when(chain.proceed(any())).thenReturn(okResponse);
     }
 
     @Test
-    void logsRequest() throws IOException {
+    void delegatesMessageHandling() throws IOException {
         okHttpInterceptor.intercept(chain);
 
-        verify(interactions).log("PUT /user from App to UserService", requestBodyString);
-    }
-
-    @Test
-    void logsResponse() throws IOException {
-        okHttpInterceptor.intercept(chain);
-
-        verify(interactions).log("200 OK response from UserService to App", responseBodyString);
+        verify(handler).handleRequest("PUT", "/user", requestBodyString);
+        verify(handler).handleResponse("200 OK", "/user", responseBodyString);
     }
 
     @Test
@@ -83,10 +75,10 @@ public class LsdOkHttpInterceptorTest {
         assertThat(response.body().string()).isEqualTo(responseBodyString);
     }
 
-    private Request aPutRequest() {
+    private Request requestFor(String method, final String path) {
         return new Request.Builder()
-                .url("https://localhost:8080/user")
-                .method("PUT", create(MEDIA_TYPE, requestBodyString))
+                .url("https://localhost:8080" + path)
+                .method(method, create(MEDIA_TYPE, requestBodyString))
                 .build();
     }
 
@@ -95,7 +87,7 @@ public class LsdOkHttpInterceptorTest {
                 .protocol(Protocol.HTTP_2)
                 .code(200)
                 .message("OK")
-                .request(aPutRequest())
+                .request(requestFor("PUT", "/user"))
                 .body(ResponseBody.create(MEDIA_TYPE, responseBodyString.getBytes()))
                 .build();
     }
