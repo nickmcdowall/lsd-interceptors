@@ -31,6 +31,7 @@ public class LsdOkHttpAutoConfigurationTest {
                 .run((context) -> {
                     assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
                     assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
+                    assertThat(context).doesNotHaveBean("httpInteractionHandlers");
                     assertThat(context).doesNotHaveBean(OkHttpClient.Builder.class);
                 });
     }
@@ -42,6 +43,7 @@ public class LsdOkHttpAutoConfigurationTest {
                 .run((context) -> {
                     assertThat(context).hasBean("defaultSourceNameMapping");
                     assertThat(context).hasBean("defaultDestinationNameMapping");
+                    assertThat(context).hasBean("httpInteractionHandlers");
                     assertThat(context).hasSingleBean(OkHttpClient.Builder.class);
                     assertThat(context.getBean(OkHttpClient.Builder.class).interceptors()).containsExactly(
                             new LsdOkHttpInterceptor(List.of(new DefaultHttpInteractionHandler(new TestState(), SourceNameMappings.ALWAYS_APP, new RegexResolvingNameMapper()))));
@@ -53,6 +55,7 @@ public class LsdOkHttpAutoConfigurationTest {
         contextRunner.withUserConfiguration(UserConfigWithRequiredBeans.class).run((context) -> {
             assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
             assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
+            assertThat(context).doesNotHaveBean("httpInteractionHandlers");
             assertThat(context.getBean(OkHttpClient.Builder.class).interceptors()).isEmpty();
         });
     }
@@ -83,6 +86,15 @@ public class LsdOkHttpAutoConfigurationTest {
         @Bean
         public OkHttpClient.Builder httpClient() {
             return new OkHttpClient.Builder();
+        }
+
+        /*
+         * To catch autoconfig beans of type List (the generic type is not taken into account so we need to use a name
+         * or wrapper type for the collection
+         */
+        @Bean
+        public List<Object> genericList() {
+            return List.of();
         }
     }
 

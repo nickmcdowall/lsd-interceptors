@@ -31,6 +31,7 @@ class LsdRestTemplateAutoConfigurationTest {
         contextRunner.withUserConfiguration(UserConfigWithoutRequiredBeans.class).run((context) -> {
             assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
             assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
+            assertThat(context).doesNotHaveBean("httpInteractionHandlers");
             assertThat(context).doesNotHaveBean(RestTemplate.class);
         });
     }
@@ -49,6 +50,7 @@ class LsdRestTemplateAutoConfigurationTest {
             assertThat(context).hasSingleBean(RestTemplate.class);
             assertThat(context).hasBean("defaultSourceNameMapping");
             assertThat(context).hasBean("defaultDestinationNameMapping");
+            assertThat(context).hasBean("httpInteractionHandlers");
             assertThat(context).getBean(LsdRestTemplateCustomizer.class).isEqualTo(
                     new LsdRestTemplateCustomizer(new LsdRestTemplateInterceptor(
                             List.of(new DefaultHttpInteractionHandler(new TestState(), SourceNameMappings.ALWAYS_APP, new RegexResolvingNameMapper())))));
@@ -64,7 +66,7 @@ class LsdRestTemplateAutoConfigurationTest {
                     assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
                     assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
                     assertThat(context).doesNotHaveBean("lsdRestTemplateInterceptor");
-
+                    assertThat(context).doesNotHaveBean("httpInteractionHandlers");
                 });
     }
 
@@ -100,6 +102,15 @@ class LsdRestTemplateAutoConfigurationTest {
         @Bean
         public TestState interactions() {
             return new TestState();
+        }
+
+        /*
+         * To catch autoconfig beans of type List (the generic type is not taken into account so we need to use a name
+         * or wrapper type for the collection
+         */
+        @Bean
+        public List<Object> genericList() {
+            return List.of();
         }
     }
 

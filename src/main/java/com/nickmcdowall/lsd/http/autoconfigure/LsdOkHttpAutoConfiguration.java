@@ -76,7 +76,7 @@ public class LsdOkHttpAutoConfiguration {
         private final DestinationNameMappings defaultDestinationNameMapping;
 
         @Bean
-        @ConditionalOnMissingBean
+        @ConditionalOnMissingBean(name = "httpInteractionHandlers")
         public List<HttpInteractionHandler> httpInteractionHandlers() {
             return List.of(new DefaultHttpInteractionHandler(testState, defaultSourceNameMapping, defaultDestinationNameMapping));
         }
