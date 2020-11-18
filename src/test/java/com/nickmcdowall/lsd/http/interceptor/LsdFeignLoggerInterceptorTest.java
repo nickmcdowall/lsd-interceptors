@@ -53,10 +53,10 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
 
     @Test
     void handlesPathParameters() {
-        logRequest("configKey", level, requestWithParameter("/app-endpoint/something?someParam=hi,secondParam=yo"));
+        logRequest("configKey", level, requestWithParameter("/app-endpoint/something?someParam=hi&secondParam=yo"));
 
         handlers.forEach(handler -> {
-            verify(handler).handleRequest("GET", "/app-endpoint/something", "");
+            verify(handler).handleRequest("GET", "/app-endpoint/something?someParam=hi&secondParam=yo", "");
         });
     }
 

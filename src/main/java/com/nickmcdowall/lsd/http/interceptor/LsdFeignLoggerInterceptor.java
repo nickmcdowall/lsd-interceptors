@@ -44,14 +44,14 @@ public class LsdFeignLoggerInterceptor extends Logger.JavaLogger {
     private void captureRequestInteraction(Request request) {
         Optional<byte[]> bodyData = Optional.ofNullable(request.body());
         String body = bodyData.map(String::new).orElse("");
-        String path = derivePathWithoutQueryParameters(request.url());
+        String path = derivePath(request.url());
 
         handlers.forEach(handler ->
                 handler.handleRequest(request.httpMethod().name(), path, body));
     }
 
     private void captureResponseInteraction(Response response, String body) {
-        String path = derivePathWithoutQueryParameters(response.request().url());
+        String path = derivePath(response.request().url());
         handlers.forEach(handler ->
                 handler.handleResponse(deriveStatus(response.status()), path, body));
     }
@@ -62,8 +62,8 @@ public class LsdFeignLoggerInterceptor extends Logger.JavaLogger {
                 .orElse(String.format("<unresolved status:%s>", code));
     }
 
-    private String derivePathWithoutQueryParameters(String url) {
-        return url.split("\\?")[0].replaceAll(EXTRACT_PATH, "$1");
+    private String derivePath(String url) {
+        return url.replaceAll(EXTRACT_PATH, "$1");
     }
 
     private String extractResponseBodyToString(Response response) throws IOException {
