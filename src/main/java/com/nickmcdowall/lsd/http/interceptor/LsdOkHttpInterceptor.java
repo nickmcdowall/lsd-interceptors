@@ -34,10 +34,9 @@ public class LsdOkHttpInterceptor implements Interceptor {
                 handler.handleRequest(request.method(), requestHeaders, path, bodyToString(requestCopy)));
 
         Response response = chain.proceed(request);
-        Map<String, String> responseHeaders = singleValueMap(response.headers().toMultimap());
 
         handlers.forEach(handler ->
-                handler.handleResponse(response.code() + " " + response.message(), responseHeaders, path, copyBodyString(response)));
+                handler.handleResponse(response.code() + " " + response.message(), requestHeaders, path, copyBodyString(response)));
 
         return response;
     }

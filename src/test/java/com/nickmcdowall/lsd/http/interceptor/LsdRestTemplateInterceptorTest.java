@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -102,7 +101,7 @@ class LsdRestTemplateInterceptorTest {
 
         interceptor.intercept(stubHttpRequest, requestBodyBytes, execution);
 
-        verify(handler).handleResponse("200 OK", Map.of("Content-Length","0"), "/price/watch", "");
+        verify(handler).handleResponse("200 OK", emptyMap(), "/price/watch", "");
     }
 
     @Test

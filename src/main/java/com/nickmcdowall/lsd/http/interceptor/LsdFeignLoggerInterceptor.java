@@ -55,7 +55,7 @@ public class LsdFeignLoggerInterceptor extends Logger.JavaLogger {
 
     private void captureResponseInteraction(Response response, String body) {
         String path = derivePath(response.request().url());
-        var headers = singleValueMap(response.headers());
+        var headers = singleValueMap(response.request().headers());
 
         handlers.forEach(handler ->
                 handler.handleResponse(deriveStatus(response.status()), headers, path, body));

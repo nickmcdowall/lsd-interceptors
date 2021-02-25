@@ -32,9 +32,8 @@ public class LsdRestTemplateInterceptor implements ClientHttpRequestInterceptor 
                 handler.handleRequest(request.getMethodValue(), requestHeaders, path, new String(body)));
 
         ClientHttpResponse response = execution.execute(request, body);
-        var responseHeaders = response.getHeaders().toSingleValueMap();
         handlers.forEach(handler ->
-                handler.handleResponse(deriveResponseStatus(response), responseHeaders, path, copyBodyToString(response)));
+                handler.handleResponse(deriveResponseStatus(response), requestHeaders, path, copyBodyToString(response)));
 
         return response;
     }
