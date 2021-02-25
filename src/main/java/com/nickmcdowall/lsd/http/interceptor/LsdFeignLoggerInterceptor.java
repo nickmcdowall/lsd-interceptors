@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import static com.nickmcdowall.lsd.http.common.Headers.singleValueMap;
+
 /**
  * Intercepts Feign {@link Request} and {@link Response} messages to add them to the {@link TestState} bean.
  * <p>
@@ -45,15 +47,18 @@ public class LsdFeignLoggerInterceptor extends Logger.JavaLogger {
         Optional<byte[]> bodyData = Optional.ofNullable(request.body());
         String body = bodyData.map(String::new).orElse("");
         String path = derivePath(request.url());
+        var headers = singleValueMap(request.headers());
 
         handlers.forEach(handler ->
-                handler.handleRequest(request.httpMethod().name(), path, body));
+                handler.handleRequest(request.httpMethod().name(), headers, path, body));
     }
 
     private void captureResponseInteraction(Response response, String body) {
         String path = derivePath(response.request().url());
+        var headers = singleValueMap(response.headers());
+
         handlers.forEach(handler ->
-                handler.handleResponse(deriveStatus(response.status()), path, body));
+                handler.handleResponse(deriveStatus(response.status()), headers, path, body));
     }
 
     private String deriveStatus(int code) {

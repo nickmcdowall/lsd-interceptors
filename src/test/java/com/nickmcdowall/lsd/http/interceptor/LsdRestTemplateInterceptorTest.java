@@ -17,7 +17,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -36,9 +38,6 @@ class LsdRestTemplateInterceptorTest {
     private final String responseBodyString = "a response body";
     private final InputStream responseBodyStream = new ByteArrayInputStream(responseBodyString.getBytes());
     private final ClientHttpResponse httpResponse = aStubbedOkResponse().build();
-
-//    @Mock
-//    private final TestState interactions = new TestState();
 
     @Mock
     private ClientHttpRequestExecution execution;
@@ -74,14 +73,14 @@ class LsdRestTemplateInterceptorTest {
     void logRequestInteraction() throws IOException {
         interceptor.intercept(stubHttpRequest, requestBodyBytes, execution);
 
-        verify(handler).handleRequest("GET", path, requestBodyString);
+        verify(handler).handleRequest("GET", emptyMap(), path, requestBodyString);
     }
 
     @Test
     void logResponseInteraction() throws IOException {
         interceptor.intercept(stubHttpRequest, requestBodyBytes, execution);
 
-        verify(handler).handleResponse("200 OK", path, responseBodyString);
+        verify(handler).handleResponse("200 OK", emptyMap(), path, responseBodyString);
     }
 
     @Test
@@ -90,8 +89,8 @@ class LsdRestTemplateInterceptorTest {
 
         interceptor.intercept(request, requestBodyBytes, execution);
 
-        verify(handler).handleRequest("GET", "/another/path", requestBodyString);
-        verify(handler).handleResponse("200 OK", "/another/path", responseBodyString);
+        verify(handler).handleRequest("GET", emptyMap(), "/another/path", requestBodyString);
+        verify(handler).handleResponse("200 OK", emptyMap(), "/another/path", responseBodyString);
     }
 
     @Test
@@ -103,15 +102,15 @@ class LsdRestTemplateInterceptorTest {
 
         interceptor.intercept(stubHttpRequest, requestBodyBytes, execution);
 
-        verify(handler).handleResponse("200 OK", "/price/watch", "");
+        verify(handler).handleResponse("200 OK", Map.of("Content-Length","0"), "/price/watch", "");
     }
 
     @Test
     void removesPathParametersFromUri() throws IOException {
         interceptor.intercept(aGetRequest(URI.create("/cow?param=yes")).build(), requestBodyBytes, execution);
 
-        verify(handler).handleRequest("GET", "/cow", requestBodyString);
-        verify(handler).handleResponse("200 OK", "/cow", responseBodyString);
+        verify(handler).handleRequest("GET", emptyMap(), "/cow", requestBodyString);
+        verify(handler).handleResponse("200 OK", emptyMap(), "/cow", responseBodyString);
     }
 
     private StubClientHttpResponse.StubClientHttpResponseBuilder aStubbedOkResponse() {

@@ -11,6 +11,9 @@ import okio.Buffer;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+
+import static com.nickmcdowall.lsd.http.common.Headers.singleValueMap;
 
 @Value
 @RequiredArgsConstructor
@@ -25,14 +28,16 @@ public class LsdOkHttpInterceptor implements Interceptor {
         Request request = chain.request();
         Request requestCopy = request.newBuilder().build();
         String path = request.url().encodedPath();
+        Map<String, String> requestHeaders = singleValueMap(request.headers().toMultimap());
 
         handlers.forEach(handler ->
-                handler.handleRequest(request.method(), path, bodyToString(requestCopy)));
+                handler.handleRequest(request.method(), requestHeaders, path, bodyToString(requestCopy)));
 
         Response response = chain.proceed(request);
+        Map<String, String> responseHeaders = singleValueMap(response.headers().toMultimap());
 
         handlers.forEach(handler ->
-                handler.handleResponse(response.code() + " " + response.message(), path, copyBodyString(response)));
+                handler.handleResponse(response.code() + " " + response.message(), responseHeaders, path, copyBodyString(response)));
 
         return response;
     }

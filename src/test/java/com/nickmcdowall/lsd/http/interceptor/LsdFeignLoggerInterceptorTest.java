@@ -38,7 +38,7 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
         logRequest("configKey", level, requestWithBody("body"));
 
         handlers.forEach(handler -> {
-            verify(handler).handleRequest("GET", "/app-endpoint/something", "body");
+            verify(handler).handleRequest("GET", emptyMap(), "/app-endpoint/something", "body");
         });
     }
 
@@ -47,7 +47,7 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
         logRequest("configKey", level, requestWithBody(null));
 
         handlers.forEach(handler -> {
-            verify(handler).handleRequest("GET", "/app-endpoint/something", "");
+            verify(handler).handleRequest("GET", emptyMap(), "/app-endpoint/something", "");
         });
     }
 
@@ -56,7 +56,7 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
         logRequest("configKey", level, requestWithParameter("/app-endpoint/something?someParam=hi&secondParam=yo"));
 
         handlers.forEach(handler -> {
-            verify(handler).handleRequest("GET", "/app-endpoint/something?someParam=hi&secondParam=yo", "");
+            verify(handler).handleRequest("GET", emptyMap(), "/app-endpoint/something?someParam=hi&secondParam=yo", "");
         });
     }
 
@@ -69,7 +69,7 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
                 .build(), 1);
 
         handlers.forEach(handler -> {
-            verify(handler).handleResponse("200 OK", "/app-endpoint/something", "response body");
+            verify(handler).handleResponse("200 OK", emptyMap(), "/app-endpoint/something", "response body");
         });
     }
 
@@ -82,7 +82,7 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
                 .build(), 1);
 
         handlers.forEach(handler -> {
-            verify(handler).handleResponse("200 OK", "/app-endpoint/something", "response body");
+            verify(handler).handleResponse("200 OK", emptyMap(), "/app-endpoint/something", "response body");
         });
     }
 
@@ -95,7 +95,7 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
                 .build(), 1);
 
         handlers.forEach(handler -> {
-            verify(handler).handleResponse("<unresolved status:111>", "/app-endpoint/something", "response body");
+            verify(handler).handleResponse("<unresolved status:111>", emptyMap(), "/app-endpoint/something", "response body");
         });
     }
 
