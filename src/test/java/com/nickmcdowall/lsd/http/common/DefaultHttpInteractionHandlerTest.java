@@ -8,16 +8,16 @@ import org.mockito.Mockito;
 
 import java.util.Map;
 
-import static com.nickmcdowall.lsd.http.common.Headers.HeaderKeys.SOURCE_SERVICE_NAME;
-import static com.nickmcdowall.lsd.http.common.Headers.HeaderKeys.TARGET_SERVICE_NAME;
+import static com.nickmcdowall.lsd.http.common.Headers.HeaderKeys.SOURCE_NAME;
+import static com.nickmcdowall.lsd.http.common.Headers.HeaderKeys.TARGET_NAME;
 import static java.util.Collections.emptyMap;
 import static org.mockito.Mockito.verify;
 
 class DefaultHttpInteractionHandlerTest {
 
     private final Map<String, String> serviceNameHeaders = Map.of(
-            TARGET_SERVICE_NAME.key(), "target",
-            SOURCE_SERVICE_NAME.key(), "source"
+            TARGET_NAME.key(), "target",
+            SOURCE_NAME.key(), "source"
     );
     private final SourceNameMappings sourceNameMapping = path -> "sourceName";
     private final DestinationNameMappings destinationNameMapping = path -> "destinationName";

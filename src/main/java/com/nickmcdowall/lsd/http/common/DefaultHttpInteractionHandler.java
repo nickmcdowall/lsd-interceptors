@@ -7,8 +7,8 @@ import lombok.EqualsAndHashCode;
 
 import java.util.Map;
 
-import static com.nickmcdowall.lsd.http.common.Headers.HeaderKeys.SOURCE_SERVICE_NAME;
-import static com.nickmcdowall.lsd.http.common.Headers.HeaderKeys.TARGET_SERVICE_NAME;
+import static com.nickmcdowall.lsd.http.common.Headers.HeaderKeys.SOURCE_NAME;
+import static com.nickmcdowall.lsd.http.common.Headers.HeaderKeys.TARGET_NAME;
 import static com.nickmcdowall.lsd.http.common.HttpInteractionMessageTemplates.requestOf;
 import static com.nickmcdowall.lsd.http.common.HttpInteractionMessageTemplates.responseOf;
 
@@ -40,14 +40,14 @@ public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
     }
 
     private String deriveTargetName(Map<String, String> headers, String path) {
-        return headers.containsKey(TARGET_SERVICE_NAME.key())
-                ? headers.get(TARGET_SERVICE_NAME.key())
+        return headers.containsKey(TARGET_NAME.key())
+                ? headers.get(TARGET_NAME.key())
                 : destinationNameMappings.mapForPath(path);
     }
 
     private String deriveSourceName(Map<String, String> headers, String path) {
-        return headers.containsKey(SOURCE_SERVICE_NAME.key())
-                ? headers.get(SOURCE_SERVICE_NAME.key())
+        return headers.containsKey(SOURCE_NAME.key())
+                ? headers.get(SOURCE_NAME.key())
                 : sourceNameMappings.mapForPath(path);
     }
 }

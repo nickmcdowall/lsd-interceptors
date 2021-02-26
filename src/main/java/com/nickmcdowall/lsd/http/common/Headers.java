@@ -8,8 +8,8 @@ import static java.util.stream.Collectors.toMap;
 public class Headers {
 
     public enum HeaderKeys {
-        SOURCE_SERVICE_NAME("SourceServiceName"),
-        TARGET_SERVICE_NAME("TargetServiceName");
+        SOURCE_NAME("Source-Name"),
+        TARGET_NAME("Target-Name");
 
         private String headerName;
 
