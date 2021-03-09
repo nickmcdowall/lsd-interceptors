@@ -74,52 +74,23 @@ public RestTemplate restTemplate(RestTemplateBuilder builder){
 
 ### Naming
 
-Capturing interactions is the first piece of the puzzle, the second is determining the context of the interaction so
-that we can get the naming correct for the entities involved in the interaction. We need to know whether the interaction
-originated from within the application or externally.
 
-Getting the source or destination names wrong results in confusing sequence diagrams. It is easy when manually logging
-the interactions since the context is clear when writing the log statement but when using runtime interceptors it
-requires a little more work by the library but it should have you covered.
+### Source Name
 
-If possible use http headers on your requests to specify the source and or target service names to get more accurate
-diagrams. Use `SourceServiceName` to specify the name of the service making the request and use `TargetServiceName` for
-the name of the service receiving the request.
+If you set the property `info.app.name` then this will be used as the default source name for interactions captured on 
+the sequence diagrams. (i.e. your app is calling downstream services)
 
-If the above headers are not found on a request the library will fall back to deriving a name based on the request path
-and any user supplied mappings.
+This can be overridden by setting the `Source-Name` http header on a request. For example if you want to create a client 
+that represents a user calling into your app say from within a test then you can set the `Source-Name` header value to 
+the name of the user.
 
-#### http interactions
+If neither are set then the library will default to the value `App`.
 
-To determine if the application (`App`) is the destination, the target path is compared against a list of known
-application path prefixes. This list includes common paths prefixes including `/actuator` as well as dynamic paths
-obtained by querying the `RequestMappingHandlerMapping` bean for request mappings that have been declared within the
-application. In the case that a path matches a known application path the source of the interaction will be called
-`User` and the destination will be called `App`.
+### Destination Name
 
-If the interaction path does not a match against any known application paths then the source name will be `App` and the
-destination name will be derived from the first section of the path. For example a path value of `/pricing/5` would
-result in a destination name of `pricing`. (_Note that diagram display names can be changed/`aliased`  by
-implementing `WithParticipants` to provide details about the `Participant`s in the sequence diagram_).
+Set the `Target-Name` header value to control the name of the destination service of an interaction on the sequence diagrams.
 
-If for whatever reason the list of application path prefixes is incomplete you can append additional entries to the
-collection by autowiring the `ApplicationPaths` bean in your test and then updating the list, e.g.
-
- ```java
-@Autowire
-private ApplicationPaths applicationPaths;
-
-//Call applicationPaths.addAll(additionalPaths) to append additional path prefixes;
-``` 
-
-Or override the bean completely and supply your own paths, e.g.
-
- ```java
-    @Bean
-public ApplicationPaths applicationPaths(){
-        return new ApplicationPaths(yourCollectionOfPaths);
-        }
-```
+If this header is not set the library will attempt to derive a destination name based on the path of the http request.
 
 ## Build/Release
 

@@ -4,7 +4,8 @@ import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import com.nickmcdowall.lsd.http.common.DefaultHttpInteractionHandler;
 import com.nickmcdowall.lsd.http.interceptor.LsdRestTemplateCustomizer;
 import com.nickmcdowall.lsd.http.interceptor.LsdRestTemplateInterceptor;
-import com.nickmcdowall.lsd.http.naming.*;
+import com.nickmcdowall.lsd.http.naming.RegexResolvingNameMapper;
+import com.nickmcdowall.lsd.http.naming.AppName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -14,13 +15,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-import static java.util.Map.of;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LsdRestTemplateAutoConfigurationTest {
-    private static final SourceNameMappings SOURCE_NAMES_OVERRIDE = UserSuppliedSourceMappings.userSuppliedSourceMappings(of("/source", "Source"));
-    private static final DestinationNameMappings DESTINATION_NAMES_OVERRIDE = UserSuppliedDestinationMappings.userSuppliedDestinationMappings(of("/destination", "Destination"));
-
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
                     LsdRestTemplateAutoConfiguration.class
@@ -53,7 +50,7 @@ class LsdRestTemplateAutoConfigurationTest {
             assertThat(context).hasBean("httpInteractionHandlers");
             assertThat(context).getBean(LsdRestTemplateCustomizer.class).isEqualTo(
                     new LsdRestTemplateCustomizer(new LsdRestTemplateInterceptor(
-                            List.of(new DefaultHttpInteractionHandler(new TestState(), SourceNameMappings.ALWAYS_APP, new RegexResolvingNameMapper())))));
+                            List.of(new DefaultHttpInteractionHandler(new TestState(), new AppName("App"), new RegexResolvingNameMapper())))));
 
         });
     }
@@ -68,16 +65,6 @@ class LsdRestTemplateAutoConfigurationTest {
                     assertThat(context).doesNotHaveBean("lsdRestTemplateInterceptor");
                     assertThat(context).doesNotHaveBean("httpInteractionHandlers");
                 });
-    }
-
-    @Test
-    void userCanOverrideNameMappings() {
-        contextRunner.withUserConfiguration(UserConfigWithNameMappingOverrides.class).run((context) -> {
-            assertThat(context).getBean("defaultSourceNameMapping", SourceNameMappings.class)
-                    .isEqualTo(SOURCE_NAMES_OVERRIDE);
-            assertThat(context).getBean("defaultDestinationNameMapping", DestinationNameMappings.class)
-                    .isEqualTo(DESTINATION_NAMES_OVERRIDE);
-        });
     }
 
     @Configuration
@@ -113,28 +100,4 @@ class LsdRestTemplateAutoConfigurationTest {
             return List.of();
         }
     }
-
-    @Configuration
-    static class UserConfigWithNameMappingOverrides {
-        @Bean
-        public RestTemplate myRestTemplate() {
-            return new RestTemplate();
-        }
-
-        @Bean
-        public TestState interactions() {
-            return new TestState();
-        }
-
-        @Bean
-        public SourceNameMappings defaultSourceNameMapping() {
-            return SOURCE_NAMES_OVERRIDE;
-        }
-
-        @Bean
-        public DestinationNameMappings defaultDestinationNameMapping() {
-            return DESTINATION_NAMES_OVERRIDE;
-        }
-    }
-
 }

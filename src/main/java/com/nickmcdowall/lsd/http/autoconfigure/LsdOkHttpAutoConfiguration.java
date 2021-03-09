@@ -9,17 +9,16 @@ import com.nickmcdowall.lsd.http.naming.RegexResolvingNameMapper;
 import com.nickmcdowall.lsd.http.naming.SourceNameMappings;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
-
-import static com.nickmcdowall.lsd.http.naming.SourceNameMappings.ALWAYS_APP;
 
 /**
  * <p>
@@ -42,7 +41,7 @@ import static com.nickmcdowall.lsd.http.naming.SourceNameMappings.ALWAYS_APP;
 @Configuration
 @ConditionalOnBean(value = {TestState.class, OkHttpClient.Builder.class})
 @ConditionalOnProperty(value = "yatspec.lsd.interceptors.autoconfig.okhttp.enabled", havingValue = "true")
-@AutoConfigureAfter(LsdSourceAndDestinationNamesAutoConfiguration.class)
+@Import({NamingConfig.class, HttpHandlerConfig.class})
 @RequiredArgsConstructor
 public class LsdOkHttpAutoConfiguration {
 
@@ -52,33 +51,5 @@ public class LsdOkHttpAutoConfiguration {
     @PostConstruct
     public void configureInterceptor() {
         okHttpClientBuilder.addInterceptor(new LsdOkHttpInterceptor(httpInteractionHandlers));
-    }
-
-    @Configuration
-    static class NameMapping {
-        @Bean
-        @ConditionalOnMissingBean(name = "defaultSourceNameMapping")
-        public SourceNameMappings defaultSourceNameMapping() {
-            return ALWAYS_APP;
-        }
-
-        @Bean
-        @ConditionalOnMissingBean(name = "defaultDestinationNameMapping")
-        public DestinationNameMappings defaultDestinationNameMapping() {
-            return new RegexResolvingNameMapper();
-        }
-    }
-
-    @RequiredArgsConstructor
-    static class HttpHandlerConfig {
-        private final TestState testState;
-        private final SourceNameMappings defaultSourceNameMapping;
-        private final DestinationNameMappings defaultDestinationNameMapping;
-
-        @Bean
-        @ConditionalOnMissingBean(name = "httpInteractionHandlers")
-        public List<HttpInteractionHandler> httpInteractionHandlers() {
-            return List.of(new DefaultHttpInteractionHandler(testState, defaultSourceNameMapping, defaultDestinationNameMapping));
-        }
     }
 }

@@ -2,8 +2,6 @@ package com.nickmcdowall.lsd.http.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import com.nickmcdowall.lsd.http.interceptor.LsdFeignLoggerInterceptor;
-import com.nickmcdowall.lsd.http.naming.DestinationNameMappings;
-import com.nickmcdowall.lsd.http.naming.SourceNameMappings;
 import feign.Logger;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -14,15 +12,9 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
-import static com.nickmcdowall.lsd.http.naming.UserSuppliedDestinationMappings.userSuppliedDestinationMappings;
-import static com.nickmcdowall.lsd.http.naming.UserSuppliedSourceMappings.userSuppliedSourceMappings;
-import static java.util.Map.of;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LsdFeignAutoConfigurationTest {
-
-    private static final SourceNameMappings SOURCE_NAMES_OVERRIDE = userSuppliedSourceMappings(of("/source", "Source"));
-    private static final DestinationNameMappings DESTINATION_NAMES_OVERRIDE = userSuppliedDestinationMappings(of("/destination", "Destination"));
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
@@ -61,16 +53,6 @@ class LsdFeignAutoConfigurationTest {
         });
     }
 
-    @Test
-    void userCanOverrideNameMappings() {
-        contextRunner.withUserConfiguration(UserConfigWithNameMappingOverrides.class).run((context) -> {
-            assertThat(context).getBean("defaultSourceNameMapping", SourceNameMappings.class)
-                    .isEqualTo(SOURCE_NAMES_OVERRIDE);
-            assertThat(context).getBean("defaultDestinationNameMapping", DestinationNameMappings.class)
-                    .isEqualTo(DESTINATION_NAMES_OVERRIDE);
-        });
-    }
-
     private void assertBeansNotLoaded(AssertableApplicationContext context) {
         assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
         assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
@@ -97,24 +79,6 @@ class LsdFeignAutoConfigurationTest {
         @Bean
         public List<Object> genericList() {
             return List.of();
-        }
-    }
-
-    @Configuration
-    static class UserConfigWithNameMappingOverrides {
-        @Bean
-        public TestState interactions() {
-            return new TestState();
-        }
-
-        @Bean
-        public SourceNameMappings defaultSourceNameMapping() {
-            return SOURCE_NAMES_OVERRIDE;
-        }
-
-        @Bean
-        public DestinationNameMappings defaultDestinationNameMapping() {
-            return DESTINATION_NAMES_OVERRIDE;
         }
     }
 
