@@ -26,13 +26,13 @@ import java.util.List;
  * a `OkHttpClient`. We can't modify the client instance once it has been built without creating a separate instance so
  * we rely on the builder been being available.
  * </p>
- * <br/>
+ * <br>
  * <p>
  * It is assumed that the {@link okhttp3.OkHttpClient} will be used to invoke downstream endpoints from within the app.
  * Therefore the <em>source</em> name will default to <em>'App'</em> and the <em>destination</em> name will be derived via
  * a {@link RegexResolvingNameMapper} by default.
  * </p>
- * <br/>
+ * <br>
  * <p>
  * Users can override either or both of the default name mappings by supplying their own {@link SourceNameMappings} or
  * {@link DestinationNameMappings} beans and naming them <em>'defaultSourceNameMapping`</em> and <em>'defaultDestinationNameMapping`</em>.

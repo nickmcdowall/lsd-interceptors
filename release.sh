@@ -4,8 +4,8 @@ set -e
 # To bump versions use:
 # ./gradlew markNextVersion -Prelease.incrementer=incrementMinor
 
-# Bumpt patch version for release version by default
+# Bump patch version for release version by default
  ./gradlew release
 
-# Upload to bintray
- ./gradlew bintrayUpload
+# Publish to sonatype and then release to maven central
+./gradlew publishToSonatype closeAndReleaseStagingRepository

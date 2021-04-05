@@ -25,13 +25,13 @@ import java.util.List;
  * If a {@link RestTemplate} class and a {@link TestState} bean is available it will automatically autoconfig
  * a {@link LsdRestTemplateInterceptor}
  * </p>
- * <br/>
+ * <br>
  * <p>
  * It is assumed that if a {@link RestTemplate} bean exists is will be used to invoke downstream endpoints from within the app.
  * Therefore the <em>source</em> name will default to <em>'App'</em> and the <em>destination</em> name will be derived using a
  * {@link RegexResolvingNameMapper} by default.
  * </p>
- * <br/>
+ * <br>
  * <p>
  * Users can override either or both of the default name mappings by supplying their own {@link SourceNameMappings} or
  * {@link DestinationNameMappings} beans and naming them <em>'defaultSourceNameMapping`</em> and <em>'defaultDestinationNameMapping`</em>.
