@@ -1,4 +1,4 @@
-# yatspec-lsd-interceptors [![Download](https://api.bintray.com/packages/nickmcdowall/nkm/yatspec-lsd-interceptors/images/download.svg) ](https://bintray.com/nickmcdowall/nkm/yatspec-lsd-interceptors/_latestVersion)
+# yatspec-lsd-interceptors [![Maven Central](https://img.shields.io/maven-central/v/com.github.nickmcdowall/yatspec-lsd-interceptors.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.nickmcdowall%22%20AND%20a:%22yatspec-lsd-interceptors%22)
 
 A central library for interceptors that can be used with [yatspec-lsd ](https://github.com/nickmcdowall/yatspec) (aka
 living sequence diagrams).
@@ -70,25 +70,46 @@ public RestTemplate restTemplate(RestTemplateBuilder builder){
   (requires explicit property to prevent clashing with `LsdFeignLoggerInterceptor` - as it is a popular client
   implementation for `Feign` and the former interceptor should work across all Feign client implementations).
 
+#### Spring AOP
+
+Another option is to use [Spring AOP](https://docs.spring.io/spring-framework/docs/5.0.0.M5/spring-framework-reference/html/aop.html) 
+for intercepting calls - e.g. if you want to capture method calls to any method in `YourClass` that takes one argument you
+may have something like this in your acceptance/component tests (requires spring aop dependencies):
+
+```java
+@Aspect
+@Component
+@EnableAspectJAutoProxy
+public class YourClassLsdInterceptor {
+
+    @Before("execution(* com.your.package.YourClass.*(*) && args(yourArg))")
+    public void captureEvents(JoinPoint joinpoint, Object yourArg) {
+        var methodName = joinpoint.getSignature().getName();
+        var yourArgType = yourArg.getClass().getSimpleName();
+        testState.log(methodName + "( " + yourArgType + " ) from A to B", yourArg);
+    }
+}
+```
+
 (Additional interceptors and auto configuration will be added over time).
 
 ### Naming
 
-
 ### Source Name
 
-If you set the property `info.app.name` then this will be used as the default source name for interactions captured on 
+If you set the property `info.app.name` then this will be used as the default source name for interactions captured on
 the sequence diagrams. (i.e. your app is calling downstream services)
 
-This can be overridden by setting the `Source-Name` http header on a request. For example if you want to create a client 
-that represents a user calling into your app say from within a test then you can set the `Source-Name` header value to 
+This can be overridden by setting the `Source-Name` http header on a request. For example if you want to create a client
+that represents a user calling into your app say from within a test then you can set the `Source-Name` header value to
 the name of the user.
 
 If neither are set then the library will default to the value `App`.
 
 ### Destination Name
 
-Set the `Target-Name` header value to control the name of the destination service of an interaction on the sequence diagrams.
+Set the `Target-Name` header value to control the name of the destination service of an interaction on the sequence
+diagrams.
 
 If this header is not set the library will attempt to derive a destination name based on the path of the http request.
 
