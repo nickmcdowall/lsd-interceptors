@@ -29,14 +29,14 @@ public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
     public void handleRequest(String method, Map<String, String> requestHeaders, String path, String body) {
         String sourceName = deriveSourceName(requestHeaders, path);
         String destinationName = deriveTargetName(requestHeaders, path);
-        testState.log(requestOf(method, path, sourceName, destinationName), body);
+        testState.log(requestOf(method, path, sourceName, destinationName), PrettyPrinter.parse(body));
     }
 
     @Override
     public void handleResponse(String statusMessage, Map<String, String> requestHeaders, String path, String body) {
         String destinationName = deriveTargetName(requestHeaders, path);
         String sourceName = deriveSourceName(requestHeaders, path);
-        testState.log(responseOf(statusMessage, destinationName, sourceName), body);
+        testState.log(responseOf(statusMessage, destinationName, sourceName), PrettyPrinter.parse(body));
     }
 
     private String deriveTargetName(Map<String, String> headers, String path) {

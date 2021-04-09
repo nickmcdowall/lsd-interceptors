@@ -27,9 +27,9 @@ class DefaultHttpInteractionHandlerTest {
 
     @Test
     void usesTestStateToLogRequest() {
-        handler.handleRequest("GET", emptyMap(), "/path", "body");
+        handler.handleRequest("GET", emptyMap(), "/path", "{\"type\":\"request\"}");
 
-        verify(testState).log("GET /path from sourceName to destinationName", "body");
+        verify(testState).log("GET /path from sourceName to destinationName", "{\n  \"type\": \"request\"\n}");
     }
 
     @Test
