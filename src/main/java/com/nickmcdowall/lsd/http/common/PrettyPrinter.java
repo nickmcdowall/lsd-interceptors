@@ -22,7 +22,7 @@ public class PrettyPrinter {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final OutputFormat format = OutputFormat.createPrettyPrint();
 
-    public static String parse(final String document) {
+    public static String prettyPrint(final String document) {
         if (isBlank(document)) {
             return document;
         }

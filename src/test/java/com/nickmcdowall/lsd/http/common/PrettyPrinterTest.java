@@ -10,14 +10,14 @@ class PrettyPrinterTest {
     void handleNonJsonOrXml() {
         String inputText = "my random text";
 
-        assertThat(PrettyPrinter.parse(inputText)).isEqualTo(inputText);
+        assertThat(PrettyPrinter.prettyPrint(inputText)).isEqualTo(inputText);
     }
 
     @Test
     void prettyPrintJson() {
         String inputText = "{\"name\":\"nick\"}";
 
-        assertThat(PrettyPrinter.parse(inputText)).isEqualTo(
+        assertThat(PrettyPrinter.prettyPrint(inputText)).isEqualTo(
                 "{\n" +
                         "  \"name\": \"nick\"\n" +
                         "}");
@@ -27,7 +27,7 @@ class PrettyPrinterTest {
     void prettyPrintXml() {
         String inputText = "<names><name>nick</name></names>";
 
-        assertThat(PrettyPrinter.parse(inputText)).isEqualTo(
+        assertThat(PrettyPrinter.prettyPrint(inputText)).isEqualTo(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                         "\n" +
                         "<names>\n" +

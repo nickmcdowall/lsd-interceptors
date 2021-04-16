@@ -11,6 +11,8 @@ import static com.nickmcdowall.lsd.http.common.Headers.HeaderKeys.SOURCE_NAME;
 import static com.nickmcdowall.lsd.http.common.Headers.HeaderKeys.TARGET_NAME;
 import static com.nickmcdowall.lsd.http.common.HttpInteractionMessageTemplates.requestOf;
 import static com.nickmcdowall.lsd.http.common.HttpInteractionMessageTemplates.responseOf;
+import static com.nickmcdowall.lsd.http.common.PrettyPrinter.prettyPrint;
+import static j2html.TagCreator.*;
 
 @EqualsAndHashCode
 public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
@@ -29,14 +31,28 @@ public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
     public void handleRequest(String method, Map<String, String> requestHeaders, String path, String body) {
         String sourceName = deriveSourceName(requestHeaders, path);
         String destinationName = deriveTargetName(requestHeaders, path);
-        testState.log(requestOf(method, path, sourceName, destinationName), PrettyPrinter.parse(body));
+        testState.log(requestOf(method, path, sourceName, destinationName), renderHtmlFor(path, requestHeaders, prettyPrint(body)));
     }
 
     @Override
     public void handleResponse(String statusMessage, Map<String, String> requestHeaders, String path, String body) {
         String destinationName = deriveTargetName(requestHeaders, path);
         String sourceName = deriveSourceName(requestHeaders, path);
-        testState.log(responseOf(statusMessage, destinationName, sourceName), PrettyPrinter.parse(body));
+        testState.log(responseOf(statusMessage, destinationName, sourceName), renderHtmlFor(path, requestHeaders, prettyPrint(body)));
+    }
+
+    private String renderHtmlFor(String path, Map<String, String> requestHeaders, String prettyBody) {
+        var popupValue = section(
+                details(
+                        summary("path"),
+                        section(pre(path))
+                ), details(
+                        summary("requestHeaders"),
+                        section(pre(requestHeaders.toString()))
+                ),
+                section(pre(prettyBody))
+        ).renderFormatted();
+        return popupValue;
     }
 
     private String deriveTargetName(Map<String, String> headers, String path) {
