@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.nickmcdowall.lsd.http.autoconfigure.LsdRestTemplateAutoConfiguration,\
+  com.nickmcdowall.lsd.http.autoconfigure.LsdOkHttpAutoConfiguration,\
+  com.nickmcdowall.lsd.http.autoconfigure.LsdFeignAutoConfiguration,\
+  com.nickmcdowall.lsd.repository.autoconfigure.LsdSpringRepositoryAopAutoConfiguration
