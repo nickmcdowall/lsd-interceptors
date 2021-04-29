@@ -10,6 +10,6 @@ class AppNameTest {
     void removesSpecialCharacters() {
         AppName appName = new AppName("App/Service (Dev)");
 
-        assertThat(appName.mapForPath("/")).isEqualTo("App_Service__Dev_");
+        assertThat(appName.mapForPath("/")).isEqualTo("App_Service_Dev_");
     }
 }

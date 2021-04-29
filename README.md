@@ -1,8 +1,8 @@
-# yatspec-lsd-interceptors [![Maven Central](https://img.shields.io/maven-central/v/com.github.nickmcdowall/yatspec-lsd-interceptors.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.nickmcdowall%22%20AND%20a:%22yatspec-lsd-interceptors%22)
+# lsd-interceptors [![Maven Central](https://img.shields.io/maven-central/v/com.github.nickmcdowall/lsd-interceptors.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.nickmcdowall%22%20AND%20a:%22lsd-interceptors%22)
 
 A central library for interceptors that can be used with [yatspec-lsd ](https://github.com/nickmcdowall/yatspec) (aka
 living sequence diagrams).
-
+ 
 The interceptors capture interactions that flow in and out of the App during tests so that they can be added to
 the `TestState` bean used by the [yatspec-lsd ](https://github.com/nickmcdowall/yatspec) framework to generate sequence
 diagrams.

@@ -3,6 +3,7 @@ package com.nickmcdowall.lsd.repository.autoconfigure;
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import com.nickmcdowall.lsd.http.interceptor.AopInterceptorDelegate;
 import com.nickmcdowall.lsd.http.interceptor.SpringDataRepositoryInterceptor;
+import com.nickmcdowall.lsd.http.naming.AppName;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -35,6 +36,6 @@ public class LsdSpringRepositoryAopAutoConfiguration {
 
     @Bean
     public SpringDataRepositoryInterceptor springDataRepositoryInterceptor() {
-        return new SpringDataRepositoryInterceptor(new AopInterceptorDelegate(testState, appName));
+        return new SpringDataRepositoryInterceptor(new AopInterceptorDelegate(testState, new AppName(appName)));
     }
 }

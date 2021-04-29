@@ -1,9 +1,9 @@
 package com.nickmcdowall.lsd.http.interceptor;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.nickmcdowall.lsd.http.naming.AppName;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 
 import static java.lang.String.join;
 import static java.util.Arrays.stream;
@@ -13,17 +13,17 @@ import static java.util.stream.Collectors.toList;
 public
 class AopInterceptorDelegate {
     private final TestState testState;
-    private final String appName;
+    private final AppName appName;
 
     public void logInternalResponse(Object resultValue, String methodName, Object[] args) {
-        testState.log(methodName + "( " + joinArgumentTypeNames(args) + " ) from " + appName + " to " + appName, resultValue);
+        testState.log(methodName + "( " + joinArgumentTypeNames(args) + " ) from " + appName.getValue() + " to " + appName.getValue(), resultValue);
     }
 
     /**
      * Used to show an internal (within the application) exception (e.g. when calling DB)
      */
     public void logInternalException(@NonNull Throwable throwable) {
-        testState.log(throwable.getClass().getSimpleName() + " response from " + appName + " to " + appName + " [#red]", throwable);
+        testState.log(throwable.getClass().getSimpleName() + " response from " + appName.getValue() + " to " + appName.getValue() + " [#red]", throwable);
     }
 
     private String joinArgumentTypeNames(Object[] args) {
