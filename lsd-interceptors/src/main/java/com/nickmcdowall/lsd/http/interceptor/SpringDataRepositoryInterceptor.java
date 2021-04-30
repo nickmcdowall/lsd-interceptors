@@ -15,7 +15,7 @@ public class SpringDataRepositoryInterceptor {
     public void captureRepositoryResponses(JoinPoint joinPoint, Object resultValue) {
         if (isMockitoWrapper(joinPoint))
             return;
-        delegate.logInternalResponse(resultValue, joinPoint.getSignature().getName(), joinPoint.getArgs());
+        delegate.logInternalResponse(resultValue, joinPoint);
     }
 
     @AfterThrowing(value = "execution(* org.springframework.data.repository.Repository+.*(*))", throwing = "throwable")
