@@ -20,19 +20,24 @@ class AopInterceptorDelegate {
     private final TestState testState;
     private final AppName appName;
 
-    public void logInternalResponse(Object resultValue, JoinPoint joinPoint) {
+    public void captureInternalInteraction(JoinPoint joinPoint, Object resultValue) {
+        captureInteraction(joinPoint, resultValue, appName.getValue(), appName.getValue());
+    }
+
+    public void captureInteraction(JoinPoint joinPoint, Object resultValue, String sourceName, String destinationName) {
         var methodName = joinPoint.getSignature().getName();
         var args = joinPoint.getArgs();
         var className = joinPoint.getSignature().getDeclaringType().getSimpleName();
         var body = renderHtmlForMethodCall(className, methodName, args, resultValue);
-        testState.log(methodName + "( " + joinArgumentTypeNames(args) + " ) from " + appName.getValue() + " to " + appName.getValue(), body);
+        testState.log(methodName + "( " + joinArgumentTypeNames(args) + " ) from " + sourceName + " to " + destinationName, body);
     }
 
-    /**
-     * Used to show an internal (within the application) exception (e.g. when calling DB)
-     */
-    public void logInternalException(@NonNull Throwable throwable) {
-        testState.log(throwable.getClass().getSimpleName() + " response from " + appName.getValue() + " to " + appName.getValue() + " [#red]", throwable);
+    public void captureInternalException(@NonNull Throwable throwable) {
+        captureException(throwable, appName.getValue(), appName.getValue());
+    }
+
+    public void captureException(@NonNull Throwable throwable, String sourceName, String destinationName) {
+        testState.log(throwable.getClass().getSimpleName() + " response from " + sourceName + " to " + destinationName + " [#red]", throwable);
     }
 
     private String renderHtmlForMethodCall(String className, String methodName, Object[] args, Object response) {

@@ -15,14 +15,14 @@ public class SpringDataRepositoryInterceptor {
     public void captureRepositoryResponses(JoinPoint joinPoint, Object resultValue) {
         if (isMockitoWrapper(joinPoint))
             return;
-        delegate.logInternalResponse(resultValue, joinPoint);
+        delegate.captureInternalInteraction(joinPoint, resultValue);
     }
 
     @AfterThrowing(value = "within(@org.springframework.stereotype.Repository *+)|| within(@org.springframework.stereotype.Repository *+)", throwing = "throwable")
     public void captureRepositoryErrors(JoinPoint joinPoint, Throwable throwable) {
         if (isMockitoWrapper(joinPoint))
             return;
-        delegate.logInternalException(throwable);
+        delegate.captureInternalException(throwable);
     }
 
     /*
