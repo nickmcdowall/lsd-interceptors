@@ -11,14 +11,14 @@ import org.aspectj.lang.annotation.Aspect;
 public class SpringDataRepositoryInterceptor {
     private final AopInterceptorDelegate delegate;
 
-    @AfterReturning(value = "execution(* org.springframework.data.repository.Repository+.*(*)))", returning = "resultValue")
+    @AfterReturning(value = "execution(* org.springframework.data.repository.Repository+.*(*))) || within(@org.springframework.stereotype.Repository *+)", returning = "resultValue")
     public void captureRepositoryResponses(JoinPoint joinPoint, Object resultValue) {
         if (isMockitoWrapper(joinPoint))
             return;
         delegate.logInternalResponse(resultValue, joinPoint);
     }
 
-    @AfterThrowing(value = "execution(* org.springframework.data.repository.Repository+.*(*))", throwing = "throwable")
+    @AfterThrowing(value = "within(@org.springframework.stereotype.Repository *+)|| within(@org.springframework.stereotype.Repository *+)", throwing = "throwable")
     public void captureRepositoryErrors(JoinPoint joinPoint, Throwable throwable) {
         if (isMockitoWrapper(joinPoint))
             return;
