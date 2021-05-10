@@ -14,6 +14,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.repository.Repository;
 
+import javax.annotation.PostConstruct;
+
 
 /**
  * <p>
@@ -37,5 +39,10 @@ public class LsdSpringRepositoryAopAutoConfiguration {
     @Bean
     public SpringDataRepositoryInterceptor springDataRepositoryInterceptor() {
         return new SpringDataRepositoryInterceptor(new AopInterceptorDelegate(testState, new AppName(appName)));
+    }
+
+    @PostConstruct
+    private void postConstruct() {
+        testState.include("tupadr3/font-awesome-5/database");
     }
 }
