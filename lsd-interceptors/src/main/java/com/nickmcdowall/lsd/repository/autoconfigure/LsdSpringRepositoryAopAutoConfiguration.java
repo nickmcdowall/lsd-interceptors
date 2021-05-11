@@ -37,8 +37,13 @@ public class LsdSpringRepositoryAopAutoConfiguration {
     private String appName;
 
     @Bean
-    public SpringDataRepositoryInterceptor springDataRepositoryInterceptor() {
-        return new SpringDataRepositoryInterceptor(new AopInterceptorDelegate(testState, new AppName(appName)));
+    public SpringDataRepositoryInterceptor springDataRepositoryInterceptor(AopInterceptorDelegate aopInterceptorDelegate) {
+        return new SpringDataRepositoryInterceptor(aopInterceptorDelegate);
+    }
+
+    @Bean
+    public AopInterceptorDelegate aopInterceptorDelegate() {
+        return new AopInterceptorDelegate(testState, new AppName(appName));
     }
 
     @PostConstruct

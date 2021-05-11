@@ -22,7 +22,7 @@ ext {
 
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.12'
-    implementation 'com.github.nickmcdowall:yatspec:2021.1.5'
+    implementation 'com.github.nickmcdowall:yatspec:2021.1.6'
     implementation 'org.springframework:spring-web:5.1.11.RELEASE'
     implementation 'com.squareup.okhttp3:okhttp:3.8.1'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
