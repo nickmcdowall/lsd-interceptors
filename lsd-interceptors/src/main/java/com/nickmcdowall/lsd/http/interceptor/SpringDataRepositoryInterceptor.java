@@ -1,5 +1,6 @@
 package com.nickmcdowall.lsd.http.interceptor;
 
+import com.nickmcdowall.lsd.repository.interceptor.AopInterceptorDelegate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;

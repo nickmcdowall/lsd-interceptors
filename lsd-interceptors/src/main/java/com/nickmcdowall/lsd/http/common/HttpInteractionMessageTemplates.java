@@ -13,6 +13,10 @@ public class HttpInteractionMessageTemplates {
     }
 
     public static String responseOf(String message, String destinationName, String sourceName) {
-        return String.format(RESPONSE_TEMPLATE, message, destinationName, sourceName);
+        String interaction = String.format(RESPONSE_TEMPLATE, message, destinationName, sourceName);
+        if (interaction.startsWith("4") || interaction.startsWith("5")) {
+            interaction += " [#red]";
+        }
+        return interaction;
     }
 }

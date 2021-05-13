@@ -1,5 +1,6 @@
 package com.nickmcdowall.lsd.http.interceptor;
 
+import com.nickmcdowall.lsd.repository.interceptor.AopInterceptorDelegate;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.mock;

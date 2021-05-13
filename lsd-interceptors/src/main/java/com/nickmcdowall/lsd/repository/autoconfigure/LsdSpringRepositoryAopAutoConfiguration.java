@@ -1,7 +1,7 @@
 package com.nickmcdowall.lsd.repository.autoconfigure;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.http.interceptor.AopInterceptorDelegate;
+import com.nickmcdowall.lsd.repository.interceptor.AopInterceptorDelegate;
 import com.nickmcdowall.lsd.http.interceptor.SpringDataRepositoryInterceptor;
 import com.nickmcdowall.lsd.http.naming.AppName;
 import lombok.RequiredArgsConstructor;

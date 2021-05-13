@@ -1,4 +1,4 @@
-package com.nickmcdowall.lsd.http.interceptor;
+package com.nickmcdowall.lsd.repository.interceptor;
 
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import com.nickmcdowall.lsd.http.common.PrettyPrinter;
