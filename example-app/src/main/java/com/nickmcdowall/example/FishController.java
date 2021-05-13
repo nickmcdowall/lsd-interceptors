@@ -5,7 +5,7 @@ import com.nickmcdowall.example.repository.FishRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Objects;
+import static java.util.Objects.isNull;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,14 +20,18 @@ public class FishController {
                 .build()
         );
     }
-    
+
+    @DeleteMapping(value = "/fish/{name}")
+    public void deleteFishWithName(@PathVariable String name) {
+        fishRepository.deleteByName(name);
+    }
+
     @GetMapping(value = "/fish/{name}")
     public String getFishWithName(@PathVariable String name) {
-        Fish fishByName = fishRepository.findFishByName(name);
-        if (Objects.isNull(fishByName)) {
-            throw new RuntimeException("Fish not found!");
+        if (isNull(fishRepository.findFishByName(name))) {
+            throw new FishNotFound();
         }
-        return fishByName.toString();
+        return fishRepository.findFishByName(name).toString();
     }
 
 }

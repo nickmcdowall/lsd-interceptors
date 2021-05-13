@@ -5,6 +5,7 @@ import com.googlecode.yatspec.junit.WithParticipants;
 import com.googlecode.yatspec.sequence.Participant;
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import com.nickmcdowall.example.repository.FishRepository;
+import feign.FeignException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.util.List;
 import static com.googlecode.yatspec.sequence.Participants.ACTOR;
 import static com.googlecode.yatspec.sequence.Participants.PARTICIPANT;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 @ImportAutoConfiguration({FeignAutoConfiguration.class})
@@ -43,7 +45,24 @@ public class FishAppTest implements WithParticipants {
     void saveAndFind() {
         fishClient.post(new NewFishRequest("nick"));
 
-        assertThat(fishRepository.countFishByName("nick")).isEqualTo(1);
+        fishClient.getFishWithName("nick");
+
+        assertThat(fishClient.getFishWithName("nick")).contains("nick");
+    }
+
+    @Test
+    void saveAndDeleteFind() {
+        fishClient.post(new NewFishRequest("ted"));
+        fishClient.getFishWithName("ted");
+
+        fishClient.deleteByName("ted");
+
+        try {
+            fishClient.getFishWithName("ted");
+            fail("Fish should have been deleted causing a 404 FishNotFound");
+        } catch (FeignException.NotFound e) {
+            //expected
+        }
     }
 
     @Override

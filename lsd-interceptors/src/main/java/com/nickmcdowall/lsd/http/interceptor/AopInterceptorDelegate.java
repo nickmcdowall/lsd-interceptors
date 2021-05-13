@@ -5,13 +5,17 @@ import com.nickmcdowall.lsd.http.common.PrettyPrinter;
 import com.nickmcdowall.lsd.http.naming.AppName;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 
+import static com.nickmcdowall.lsd.http.common.PrettyPrinter.prettyPrint;
 import static j2html.TagCreator.*;
 import static java.lang.System.lineSeparator;
 import static java.util.Arrays.stream;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 
+@Slf4j
 @RequiredArgsConstructor
 public
 class AopInterceptorDelegate {
@@ -27,7 +31,7 @@ class AopInterceptorDelegate {
         var args = joinPoint.getArgs();
         var className = joinPoint.getSignature().getDeclaringType().getSimpleName();
         var body = renderHtmlForMethodCall(className, methodName, args, resultValue);
-        testState.log(icon + methodName + "( " + joinArgumentTypeNames(args) + " ) from " + sourceName + " to " + destinationName, body);
+        testState.log(icon + " " + methodName + "( " + joinArgumentTypeNames(args) + " ) from " + sourceName + " to " + destinationName, body);
     }
 
     public void captureInternalException(@NonNull Throwable throwable, String icon) {
@@ -35,7 +39,7 @@ class AopInterceptorDelegate {
     }
 
     public void captureException(@NonNull Throwable throwable, String sourceName, String destinationName, String icon) {
-        testState.log(icon + throwable.getClass().getSimpleName() + " response from " + sourceName + " to " + destinationName + " [#red]", throwable);
+        testState.log(icon + " " + throwable.getClass().getSimpleName() + " response from " + sourceName + " to " + destinationName + " [#red]", throwable);
     }
 
     private String renderHtmlForMethodCall(String className, String methodName, Object[] args, Object response) {
@@ -51,7 +55,10 @@ class AopInterceptorDelegate {
                         ),
                         p(
                                 h4("Response:"),
-                                pre(PrettyPrinter.prettyPrint(response.toString()))
+                                pre(ofNullable(response)
+                                        .map(r -> prettyPrint(r.toString()))
+                                        .orElse("")
+                                )
                         )
                 ).render();
         return popupValue;
