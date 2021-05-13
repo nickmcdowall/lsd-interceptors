@@ -30,7 +30,7 @@ public class SpringDataRepositoryInterceptor {
         try {
             if (isMockitoWrapper(joinPoint))
                 return;
-            delegate.captureInternalException(throwable, "<$database{scale=0.4,color=red}>");
+            delegate.captureInternalException(joinPoint, throwable, "<$database{scale=0.4,color=red}>");
         } catch (Exception e) {
             log.error("Failed while intercepting repository exception for LSD", e);
         }

@@ -28,10 +28,11 @@ public class FishController {
 
     @GetMapping(value = "/fish/{name}")
     public String getFishWithName(@PathVariable String name) {
-        if (isNull(fishRepository.findFishByName(name))) {
+        Fish fishByName = fishRepository.findFishByName(name);
+        if (isNull(fishByName)) {
             throw new FishNotFound();
         }
-        return fishRepository.findFishByName(name).toString();
+        return fishByName.toString();
     }
 
 }
