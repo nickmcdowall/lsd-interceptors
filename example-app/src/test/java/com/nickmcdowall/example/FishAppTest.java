@@ -4,7 +4,6 @@ import com.googlecode.yatspec.junit.SequenceDiagramExtension;
 import com.googlecode.yatspec.junit.WithParticipants;
 import com.googlecode.yatspec.sequence.Participant;
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.example.repository.FishRepository;
 import feign.FeignException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,9 +32,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class FishAppTest implements WithParticipants {
 
     @Autowired
-    private FishRepository fishRepository;
-
-    @Autowired
     private FishClient fishClient;
 
     @Autowired
@@ -61,6 +57,19 @@ public class FishAppTest implements WithParticipants {
             fishClient.getFishWithName("ted");
             fail("Fish should have been deleted causing a 404 FishNotFound");
         } catch (FeignException.NotFound e) {
+            //expected
+        }
+    }
+
+    @Test
+    void preventDuplicates() {
+        try {
+            fishClient.post(new NewFishRequest("jon"));
+            
+            fishClient.getFishWithName("jon");
+
+            fishClient.post(new NewFishRequest("jon"));
+        } catch (FeignException.InternalServerError e) {
             //expected
         }
     }

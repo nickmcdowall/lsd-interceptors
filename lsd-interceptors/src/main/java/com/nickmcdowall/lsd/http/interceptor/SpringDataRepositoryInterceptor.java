@@ -18,13 +18,13 @@ public class SpringDataRepositoryInterceptor {
         try {
             if (isMockitoWrapper(joinPoint))
                 return;
-            delegate.captureInternalInteraction(joinPoint, resultValue, "<$database{scale=0.4}>");
+            delegate.captureInternalInteraction(joinPoint, resultValue, "<$database{scale=0.4,color=grey}>");
         } catch (Exception e) {
             log.error("Failed while intercepting repository call for LSD", e);
         }
     }
 
-    @AfterThrowing(value = "within(@org.springframework.stereotype.Repository *+)|| within(@org.springframework.stereotype.Repository *+)", throwing = "throwable")
+    @AfterThrowing(value = "within(org.springframework.data.repository.Repository+) || within(@org.springframework.stereotype.Repository *+)", throwing = "throwable")
     public void captureRepositoryErrors(JoinPoint joinPoint, Throwable throwable) {
         try {
             if (isMockitoWrapper(joinPoint))
