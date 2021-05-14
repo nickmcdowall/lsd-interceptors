@@ -8,10 +8,8 @@ import javax.transaction.Transactional;
 
 @Transactional
 @Repository
-public interface FishRepository extends CrudRepository<Fish, String> {
+public interface FishRepositoryJpa extends CrudRepository<Fish, String> {
     Fish findFishByName(String name);
 
     void deleteByName(String name);
-
-    long countFishByName(String name);
 }

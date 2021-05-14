@@ -14,7 +14,7 @@ import org.aspectj.lang.annotation.Aspect;
 public class SpringDataRepositoryInterceptor {
     private final AopInterceptorDelegate delegate;
 
-    @AfterReturning(value = "within(org.springframework.data.repository.Repository+)) || within(@org.springframework.stereotype.Repository *+)", returning = "resultValue")
+    @AfterReturning(value = "within(org.springframework.data.repository.Repository+) || within(@org.springframework.stereotype.Repository *+)", returning = "resultValue")
     public void captureRepositoryResponses(JoinPoint joinPoint, Object resultValue) {
         try {
             if (isMockitoWrapper(joinPoint))

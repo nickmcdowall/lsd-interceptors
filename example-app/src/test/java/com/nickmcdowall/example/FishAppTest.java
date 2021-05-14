@@ -4,7 +4,6 @@ import com.googlecode.yatspec.junit.SequenceDiagramExtension;
 import com.googlecode.yatspec.junit.WithParticipants;
 import com.googlecode.yatspec.sequence.Participant;
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import feign.FeignException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +14,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static com.googlecode.yatspec.sequence.Participants.ACTOR;
 import static com.googlecode.yatspec.sequence.Participants.PARTICIPANT;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Fail.fail;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 @ImportAutoConfiguration({FeignAutoConfiguration.class})
@@ -38,39 +37,31 @@ public class FishAppTest implements WithParticipants {
     private TestState testState;
 
     @Test
-    void saveAndFind() {
+    void triggerVariousInteractions() {
         fishClient.post(new NewFishRequest("nick"));
-
-        fishClient.getFishWithName("nick");
-
-        assertThat(fishClient.getFishWithName("nick")).contains("nick");
+        fishClient.createFish(System.currentTimeMillis(), "eric");
+        safely(() -> fishClient.getFishWithName("ted"));
+        safely(() -> fishClient.getFishWithName("nick"));
+        fishClient.deleteByName("eric");
+        safely((Object) -> fishClient.post(new NewFishRequest("jon")));
+        safely((Object) -> fishClient.post(new NewFishRequest("jon")));
+        safely((Object) -> fishClient.createFish(System.currentTimeMillis(), "jon"));
     }
 
-    @Test
-    void saveAndDeleteFind() {
-        fishClient.post(new NewFishRequest("ted"));
-        fishClient.getFishWithName("ted");
-
-        fishClient.deleteByName("ted");
-
+    private void safely(Supplier<?> supplier) {
         try {
-            fishClient.getFishWithName("ted");
-            fail("Fish should have been deleted causing a 404 FishNotFound");
-        } catch (FeignException.NotFound e) {
-            //expected
+            supplier.get();
+        } catch (Exception e) {
+            //Allow for test
         }
     }
 
-    @Test
-    void preventDuplicates() {
+    private void safely(Consumer<?> consumer
+    ) {
         try {
-            fishClient.post(new NewFishRequest("jon"));
-            
-            fishClient.getFishWithName("jon");
-
-            fishClient.post(new NewFishRequest("jon"));
-        } catch (FeignException.InternalServerError e) {
-            //expected
+            consumer.accept(null);
+        } catch (Exception e) {
+            //Allow for test
         }
     }
 

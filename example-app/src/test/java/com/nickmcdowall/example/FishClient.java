@@ -20,6 +20,9 @@ public interface FishClient {
     @DeleteMapping("/fish/{name}")
     void deleteByName(@PathVariable String name);
 
+    @PostMapping(value = "/fish/{id}/{name}")
+    void createFish(@PathVariable long id, @PathVariable String name);
+
     class FishClientConfig {
         @Bean
         public RequestInterceptor requestInterceptor() {
