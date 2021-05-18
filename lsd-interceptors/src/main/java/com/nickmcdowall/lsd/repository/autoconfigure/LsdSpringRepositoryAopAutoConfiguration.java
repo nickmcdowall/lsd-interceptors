@@ -49,5 +49,9 @@ public class LsdSpringRepositoryAopAutoConfiguration {
     @PostConstruct
     private void postConstruct() {
         testState.include("tupadr3/font-awesome-5/database");
+        testState.include("tupadr3/font-awesome-5/clock");
+        testState.include("tupadr3/font-awesome-5/play");
+        testState.include("tupadr3/font-awesome-5/stop");
+        testState.include("tupadr3/font-awesome-5/exclamation");
     }
 }

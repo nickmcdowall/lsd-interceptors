@@ -4,9 +4,15 @@ import com.nickmcdowall.lsd.repository.interceptor.AopInterceptorDelegate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+
+import java.time.ZonedDateTime;
+
+import static java.time.ZonedDateTime.now;
 
 @Slf4j
 @Aspect
@@ -33,6 +39,28 @@ public class SpringDataRepositoryInterceptor {
             delegate.captureInternalException(joinPoint, throwable, "<$database{scale=0.4,color=red}>");
         } catch (Exception e) {
             log.error("Failed while intercepting repository exception for LSD", e);
+        }
+    }
+
+    @Around("@annotation(org.springframework.scheduling.annotation.Scheduled)")
+    public void captureScheduledMethods(ProceedingJoinPoint joinPoint) throws Throwable {
+        ZonedDateTime startTime = now();
+        safely(() -> delegate.captureScheduledStart(joinPoint, startTime));
+        try {
+            joinPoint.proceed();
+        } catch (Throwable e) {
+            safely(() -> delegate.captureScheduledError(joinPoint, startTime, now(), e));
+            throw e;
+        } finally {
+            safely(() -> delegate.captureScheduledEnd(joinPoint, startTime, now()));
+        }
+    }
+
+    public void safely(Runnable runnable) {
+        try {
+            runnable.run();
+        } catch (Throwable t) {
+            log.error("LSD interceptor exception while intercepting AOP execution", t);
         }
     }
 
