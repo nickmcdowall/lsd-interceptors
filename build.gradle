@@ -91,9 +91,9 @@ subprojects {
                     artifact javadocJar
 
                     pom {
-                        name = "yatspec-lsd-interceptors"
-                        description = "interceptors to be used with the lsd library"
-                        url = 'https://github.com/nickmcdowall/yatspec-lsd-interceptors.git'
+                        name = "lsd-interceptors"
+                        description = "Provides various interceptors to capture events for the lsd-core library to generate sequence diagrams"
+                        url = 'https://github.com/nickmcdowall/lsd-interceptors.git'
                         licenses {
                             license {
                                 name = "The Apache Software License, Version 2.0"
@@ -110,7 +110,7 @@ subprojects {
                             }
                         }
                         scm {
-                            url = "https://github.com/nickmcdowall/yatspec-lsd-interceptors.git"
+                            url = "https://github.com/nickmcdowall/lsd-interceptors.git"
                         }
                     }
                     repositories {
