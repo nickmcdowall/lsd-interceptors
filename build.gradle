@@ -93,7 +93,7 @@ subprojects {
                     pom {
                         name = "lsd-interceptors"
                         description = "Provides various interceptors to capture events for the lsd-core library to generate sequence diagrams"
-                        url = 'https://github.com/nickmcdowall/lsd-interceptors.git'
+                        url = 'https://github.com/Living-Sequence-Diagrams/lsd-interceptors.git'
                         licenses {
                             license {
                                 name = "The Apache Software License, Version 2.0"
@@ -105,12 +105,12 @@ subprojects {
                             developer {
                                 name = "Nick"
                                 email = "nicholas.mcdowall@gmail.com"
-                                organization = 'NKM IT Solutions'
-                                organizationUrl = 'https://github.com/nickmcdowall'
+                                organization = 'Living-Sequence-Diagrams'
+                                organizationUrl = 'https://github.com/Living-Sequence-Diagrams'
                             }
                         }
                         scm {
-                            url = "https://github.com/nickmcdowall/lsd-interceptors.git"
+                            url = "https://github.com/Living-Sequence-Diagrams/lsd-interceptors.git"
                         }
                     }
                     repositories {
