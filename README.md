@@ -1,8 +1,10 @@
 # lsd-interceptors [![Maven Central](https://img.shields.io/maven-central/v/com.github.nickmcdowall/lsd-interceptors.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.nickmcdowall%22%20AND%20a:%22lsd-interceptors%22)
 
 A library containing various automated message/event interceptors that can be used along with the [lsd-core](https://github.com/Living-Sequence-Diagrams/lsd-core) library
-to generate reports containing sequence diagrams of the captured events.
- 
+to generate reports containing sequence diagrams of the captured events. e.g.
+
+![screenshot of sequence diagram](images/sequence_screenshot.png)
+
 ## Autoconfig
 
 This library is designed with `@SpringBootTest` in mind and attempts to minimise boilerplate code by wiring up default
