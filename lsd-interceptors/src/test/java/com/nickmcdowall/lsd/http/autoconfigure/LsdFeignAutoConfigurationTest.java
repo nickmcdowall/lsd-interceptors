@@ -1,6 +1,5 @@
 package com.nickmcdowall.lsd.http.autoconfigure;
 
-import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import com.nickmcdowall.lsd.http.interceptor.LsdFeignLoggerInterceptor;
 import feign.Logger;
 import org.junit.jupiter.api.Test;
@@ -22,12 +21,6 @@ class LsdFeignAutoConfigurationTest {
             ));
 
     @Test
-    public void noBeansAutoLoadedWhenRequiredBeansMissing() {
-        contextRunner.withUserConfiguration(UserConfigWithoutRequiredBeans.class)
-                .run((context) -> assertBeansNotLoaded(context));
-    }
-
-    @Test
     void loadsBeansWhenTestStateIsAvailable() {
         contextRunner.withUserConfiguration(UserConfigWithRequiredBeans.class).run((context) -> {
             assertThat(context).hasBean("defaultSourceNameMapping");
@@ -41,8 +34,8 @@ class LsdFeignAutoConfigurationTest {
     @Test
     void noBeansAutoLoadedWhenInterceptorsDisabledViaPropertyEvenIfBeansAvailable() {
         contextRunner.withUserConfiguration(UserConfigWithRequiredBeans.class)
-                .withPropertyValues("yatspec.lsd.interceptors.autoconfig.enabled=false")
-                .run((context) -> assertBeansNotLoaded(context));
+                .withPropertyValues("lsd.interceptors.autoconfig.enabled=false")
+                .run(this::assertBeansNotLoaded);
     }
 
     @Test
@@ -67,11 +60,6 @@ class LsdFeignAutoConfigurationTest {
 
     @Configuration
     static class UserConfigWithRequiredBeans {
-        @Bean
-        public TestState interactions() {
-            return new TestState();
-        }
-
         /*
          * To catch autoconfig beans of type List (the generic type is not taken into account so we need to use a name
          * or wrapper type for the collection
@@ -83,11 +71,6 @@ class LsdFeignAutoConfigurationTest {
     }
 
     static class UserConfigWithExistingLoggerBean {
-        @Bean
-        public TestState interactions() {
-            return new TestState();
-        }
-
         @Bean
         public Logger.Level feignLoggerLevel() {
             return Logger.Level.FULL;

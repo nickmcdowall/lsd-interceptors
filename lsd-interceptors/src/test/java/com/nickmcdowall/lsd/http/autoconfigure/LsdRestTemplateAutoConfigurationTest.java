@@ -1,11 +1,11 @@
 package com.nickmcdowall.lsd.http.autoconfigure;
 
-import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.lsd.LsdContext;
 import com.nickmcdowall.lsd.http.common.DefaultHttpInteractionHandler;
 import com.nickmcdowall.lsd.http.interceptor.LsdRestTemplateCustomizer;
 import com.nickmcdowall.lsd.http.interceptor.LsdRestTemplateInterceptor;
-import com.nickmcdowall.lsd.http.naming.RegexResolvingNameMapper;
 import com.nickmcdowall.lsd.http.naming.AppName;
+import com.nickmcdowall.lsd.http.naming.RegexResolvingNameMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -24,16 +24,6 @@ class LsdRestTemplateAutoConfigurationTest {
             ));
 
     @Test
-    public void noBeansAutoLoadedWhenRequiredBeansMissing() {
-        contextRunner.withUserConfiguration(UserConfigWithoutRequiredBeans.class).run((context) -> {
-            assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
-            assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
-            assertThat(context).doesNotHaveBean("httpInteractionHandlers");
-            assertThat(context).doesNotHaveBean(RestTemplate.class);
-        });
-    }
-
-    @Test
     public void noInterceptorAddedWhenNoTestStateBeanExists() {
         contextRunner.withUserConfiguration(UserConfigWithNoTestState.class).run((context) -> {
             assertThat(context).hasSingleBean(RestTemplate.class);
@@ -50,7 +40,7 @@ class LsdRestTemplateAutoConfigurationTest {
             assertThat(context).hasBean("httpInteractionHandlers");
             assertThat(context).getBean(LsdRestTemplateCustomizer.class).isEqualTo(
                     new LsdRestTemplateCustomizer(new LsdRestTemplateInterceptor(
-                            List.of(new DefaultHttpInteractionHandler(new TestState(), new AppName("App"), new RegexResolvingNameMapper())))));
+                            List.of(new DefaultHttpInteractionHandler(LsdContext.getInstance(), new AppName("App"), new RegexResolvingNameMapper())))));
 
         });
     }
@@ -58,7 +48,7 @@ class LsdRestTemplateAutoConfigurationTest {
     @Test
     void noBeansWhenDisabledViaProperty() {
         contextRunner.withUserConfiguration(UserConfigWithRequiredBeans.class)
-                .withPropertyValues("yatspec.lsd.interceptors.autoconfig.enabled=false")
+                .withPropertyValues("lsd.interceptors.autoconfig.enabled=false")
                 .run((context) -> {
                     assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
                     assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
@@ -84,11 +74,6 @@ class LsdRestTemplateAutoConfigurationTest {
         @Bean
         public RestTemplate myRestTemplate() {
             return new RestTemplate();
-        }
-
-        @Bean
-        public TestState interactions() {
-            return new TestState();
         }
 
         /*

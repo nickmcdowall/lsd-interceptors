@@ -1,12 +1,8 @@
 # lsd-interceptors [![Maven Central](https://img.shields.io/maven-central/v/com.github.nickmcdowall/lsd-interceptors.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.nickmcdowall%22%20AND%20a:%22lsd-interceptors%22)
 
-A central library for interceptors that can be used with [yatspec-lsd ](https://github.com/nickmcdowall/yatspec) (aka
-living sequence diagrams).
+A library containing various automated message/event interceptors that can be used along with the [lsd-core](https://github.com/Living-Sequence-Diagrams/lsd-core) library
+to generate reports containing sequence diagrams of the captured events.
  
-The interceptors capture interactions that flow in and out of the App during tests so that they can be added to
-the `TestState` bean used by the [yatspec-lsd ](https://github.com/nickmcdowall/yatspec) framework to generate sequence
-diagrams.
-
 ## Autoconfig
 
 This library is designed with `@SpringBootTest` in mind and attempts to minimise boilerplate code by wiring up default
@@ -19,7 +15,7 @@ the interceptors when autowiring is not an option.
 To disable autoconfig so that the beans can be used in another library add the following property:
 
 ```properties
-yatspec.lsd.interceptors.autoconfig.enabled=false
+lsd.interceptors.autoconfig.enabled=false
 ```
 
 ### Available Interceptors
@@ -66,7 +62,7 @@ public RestTemplate restTemplate(RestTemplateBuilder builder){
 
 - For `OkHttpClient` clients.
 - Auto configured if `TestState` and `OkHttpClient.Builder` beans exists *and* has spring
-  property `yatspec.lsd.interceptors.autoconfig.okhttp.enabled=true`
+  property `lsd.interceptors.autoconfig.okhttp.enabled=true`
   (requires explicit property to prevent clashing with `LsdFeignLoggerInterceptor` - as it is a popular client
   implementation for `Feign` and the former interceptor should work across all Feign client implementations).
 
@@ -112,6 +108,14 @@ Set the `Target-Name` header value to control the name of the destination servic
 diagrams.
 
 If this header is not set the library will attempt to derive a destination name based on the path of the http request.
+
+## Properties
+The following properties can be overridden by adding a properties file called `lsd.properties` on the classpath of your
+application.
+
+| Property Name        | Default     | Description |
+| ----------- | ----------- |------------ |
+| lsd.interceptors.autoconfig.enabled | true | Used to disable the autoconfiguration of interceptors if necessary. |
 
 ## Build/Release
 

@@ -15,7 +15,7 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * Created to intercept rest template calls for Yatspec interactions.
+ * Created to intercept rest template calls for lsd interactions.
  * Attempts to reset the input stream so that no data is lost on reading the reponse body
  */
 @Value

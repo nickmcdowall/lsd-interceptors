@@ -1,6 +1,6 @@
 package com.nickmcdowall.lsd.http.interceptor;
 
-import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.lsd.LsdContext;
 import com.nickmcdowall.lsd.http.common.DefaultHttpInteractionHandler;
 import com.nickmcdowall.lsd.http.common.HttpInteractionHandler;
 import org.junit.jupiter.api.Test;
@@ -18,8 +18,8 @@ import static org.mockito.Mockito.mock;
 class LsdRestTemplateCustomizerTest {
 
     private final RestTemplate restTemplate = new RestTemplate();
-    private final TestState interactions = new TestState();
-    private final List<HttpInteractionHandler> httpInteractionHandlers = List.of(new DefaultHttpInteractionHandler(interactions, s -> "Source", s -> "Destination"));
+    private final LsdContext lsdContext = LsdContext.getInstance();
+    private final List<HttpInteractionHandler> httpInteractionHandlers = List.of(new DefaultHttpInteractionHandler(lsdContext, s -> "Source", s -> "Destination"));
     private final LsdRestTemplateInterceptor lsdRestTemplateInterceptor = new LsdRestTemplateInterceptor(httpInteractionHandlers);
     private final LsdRestTemplateCustomizer lsdRestTemplateCustomizer = new LsdRestTemplateCustomizer(lsdRestTemplateInterceptor);
 

@@ -1,7 +1,6 @@
 package com.nickmcdowall.lsd.http.autoconfigure;
 
-import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.nickmcdowall.lsd.http.common.DefaultHttpInteractionHandler;
+import com.lsd.LsdContext;
 import com.nickmcdowall.lsd.http.common.HttpInteractionHandler;
 import com.nickmcdowall.lsd.http.interceptor.LsdOkHttpInterceptor;
 import com.nickmcdowall.lsd.http.naming.DestinationNameMappings;
@@ -9,11 +8,9 @@ import com.nickmcdowall.lsd.http.naming.RegexResolvingNameMapper;
 import com.nickmcdowall.lsd.http.naming.SourceNameMappings;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -39,8 +36,9 @@ import java.util.List;
  * </p>
  */
 @Configuration
-@ConditionalOnBean(value = {TestState.class, OkHttpClient.Builder.class})
-@ConditionalOnProperty(value = "yatspec.lsd.interceptors.autoconfig.okhttp.enabled", havingValue = "true")
+@ConditionalOnClass({LsdContext.class})
+@ConditionalOnBean(OkHttpClient.Builder.class)
+@ConditionalOnProperty(value = "lsd.interceptors.autoconfig.okhttp.enabled", havingValue = "true") //TODO create new property
 @Import({NamingConfig.class, HttpHandlerConfig.class})
 @RequiredArgsConstructor
 public class LsdOkHttpAutoConfiguration {

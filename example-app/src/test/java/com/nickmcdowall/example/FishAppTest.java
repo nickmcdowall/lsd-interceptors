@@ -1,9 +1,7 @@
 package com.nickmcdowall.example;
 
-import com.googlecode.yatspec.junit.SequenceDiagramExtension;
-import com.googlecode.yatspec.junit.WithParticipants;
-import com.googlecode.yatspec.sequence.Participant;
-import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.lsd.LsdContext;
+import lsd.junit5.LsdExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +11,13 @@ import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static com.googlecode.yatspec.sequence.Participants.ACTOR;
-import static com.googlecode.yatspec.sequence.Participants.PARTICIPANT;
+import static com.lsd.ParticipantType.ACTOR;
+import static com.lsd.ParticipantType.PARTICIPANT;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 @ImportAutoConfiguration({FeignAutoConfiguration.class})
@@ -27,14 +26,13 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @Import({
         TestConfig.class
 })
-@ExtendWith(SequenceDiagramExtension.class)
-public class FishAppTest implements WithParticipants {
+@ExtendWith(LsdExtension.class)
+public class FishAppTest {
 
     @Autowired
     private FishClient fishClient;
 
-    @Autowired
-    private TestState testState;
+    private final LsdContext lsdContext = LsdContext.getInstance();
 
     @Test
     void triggerVariousInteractions() {
@@ -65,11 +63,11 @@ public class FishAppTest implements WithParticipants {
         }
     }
 
-    @Override
-    public List<Participant> participants() {
-        return List.of(
-                ACTOR.create("User"),
-                PARTICIPANT.create("FishApp")
-        );
+    @PostConstruct
+    public void participants() {
+        lsdContext.addParticipants(List.of(
+                ACTOR.called("User"),
+                PARTICIPANT.called("FishApp")
+        ));
     }
 }

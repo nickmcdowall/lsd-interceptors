@@ -1,6 +1,6 @@
 package com.nickmcdowall.lsd.http.autoconfigure;
 
-import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.lsd.LsdContext;
 import com.nickmcdowall.lsd.http.common.HttpInteractionHandler;
 import com.nickmcdowall.lsd.http.interceptor.LsdFeignLoggerInterceptor;
 import com.nickmcdowall.lsd.http.naming.DestinationNameMappings;
@@ -8,7 +8,6 @@ import com.nickmcdowall.lsd.http.naming.RegexResolvingNameMapper;
 import com.nickmcdowall.lsd.http.naming.SourceNameMappings;
 import feign.Logger;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -16,18 +15,18 @@ import org.springframework.cloud.openfeign.FeignClientBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
 
 import java.util.List;
 
 /**
  * <p>
- * If a {@link TestState} bean is available it will automatically autoconfig a {@link LsdFeignLoggerInterceptor}
+ * If a {@link com.lsd.LsdContext} class is available it will automatically autoconfig a {@link LsdFeignLoggerInterceptor}
  * </p>
  * <br>
  * <p>
- * It is assumed that if a {@link LsdFeignLoggerInterceptor} bean exists is will be used to invoke downstream endpoints from within the app.
- * Therefore the <em>source</em> name will default to <em>'App'</em> and the <em>destination</em> name will be derived using a
- * {@link RegexResolvingNameMapper} by default.
+ * By default <em>source</em> name defaults to <em>'App'</em> and the <em>destination</em> name will be derived using a
+ * {@link RegexResolvingNameMapper}.
  * </p>
  * <br>
  * <p>
@@ -36,9 +35,9 @@ import java.util.List;
  * </p>
  */
 @Configuration
-@ConditionalOnProperty(name = "yatspec.lsd.interceptors.autoconfig.enabled", havingValue = "true", matchIfMissing = true)
-@ConditionalOnBean(value = {TestState.class})
-@ConditionalOnClass(value = {FeignClientBuilder.class, Logger.Level.class})
+@PropertySource(ignoreResourceNotFound = true, value = "classpath:lsd.properties")
+@ConditionalOnProperty(name = "lsd.interceptors.autoconfig.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnClass(value = {LsdContext.class, FeignClientBuilder.class, Logger.Level.class})
 @Import({NamingConfig.class, HttpHandlerConfig.class})
 @RequiredArgsConstructor
 public class LsdFeignAutoConfiguration {

@@ -27,7 +27,7 @@ import static org.springframework.http.HttpHeaders.EMPTY;
 import static org.springframework.http.HttpStatus.OK;
 
 @ExtendWith(MockitoExtension.class)
-class LsdRestTemplateInterceptorTest {
+public class LsdRestTemplateInterceptorTest {
 
     private final String path = "/price/watch";
     private final URI uri = URI.create(path);

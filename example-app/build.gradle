@@ -31,7 +31,8 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
 
     testImplementation(project(':lsd-interceptors'))
-    testImplementation 'com.github.nickmcdowall:yatspec:2021.1.10'
+    testImplementation 'com.github.nickmcdowall:lsd-core:0.1.14'
+    testImplementation 'com.github.nickmcdowall:lsd-junit5:0.1.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.assertj:assertj-core:3.15.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:3.3.3'
@@ -42,7 +43,6 @@ dependencies {
 }
 
 test {
-    systemProperty('yatspec.output.dir', "$buildDir/reports/lsd")
     useJUnitPlatform()
     testLogging {
         events "passed", "skipped", "failed"

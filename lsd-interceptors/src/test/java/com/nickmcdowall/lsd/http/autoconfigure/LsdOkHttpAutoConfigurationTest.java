@@ -1,10 +1,10 @@
 package com.nickmcdowall.lsd.http.autoconfigure;
 
-import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.lsd.LsdContext;
 import com.nickmcdowall.lsd.http.common.DefaultHttpInteractionHandler;
 import com.nickmcdowall.lsd.http.interceptor.LsdOkHttpInterceptor;
-import com.nickmcdowall.lsd.http.naming.RegexResolvingNameMapper;
 import com.nickmcdowall.lsd.http.naming.AppName;
+import com.nickmcdowall.lsd.http.naming.RegexResolvingNameMapper;
 import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -18,6 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LsdOkHttpAutoConfigurationTest {
 
+    private final LsdContext lsdContext = LsdContext.getInstance();
+
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
                     LsdOkHttpAutoConfiguration.class
@@ -26,7 +28,7 @@ public class LsdOkHttpAutoConfigurationTest {
     @Test
     public void noBeansAutoLoadedWhenRequiredBeansMissing() {
         contextRunner.withUserConfiguration(UserConfigWithoutRequiredBeans.class)
-                .withPropertyValues("yatspec.lsd.interceptors.autoconfig.okhttp.enabled=true")
+                .withPropertyValues("lsd.interceptors.autoconfig.okhttp.enabled=true")
                 .run((context) -> {
                     assertThat(context).doesNotHaveBean("defaultSourceNameMapping");
                     assertThat(context).doesNotHaveBean("defaultDestinationNameMapping");
@@ -38,14 +40,14 @@ public class LsdOkHttpAutoConfigurationTest {
     @Test
     public void addsOkHttpBuilderWhenPropertySetAndRequiredBeansAvailable() {
         contextRunner.withUserConfiguration(UserConfigWithRequiredBeans.class)
-                .withPropertyValues("yatspec.lsd.interceptors.autoconfig.okhttp.enabled=true")
+                .withPropertyValues("lsd.interceptors.autoconfig.okhttp.enabled=true")
                 .run((context) -> {
                     assertThat(context).hasBean("defaultSourceNameMapping");
                     assertThat(context).hasBean("defaultDestinationNameMapping");
                     assertThat(context).hasBean("httpInteractionHandlers");
                     assertThat(context).hasSingleBean(OkHttpClient.Builder.class);
                     assertThat(context.getBean(OkHttpClient.Builder.class).interceptors()).containsExactly(
-                            new LsdOkHttpInterceptor(List.of(new DefaultHttpInteractionHandler(new TestState(), new AppName("App"), new RegexResolvingNameMapper()))));
+                            new LsdOkHttpInterceptor(List.of(new DefaultHttpInteractionHandler(lsdContext, new AppName("App"), new RegexResolvingNameMapper()))));
                 });
     }
 
@@ -65,11 +67,6 @@ public class LsdOkHttpAutoConfigurationTest {
 
     @Configuration
     static class UserConfigWithRequiredBeans {
-        @Bean
-        public TestState testState() {
-            return new TestState();
-        }
-
         @Bean
         public OkHttpClient.Builder httpClient() {
             return new OkHttpClient.Builder();

@@ -1,6 +1,6 @@
 package com.nickmcdowall.lsd.http.autoconfigure;
 
-import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.lsd.LsdContext;
 import com.nickmcdowall.lsd.http.common.DefaultHttpInteractionHandler;
 import com.nickmcdowall.lsd.http.common.HttpInteractionHandler;
 import com.nickmcdowall.lsd.http.naming.DestinationNameMappings;
@@ -13,13 +13,14 @@ import java.util.List;
 
 @RequiredArgsConstructor
 class HttpHandlerConfig {
-    private final TestState testState;
+    private final LsdContext lsdContext = LsdContext.getInstance();
+    
     private final SourceNameMappings defaultSourceNameMapping;
     private final DestinationNameMappings defaultDestinationNameMapping;
 
     @Bean
     @ConditionalOnMissingBean(name = "httpInteractionHandlers")
     public List<HttpInteractionHandler> httpInteractionHandlers() {
-        return List.of(new DefaultHttpInteractionHandler(testState, defaultSourceNameMapping, defaultDestinationNameMapping));
+        return List.of(new DefaultHttpInteractionHandler(lsdContext, defaultSourceNameMapping, defaultDestinationNameMapping));
     }
 }

@@ -1,9 +1,10 @@
 package com.nickmcdowall.lsd.http.common;
 
-import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.lsd.LsdContext;
 import com.nickmcdowall.lsd.http.naming.DestinationNameMappings;
 import com.nickmcdowall.lsd.http.naming.SourceNameMappings;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.util.Map;
@@ -11,11 +12,8 @@ import java.util.Map;
 import static com.nickmcdowall.lsd.http.common.Headers.HeaderKeys.SOURCE_NAME;
 import static com.nickmcdowall.lsd.http.common.Headers.HeaderKeys.TARGET_NAME;
 import static java.util.Collections.emptyMap;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 class DefaultHttpInteractionHandlerTest {
 
@@ -25,15 +23,15 @@ class DefaultHttpInteractionHandlerTest {
     );
     private final SourceNameMappings sourceNameMapping = path -> "sourceName";
     private final DestinationNameMappings destinationNameMapping = path -> "destinationName";
-    private final TestState testState = Mockito.mock(TestState.class);
+    private final LsdContext lsdContext = Mockito.mock(LsdContext.class);
 
-    private final DefaultHttpInteractionHandler handler = new DefaultHttpInteractionHandler(testState, sourceNameMapping, destinationNameMapping);
+    private final DefaultHttpInteractionHandler handler = new DefaultHttpInteractionHandler(lsdContext, sourceNameMapping, destinationNameMapping);
 
     @Test
     void usesTestStateToLogRequest() {
         handler.handleRequest("GET", emptyMap(), "/path", "{\"type\":\"request\"}");
 
-        verify(testState).log("GET /path from sourceName to destinationName",
+        verify(lsdContext).capture("GET /path from sourceName to destinationName",
                 "<p>" +
                         "<p><h4>request path:</h4><sub>/path</sub></p>" +
                         "<p><h4>request headers:</h4><sub></sub></p>" +
@@ -45,7 +43,7 @@ class DefaultHttpInteractionHandlerTest {
     void usesTestStateToLogResponse() {
         handler.handleResponse("200 OK", emptyMap(), "/path", "response body");
 
-        verify(testState).log("200 OK response from destinationName to sourceName",
+        verify(lsdContext).capture("sync 200 OK response from destinationName to sourceName",
                 "<p>" +
                         "<p><h4>request path:</h4><sub>/path</sub></p>" +
                         "<p><h4>request headers:</h4><sub></sub></p>" +
@@ -57,15 +55,15 @@ class DefaultHttpInteractionHandlerTest {
     void headerValuesForSourceAndDestinationArePreferredWhenLoggingRequest() {
         handler.handleRequest("GET", serviceNameHeaders, "/path", "");
 
-        verify(testState).log(argThat(equalTo("GET /path from source to target")), anyString());
+        verify(lsdContext).capture(ArgumentMatchers.eq("GET /path from source to target"), anyString());
     }
 
     @Test
     void headerValuesForSourceAndDestinationArePreferredWhenLoggingResponse() {
         handler.handleResponse("200 OK", serviceNameHeaders, "/path", "response body");
 
-        verify(testState).log(
-                argThat(equalTo("200 OK response from target to source")),
-                argThat(containsString("<pre>response body</pre>")));
+        verify(lsdContext).capture(
+                ArgumentMatchers.eq("sync 200 OK response from target to source"),
+                ArgumentMatchers.contains("<pre>response body</pre>"));
     }
 }

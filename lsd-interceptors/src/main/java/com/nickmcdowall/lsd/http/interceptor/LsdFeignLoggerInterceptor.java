@@ -1,6 +1,5 @@
 package com.nickmcdowall.lsd.http.interceptor;
 
-import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import com.nickmcdowall.lsd.http.common.HttpInteractionHandler;
 import feign.Logger;
 import feign.Request;
@@ -15,9 +14,9 @@ import java.util.Optional;
 import static com.nickmcdowall.lsd.http.common.Headers.singleValueMap;
 
 /**
- * Intercepts Feign {@link Request} and {@link Response} messages to add them to the {@link TestState} bean.
+ * Intercepts Feign {@link Request} and {@link Response} messages to add them to the {@link com.lsd.LsdContext} class.
  * <p>
- * (This allows yatspec-lsd to display them on the sequence diagrams).
+ * (This allows lsd-core to display them on the sequence diagrams).
  */
 public class LsdFeignLoggerInterceptor extends Logger.JavaLogger {
     public static final String EXTRACT_PATH = "https?://.*?(/.*)";

@@ -1,6 +1,7 @@
 package com.nickmcdowall.lsd.http.common;
 
-import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.lsd.LsdContext;
+import com.lsd.events.Markup;
 import com.nickmcdowall.lsd.http.naming.DestinationNameMappings;
 import com.nickmcdowall.lsd.http.naming.SourceNameMappings;
 import lombok.EqualsAndHashCode;
@@ -19,12 +20,12 @@ import static java.util.stream.Collectors.joining;
 @EqualsAndHashCode
 public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
 
-    private final TestState testState;
+    private final LsdContext lsdContext;
     private final SourceNameMappings sourceNameMappings;
     private final DestinationNameMappings destinationNameMappings;
 
-    public DefaultHttpInteractionHandler(TestState testState, SourceNameMappings sourceNameMappings, DestinationNameMappings destinationNameMappings) {
-        this.testState = testState;
+    public DefaultHttpInteractionHandler(LsdContext lsdContext, SourceNameMappings sourceNameMappings, DestinationNameMappings destinationNameMappings) {
+        this.lsdContext = lsdContext;
         this.sourceNameMappings = sourceNameMappings;
         this.destinationNameMappings = destinationNameMappings;
     }
@@ -33,14 +34,16 @@ public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
     public void handleRequest(String method, Map<String, String> requestHeaders, String path, String body) {
         String sourceName = deriveSourceName(requestHeaders, path);
         String destinationName = deriveTargetName(requestHeaders, path);
-        testState.log(requestOf(method, path, sourceName, destinationName), renderHtmlFor(path, requestHeaders, prettyPrint(body)));
+        lsdContext.capture(requestOf(method, path, sourceName, destinationName), renderHtmlFor(path, requestHeaders, prettyPrint(body)));
+        lsdContext.capture(new Markup("activate " + destinationName + "#skyblue"));
     }
 
     @Override
     public void handleResponse(String statusMessage, Map<String, String> requestHeaders, String path, String body) {
         String destinationName = deriveTargetName(requestHeaders, path);
         String sourceName = deriveSourceName(requestHeaders, path);
-        testState.log(responseOf(statusMessage, destinationName, sourceName), renderHtmlFor(path, requestHeaders, prettyPrint(body)));
+        lsdContext.capture(responseOf(statusMessage, destinationName, sourceName), renderHtmlFor(path, requestHeaders, prettyPrint(body)));
+        lsdContext.capture(new Markup("deactivate " + destinationName));
     }
 
     private String renderHtmlFor(String path, Map<String, String> requestHeaders, String prettyBody) {

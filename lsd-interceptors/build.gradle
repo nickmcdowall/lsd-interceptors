@@ -20,16 +20,16 @@ ext {
 
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.12'
-    implementation 'com.github.nickmcdowall:yatspec:2021.1.10'
+    implementation 'com.github.nickmcdowall:lsd-core:0.1.14'
     implementation 'org.springframework:spring-web:5.1.11.RELEASE'
     implementation 'com.squareup.okhttp3:okhttp:3.8.1'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
     testCompileOnly 'org.springframework:spring-web:5.1.11.RELEASE'
     testCompileOnly 'org.projectlombok:lombok:1.18.12'
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-api:$junitJupiter"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-params:$junitJupiter"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiter"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiter"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junitJupiter"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitJupiter"
     testImplementation 'org.assertj:assertj-core:3.15.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:3.3.3'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'

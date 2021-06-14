@@ -1,6 +1,6 @@
 package com.nickmcdowall.lsd.http.autoconfigure;
 
-import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.lsd.LsdContext;
 import com.nickmcdowall.lsd.http.common.HttpInteractionHandler;
 import com.nickmcdowall.lsd.http.interceptor.LsdRestTemplateCustomizer;
 import com.nickmcdowall.lsd.http.interceptor.LsdRestTemplateInterceptor;
@@ -8,7 +8,6 @@ import com.nickmcdowall.lsd.http.naming.DestinationNameMappings;
 import com.nickmcdowall.lsd.http.naming.RegexResolvingNameMapper;
 import com.nickmcdowall.lsd.http.naming.SourceNameMappings;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
@@ -22,7 +21,7 @@ import java.util.List;
 
 /**
  * <p>
- * If a {@link RestTemplate} class and a {@link TestState} bean is available it will automatically autoconfig
+ * If a {@link RestTemplate} class and a {@link com.lsd.LsdContext} class is available it will automatically autoconfig
  * a {@link LsdRestTemplateInterceptor}
  * </p>
  * <br>
@@ -38,9 +37,8 @@ import java.util.List;
  * </p>
  */
 @Configuration
-@ConditionalOnProperty(name = "yatspec.lsd.interceptors.autoconfig.enabled", havingValue = "true", matchIfMissing = true)
-@ConditionalOnBean(value = {TestState.class})
-@ConditionalOnClass(value = {RestTemplate.class})
+@ConditionalOnProperty(name = "lsd.interceptors.autoconfig.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnClass(value = {RestTemplate.class, LsdContext.class})
 @Import({NamingConfig.class, HttpHandlerConfig.class})
 @RequiredArgsConstructor
 public class LsdRestTemplateAutoConfiguration {
