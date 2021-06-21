@@ -8,7 +8,7 @@ repositories {
     mavenCentral()
 }
 
-group = 'com.github.nickmcdowall'
+group = 'io.github.lsd-consulting'
 sourceCompatibility = '11'
 project.version = scmVersion.version
 
