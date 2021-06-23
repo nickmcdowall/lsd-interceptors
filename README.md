@@ -3,7 +3,7 @@
 [![Build](https://github.com/lsd-consulting/lsd-interceptors/actions/workflows/macos-build.yml/badge.svg)](https://github.com/lsd-consulting/lsd-interceptors/actions/workflows/macos-build.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.lsd-consulting/lsd-interceptors.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.lsd-consulting%22%20AND%20a:%22lsd-interceptors%22)
 
-A library containing various automated message/event interceptors that can be used along with the [lsd-core](https://github.com/Living-Sequence-Diagrams/lsd-core) library
+A library containing various automated message/event interceptors that can be used along with the [lsd-core](https://github.com/lsd-consulting/lsd-core) library
 to generate reports containing sequence diagrams of the captured events. e.g.
 
 ![screenshot of sequence diagram](images/sequence_screenshot.png)
