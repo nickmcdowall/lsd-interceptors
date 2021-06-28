@@ -1,8 +1,8 @@
-package com.nickmcdowall.example;
+package io.lsdconsulting.intercceptors.example;
 
-import com.nickmcdowall.example.entity.Fish;
-import com.nickmcdowall.example.repository.FishRepositoryJpa;
-import com.nickmcdowall.example.repository.FishRepositoryEntityManager;
+import io.lsdconsulting.intercceptors.example.entity.Fish;
+import io.lsdconsulting.intercceptors.example.repository.FishRepositoryJpa;
+import io.lsdconsulting.intercceptors.example.repository.FishRepositoryEntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

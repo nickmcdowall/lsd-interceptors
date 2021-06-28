@@ -1,4 +1,4 @@
-package com.nickmcdowall.example;
+package io.lsdconsulting.intercceptors.example;
 
 import feign.RequestInterceptor;
 import org.springframework.cloud.openfeign.FeignClient;

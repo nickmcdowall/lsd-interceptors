@@ -1,4 +1,4 @@
-package com.nickmcdowall.example;
+package io.lsdconsulting.intercceptors.example;
 
 import com.lsd.LsdContext;
 import lsd.junit5.LsdExtension;

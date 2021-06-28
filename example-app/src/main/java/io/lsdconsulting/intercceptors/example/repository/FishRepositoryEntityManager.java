@@ -1,6 +1,6 @@
-package com.nickmcdowall.example.repository;
+package io.lsdconsulting.intercceptors.example.repository;
 
-import com.nickmcdowall.example.entity.Fish;
+import io.lsdconsulting.intercceptors.example.entity.Fish;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

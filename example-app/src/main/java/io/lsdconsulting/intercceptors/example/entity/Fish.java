@@ -1,4 +1,4 @@
-package com.nickmcdowall.example.entity;
+package io.lsdconsulting.intercceptors.example.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

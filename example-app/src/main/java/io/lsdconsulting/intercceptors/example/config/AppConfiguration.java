@@ -1,4 +1,4 @@
-package com.nickmcdowall.example.config;
+package io.lsdconsulting.intercceptors.example.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.codec.Decoder;

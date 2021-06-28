@@ -1,4 +1,4 @@
-package com.nickmcdowall.example;
+package io.lsdconsulting.intercceptors.example;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

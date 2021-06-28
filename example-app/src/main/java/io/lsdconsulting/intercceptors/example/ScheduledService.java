@@ -1,6 +1,6 @@
-package com.nickmcdowall.example;
+package io.lsdconsulting.intercceptors.example;
 
-import com.nickmcdowall.example.repository.FishRepositoryJpa;
+import io.lsdconsulting.intercceptors.example.repository.FishRepositoryJpa;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
