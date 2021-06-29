@@ -1,10 +1,11 @@
 package io.lsdconsulting.interceptors.http.autoconfigure;
 
 import com.lsd.LsdContext;
-import io.lsdconsulting.interceptors.http.common.DefaultHttpInteractionHandler;
+import io.lsdconsulting.interceptors.common.AppName;
 import io.lsdconsulting.interceptors.http.LsdRestTemplateCustomizer;
 import io.lsdconsulting.interceptors.http.LsdRestTemplateInterceptor;
-import io.lsdconsulting.interceptors.http.naming.AppName;
+import io.lsdconsulting.interceptors.http.common.DefaultHttpInteractionHandler;
+import io.lsdconsulting.interceptors.http.naming.AlwaysAppName;
 import io.lsdconsulting.interceptors.http.naming.RegexResolvingNameMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -22,6 +23,7 @@ class LsdRestTemplateAutoConfigurationTest {
             .withConfiguration(AutoConfigurations.of(
                     LsdRestTemplateAutoConfiguration.class
             ));
+    private AlwaysAppName alwaysAppName = new AlwaysAppName(new AppName("App"));
 
     @Test
     public void noInterceptorAddedWhenNoTestStateBeanExists() {
@@ -40,7 +42,7 @@ class LsdRestTemplateAutoConfigurationTest {
             assertThat(context).hasBean("httpInteractionHandlers");
             assertThat(context).getBean(LsdRestTemplateCustomizer.class).isEqualTo(
                     new LsdRestTemplateCustomizer(new LsdRestTemplateInterceptor(
-                            List.of(new DefaultHttpInteractionHandler(LsdContext.getInstance(), new AppName("App"), new RegexResolvingNameMapper())))));
+                            List.of(new DefaultHttpInteractionHandler(LsdContext.getInstance(), alwaysAppName, new RegexResolvingNameMapper())))));
 
         });
     }

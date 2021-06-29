@@ -1,5 +1,6 @@
 package io.lsdconsulting.interceptors.http.naming;
 
+import io.lsdconsulting.interceptors.common.AppName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -8,8 +9,8 @@ class AppNameTest {
 
     @Test
     void removesSpecialCharacters() {
-        AppName appName = new AppName("App/Service (Dev)");
+        var alwaysAppName = new AlwaysAppName(new AppName("App/Service (Dev)"));
 
-        assertThat(appName.mapForPath("/")).isEqualTo("App_Service_Dev_");
+        assertThat(alwaysAppName.mapForPath("/")).isEqualTo("AppServiceDev");
     }
 }

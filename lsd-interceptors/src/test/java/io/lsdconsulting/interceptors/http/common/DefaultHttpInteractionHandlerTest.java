@@ -29,7 +29,7 @@ class DefaultHttpInteractionHandlerTest {
     void usesTestStateToLogRequest() {
         handler.handleRequest("GET", emptyMap(), "/path", "{\"type\":\"request\"}");
 
-        verify(lsdContext).capture("GET /path from sourceName to destinationName",
+        verify(lsdContext).capture("GET /path from SourceName to DestinationName",
                 "<p>" +
                         "<p><h4>request path:</h4><sub>/path</sub></p>" +
                         "<p><h4>request headers:</h4><sub></sub></p>" +
@@ -41,7 +41,7 @@ class DefaultHttpInteractionHandlerTest {
     void usesTestStateToLogResponse() {
         handler.handleResponse("200 OK", emptyMap(), "/path", "response body");
 
-        verify(lsdContext).capture("sync 200 OK response from destinationName to sourceName",
+        verify(lsdContext).capture("sync 200 OK response from DestinationName to SourceName",
                 "<p>" +
                         "<p><h4>request path:</h4><sub>/path</sub></p>" +
                         "<p><h4>request headers:</h4><sub></sub></p>" +
@@ -53,7 +53,7 @@ class DefaultHttpInteractionHandlerTest {
     void headerValuesForSourceAndDestinationArePreferredWhenLoggingRequest() {
         handler.handleRequest("GET", serviceNameHeaders, "/path", "");
 
-        verify(lsdContext).capture(ArgumentMatchers.eq("GET /path from source to target"), anyString());
+        verify(lsdContext).capture(ArgumentMatchers.eq("GET /path from Source to Target"), anyString());
     }
 
     @Test
@@ -61,7 +61,7 @@ class DefaultHttpInteractionHandlerTest {
         handler.handleResponse("200 OK", serviceNameHeaders, "/path", "response body");
 
         verify(lsdContext).capture(
-                ArgumentMatchers.eq("sync 200 OK response from target to source"),
+                ArgumentMatchers.eq("sync 200 OK response from Target to Source"),
                 ArgumentMatchers.contains("<pre>response body</pre>"));
     }
 }

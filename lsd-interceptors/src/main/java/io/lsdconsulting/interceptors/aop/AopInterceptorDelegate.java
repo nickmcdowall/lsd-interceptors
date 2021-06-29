@@ -1,10 +1,11 @@
 package io.lsdconsulting.interceptors.aop;
 
 import com.lsd.LsdContext;
+import com.lsd.diagram.ValidComponentName;
 import com.lsd.events.Markup;
 import com.lsd.events.ShortMessageInbound;
+import io.lsdconsulting.interceptors.common.AppName;
 import io.lsdconsulting.interceptors.http.common.PrettyPrinter;
-import io.lsdconsulting.interceptors.http.naming.AppName;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -37,7 +38,7 @@ public class AopInterceptorDelegate {
         var body = renderHtmlForMethodCall(args, resultValue);
         var signature = joinPoint.getSignature().toShortString();
 
-        lsdContext.capture(icon + " " + signature + " from " + sourceName + " to " + destinationName, body);
+        lsdContext.capture(icon + " " + signature + " from " + ValidComponentName.of(sourceName) + " to " + ValidComponentName.of(destinationName), body);
     }
 
     public void captureInternalException(JoinPoint joinPoint, Throwable throwable, String icon) {
@@ -47,7 +48,7 @@ public class AopInterceptorDelegate {
     public void captureException(JoinPoint joinPoint, Throwable throwable, String sourceName, String destinationName, String icon) {
         var body = renderHtmlForException(joinPoint.getSignature().toShortString(), joinPoint.getArgs(), throwable);
         var exceptionName = throwable.getClass().getSimpleName();
-        lsdContext.capture(icon + " " + exceptionName + " response from " + sourceName + " to " + destinationName + " [#red]", body);
+        lsdContext.capture(icon + " " + exceptionName + " response from " + ValidComponentName.of(sourceName) + " to " +  ValidComponentName.of(destinationName) + " [#red]", body);
     }
 
     public void captureScheduledStart(ProceedingJoinPoint joinPoint, ZonedDateTime startTime) {

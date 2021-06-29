@@ -1,10 +1,12 @@
 package io.lsdconsulting.interceptors.http.common;
 
 import com.lsd.LsdContext;
+import com.lsd.diagram.ValidComponentName;
 import com.lsd.events.Markup;
 import io.lsdconsulting.interceptors.http.naming.DestinationNameMappings;
 import io.lsdconsulting.interceptors.http.naming.SourceNameMappings;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.Map;
 
@@ -15,6 +17,7 @@ import static j2html.TagCreator.*;
 import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
 
+@ToString
 @EqualsAndHashCode
 public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
 
@@ -30,42 +33,41 @@ public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
 
     @Override
     public void handleRequest(String method, Map<String, String> requestHeaders, String path, String body) {
-        String sourceName = deriveSourceName(requestHeaders, path);
-        String destinationName = deriveTargetName(requestHeaders, path);
+        String sourceName = ValidComponentName.of(deriveSourceName(requestHeaders, path));
+        String destinationName = ValidComponentName.of(deriveTargetName(requestHeaders, path));
         lsdContext.capture(requestOf(method, path, sourceName, destinationName), renderHtmlFor(path, requestHeaders, prettyPrint(body)));
         lsdContext.capture(new Markup("activate " + destinationName + "#skyblue"));
     }
 
     @Override
     public void handleResponse(String statusMessage, Map<String, String> requestHeaders, String path, String body) {
-        String destinationName = deriveTargetName(requestHeaders, path);
-        String sourceName = deriveSourceName(requestHeaders, path);
+        String destinationName = ValidComponentName.of(deriveTargetName(requestHeaders, path));
+        String sourceName = ValidComponentName.of(deriveSourceName(requestHeaders, path));
         lsdContext.capture(responseOf(statusMessage, destinationName, sourceName), renderHtmlFor(path, requestHeaders, prettyPrint(body)));
         lsdContext.capture(new Markup("deactivate " + destinationName));
     }
 
     private String renderHtmlFor(String path, Map<String, String> requestHeaders, String prettyBody) {
-        var popupValue =
+        return p(
                 p(
-                        p(
-                                h4("request path:"),
-                                sub(path)
-                        ),
-                        p(
-                                h4("request headers:"),
-                                sub(prettyPrintHeaders(requestHeaders))
-                        ),
-                        p(
-                                h4("body:"),
-                                pre(prettyBody)
-                        )
-                ).render();
-        return popupValue;
+                        h4("request path:"),
+                        sub(path)
+                ),
+                p(
+                        h4("request headers:"),
+                        sub(prettyPrintHeaders(requestHeaders))
+                ),
+                p(
+                        h4("body:"),
+                        pre(prettyBody)
+                )
+        ).render();
     }
 
     private String prettyPrintHeaders(Map<String, String> requestHeaders) {
         return requestHeaders.entrySet().stream().map(entry ->
-                entry.getKey() + ": " + entry.getValue()).collect(joining(lineSeparator()));
+                entry.getKey() + ": " + entry.getValue())
+                .collect(joining(lineSeparator()));
     }
 
     private String deriveTargetName(Map<String, String> headers, String path) {

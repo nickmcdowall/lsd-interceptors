@@ -2,7 +2,7 @@ package io.lsdconsulting.interceptors.aop.autoconfigure;
 
 import com.lsd.LsdContext;
 import io.lsdconsulting.interceptors.aop.SpringDataRepositoryInterceptor;
-import io.lsdconsulting.interceptors.http.naming.AppName;
+import io.lsdconsulting.interceptors.common.AppName;
 import io.lsdconsulting.interceptors.aop.AopInterceptorDelegate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,8 +1,9 @@
 package io.lsdconsulting.interceptors.http.autoconfigure;
 
+import io.lsdconsulting.interceptors.common.AppName;
+import io.lsdconsulting.interceptors.http.naming.AlwaysAppName;
 import io.lsdconsulting.interceptors.http.naming.DestinationNameMappings;
 import io.lsdconsulting.interceptors.http.naming.RegexResolvingNameMapper;
-import io.lsdconsulting.interceptors.http.naming.AppName;
 import io.lsdconsulting.interceptors.http.naming.SourceNameMappings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -15,7 +16,7 @@ class NamingConfig {
     @Bean
     @ConditionalOnMissingBean(name = "defaultSourceNameMapping")
     public SourceNameMappings defaultSourceNameMapping() {
-        return new AppName(appName);
+        return new AlwaysAppName(new AppName(appName));
     }
 
     @Bean

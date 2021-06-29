@@ -1,9 +1,10 @@
 package io.lsdconsulting.interceptors.http.autoconfigure;
 
 import com.lsd.LsdContext;
-import io.lsdconsulting.interceptors.http.common.DefaultHttpInteractionHandler;
+import io.lsdconsulting.interceptors.common.AppName;
 import io.lsdconsulting.interceptors.http.LsdOkHttpInterceptor;
-import io.lsdconsulting.interceptors.http.naming.AppName;
+import io.lsdconsulting.interceptors.http.common.DefaultHttpInteractionHandler;
+import io.lsdconsulting.interceptors.http.naming.AlwaysAppName;
 import io.lsdconsulting.interceptors.http.naming.RegexResolvingNameMapper;
 import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LsdOkHttpAutoConfigurationTest {
 
     private final LsdContext lsdContext = LsdContext.getInstance();
+    private final AlwaysAppName alwaysAppName = new AlwaysAppName(new AppName("App"));
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
@@ -47,7 +49,7 @@ public class LsdOkHttpAutoConfigurationTest {
                     assertThat(context).hasBean("httpInteractionHandlers");
                     assertThat(context).hasSingleBean(OkHttpClient.Builder.class);
                     assertThat(context.getBean(OkHttpClient.Builder.class).interceptors()).containsExactly(
-                            new LsdOkHttpInterceptor(List.of(new DefaultHttpInteractionHandler(lsdContext, new AppName("App"), new RegexResolvingNameMapper()))));
+                            new LsdOkHttpInterceptor(List.of(new DefaultHttpInteractionHandler(lsdContext, alwaysAppName, new RegexResolvingNameMapper()))));
                 });
     }
 

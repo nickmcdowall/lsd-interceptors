@@ -1,7 +1,7 @@
 package io.lsdconsulting.interceptors.http;
 
-import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
 import io.lsdconsulting.interceptors.http.common.Headers;
+import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
@@ -20,7 +20,7 @@ public class LsdOkHttpInterceptor implements Interceptor {
 
     public static final int RESPONSE_MAXY_BYTES = 10000;
 
-    private final List<HttpInteractionHandler> handlers;
+    List<HttpInteractionHandler> handlers;
 
     @Override
     public Response intercept(Chain chain) throws IOException {
@@ -41,7 +41,7 @@ public class LsdOkHttpInterceptor implements Interceptor {
     }
 
     /*
-     * Prevent closing the response body stream by peeking. The max bytes is to preven OOM for ridiculous size bodies
+     * Prevent closing the response body stream by peeking. The max bytes is to prevent OOM for ridiculous size bodies
      */
     @SneakyThrows
     private String copyBodyString(Response response) {
