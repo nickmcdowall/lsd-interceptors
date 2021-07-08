@@ -16,6 +16,7 @@ import static io.lsdconsulting.interceptors.http.common.PrettyPrinter.prettyPrin
 import static j2html.TagCreator.*;
 import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @ToString
 @EqualsAndHashCode
@@ -50,16 +51,15 @@ public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
     private String renderHtmlFor(String path, Map<String, String> requestHeaders, String prettyBody) {
         return p(
                 p(
-                        h4("request path:"),
-                        sub(path)
+                        h4("Full Path"),
+                        span(path)
                 ),
                 p(
-                        h4("request headers:"),
-                        sub(prettyPrintHeaders(requestHeaders))
-                ),
-                p(
-                        h4("body:"),
-                        pre(prettyBody)
+                        h4("Request Headers"),
+                        code(prettyPrintHeaders(requestHeaders))
+                ), isEmpty(prettyBody)
+                        ? p()
+                        : p(h4("Body"), code(prettyBody)
                 )
         ).render();
     }

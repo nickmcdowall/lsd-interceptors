@@ -31,9 +31,9 @@ class DefaultHttpInteractionHandlerTest {
 
         verify(lsdContext).capture("GET /path from SourceName to DestinationName",
                 "<p>" +
-                        "<p><h4>request path:</h4><sub>/path</sub></p>" +
-                        "<p><h4>request headers:</h4><sub></sub></p>" +
-                        "<p><h4>body:</h4><pre>{\n  &quot;type&quot;: &quot;request&quot;\n}</pre></p>" +
+                        "<p><h4>Full Path</h4><span>/path</span></p>" +
+                        "<p><h4>Request Headers</h4><code></code></p>" +
+                        "<p><h4>Body</h4><code>{\n  &quot;type&quot;: &quot;request&quot;\n}</code></p>" +
                         "</p>");
     }
 
@@ -43,9 +43,9 @@ class DefaultHttpInteractionHandlerTest {
 
         verify(lsdContext).capture("sync 200 OK response from DestinationName to SourceName",
                 "<p>" +
-                        "<p><h4>request path:</h4><sub>/path</sub></p>" +
-                        "<p><h4>request headers:</h4><sub></sub></p>" +
-                        "<p><h4>body:</h4><pre>response body</pre></p>" +
+                        "<p><h4>Full Path</h4><span>/path</span></p>" +
+                        "<p><h4>Request Headers</h4><code></code></p>" +
+                        "<p><h4>Body</h4><code>response body</code></p>" +
                         "</p>");
     }
 
@@ -62,6 +62,6 @@ class DefaultHttpInteractionHandlerTest {
 
         verify(lsdContext).capture(
                 ArgumentMatchers.eq("sync 200 OK response from Target to Source"),
-                ArgumentMatchers.contains("<pre>response body</pre>"));
+                ArgumentMatchers.contains("<code>response body</code>"));
     }
 }

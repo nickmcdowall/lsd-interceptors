@@ -60,11 +60,11 @@ public class AopInterceptorDelegate {
                 .data(p(
                         p(
                                 h4("Scheduled"),
-                                sub(joinPoint.getSignature().toShortString())
+                                code(joinPoint.getSignature().toShortString())
                         ),
                         p(
                                 h4("Timestamp"),
-                                sub(startTime.format(ISO_DATE_TIME))
+                                code(startTime.format(ISO_DATE_TIME))
                         )).render())
                 .build());
         lsdContext.capture(new Markup("activate " + appName.getValue() + "#skyblue"));
@@ -80,11 +80,11 @@ public class AopInterceptorDelegate {
                         p(
                                 p(
                                         h4("Scheduler completed"),
-                                        sub(joinPoint.getSignature().toShortString())
+                                        code(joinPoint.getSignature().toShortString())
                                 ),
                                 p(
                                         h4("Duration"),
-                                        sub(delay)
+                                        span(delay)
                                 )).render())
                 .arrowType(DOTTED_THIN)
                 .build());
@@ -101,15 +101,15 @@ public class AopInterceptorDelegate {
                 .data(p(
                         p(
                                 h4("Scheduler Error"),
-                                sub(joinPoint.getSignature().toShortString())
+                                code(joinPoint.getSignature().toShortString())
                         ),
                         p(
                                 h4("Exception"),
-                                sub(e.toString())
+                                code(e.toString())
                         ),
                         p(
                                 h4("Duration"),
-                                sub(MILLIS.between(startTime, endTime) + "ms")
+                                span(MILLIS.between(startTime, endTime) + "ms")
                         )).render())
                 .build());
     }
@@ -117,12 +117,12 @@ public class AopInterceptorDelegate {
     private String renderHtmlForMethodCall(Object[] args, Object response) {
         return p(
                 p(
-                        h4("Arguments:"),
-                        sub(prettyPrintArgs(args))
+                        h4("Arguments"),
+                        code(prettyPrintArgs(args))
                 ),
                 p(
-                        h4("Response:"),
-                        pre(ofNullable(response)
+                        h4("Response"),
+                        code(ofNullable(response)
                                 .map(r -> prettyPrint(r.toString()))
                                 .orElse("")
                         )
@@ -133,16 +133,16 @@ public class AopInterceptorDelegate {
     private String renderHtmlForException(String signature, Object[] args, Throwable throwable) {
         return p(
                 p(
-                        h4("Invoked:"),
-                        sub(signature)
+                        h4("Invoked"),
+                        code(signature)
                 ),
                 p(
-                        h4("Arguments:"),
-                        sub(prettyPrintArgs(args))
+                        h4("Arguments"),
+                        code(prettyPrintArgs(args))
                 ),
                 p(
-                        h4("Exception:"),
-                        pre(throwable.toString())
+                        h4("Exception"),
+                        code(throwable.toString())
                 )
         ).render();
     }
