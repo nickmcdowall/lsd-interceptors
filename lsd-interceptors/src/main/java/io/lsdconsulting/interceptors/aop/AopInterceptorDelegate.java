@@ -5,16 +5,15 @@ import com.lsd.diagram.ValidComponentName;
 import com.lsd.events.Markup;
 import com.lsd.events.ShortMessageInbound;
 import io.lsdconsulting.interceptors.common.AppName;
-import io.lsdconsulting.interceptors.http.common.PrettyPrinter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lsd.format.Formatter;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 import java.time.ZonedDateTime;
 
 import static com.lsd.events.ArrowType.DOTTED_THIN;
-import static io.lsdconsulting.interceptors.http.common.PrettyPrinter.prettyPrint;
 import static j2html.TagCreator.*;
 import static java.lang.System.lineSeparator;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
@@ -22,6 +21,7 @@ import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
+import static lsd.format.Formatter.indent;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -123,7 +123,7 @@ public class AopInterceptorDelegate {
                 p(
                         h4("Response"),
                         code(ofNullable(response)
-                                .map(r -> prettyPrint(r.toString()))
+                                .map(r -> indent(r.toString()))
                                 .orElse("")
                         )
                 )
@@ -150,7 +150,7 @@ public class AopInterceptorDelegate {
     private String prettyPrintArgs(Object[] args) {
         return stream(args)
                 .map(Object::toString)
-                .map(PrettyPrinter::prettyPrint)
+                .map(Formatter::indent)
                 .collect(joining(lineSeparator()));
     }
 }
