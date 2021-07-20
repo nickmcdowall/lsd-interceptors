@@ -92,7 +92,7 @@ public class YourClassLsdInterceptor {
 }
 ```
 
-(Additional interceptors and auto configuration will be added over time).
+(Additional interceptors and auto-configuration will be added over time).
 
 ### Naming
 
