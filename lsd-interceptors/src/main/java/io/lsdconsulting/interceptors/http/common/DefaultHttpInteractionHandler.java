@@ -15,7 +15,7 @@ import static io.lsdconsulting.interceptors.http.common.HttpInteractionMessageTe
 import static j2html.TagCreator.*;
 import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
-import static lsd.format.Formatter.indent;
+import static lsd.format.PrettyPrinter.prettyPrint;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @ToString
@@ -36,7 +36,7 @@ public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
     public void handleRequest(String method, Map<String, String> requestHeaders, String path, String body) {
         String sourceName = ValidComponentName.of(deriveSourceName(requestHeaders, path));
         String destinationName = ValidComponentName.of(deriveTargetName(requestHeaders, path));
-        lsdContext.capture(requestOf(method, path, sourceName, destinationName), renderHtmlFor(path, requestHeaders, indent(body)));
+        lsdContext.capture(requestOf(method, path, sourceName, destinationName), renderHtmlFor(path, requestHeaders, prettyPrint(body)));
         lsdContext.capture(new Markup("activate " + destinationName + "#skyblue"));
     }
 
@@ -44,7 +44,7 @@ public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
     public void handleResponse(String statusMessage, Map<String, String> requestHeaders, String path, String body) {
         String destinationName = ValidComponentName.of(deriveTargetName(requestHeaders, path));
         String sourceName = ValidComponentName.of(deriveSourceName(requestHeaders, path));
-        lsdContext.capture(responseOf(statusMessage, destinationName, sourceName), renderHtmlFor(path, requestHeaders, indent(body)));
+        lsdContext.capture(responseOf(statusMessage, destinationName, sourceName), renderHtmlFor(path, requestHeaders, prettyPrint(body)));
         lsdContext.capture(new Markup("deactivate " + destinationName));
     }
 

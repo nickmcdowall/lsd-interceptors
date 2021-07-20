@@ -7,7 +7,7 @@ import com.lsd.events.ShortMessageInbound;
 import io.lsdconsulting.interceptors.common.AppName;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lsd.format.Formatter;
+import lsd.format.PrettyPrinter;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 
@@ -123,7 +123,7 @@ public class AopInterceptorDelegate {
                 p(
                         h4("Response"),
                         code(ofNullable(response)
-                                .map(r -> indent(r.toString()))
+                                .map(PrettyPrinter::prettyPrintJson)
                                 .orElse("")
                         )
                 )
@@ -149,8 +149,7 @@ public class AopInterceptorDelegate {
 
     private String prettyPrintArgs(Object[] args) {
         return stream(args)
-                .map(Object::toString)
-                .map(Formatter::indent)
+                .map(PrettyPrinter::prettyPrintJson)
                 .collect(joining(lineSeparator()));
     }
 }
