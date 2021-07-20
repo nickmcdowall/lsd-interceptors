@@ -21,7 +21,6 @@ import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
-import static lsd.format.Formatter.indent;
 
 @Slf4j
 @RequiredArgsConstructor
