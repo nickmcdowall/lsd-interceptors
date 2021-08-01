@@ -14,6 +14,7 @@ import static io.lsdconsulting.interceptors.http.common.HttpInteractionMessageTe
 import static io.lsdconsulting.interceptors.http.common.HttpInteractionMessageTemplates.responseOf;
 import static j2html.TagCreator.*;
 import static java.lang.System.lineSeparator;
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.joining;
 import static lsd.format.PrettyPrinter.prettyPrint;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
