@@ -1,10 +1,9 @@
 package io.lsdconsulting.interceptors.http;
 
-import io.lsdconsulting.interceptors.http.LsdFeignLoggerInterceptor;
-import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
+import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -70,7 +69,7 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
                 .build(), 1);
 
         handlers.forEach(handler -> {
-            verify(handler).handleResponse("200 OK", emptyMap(), "/app-endpoint/something", "response body");
+            verify(handler).handleResponse("200 OK", emptyMap(), emptyMap(), "/app-endpoint/something", "response body");
         });
     }
 
@@ -83,7 +82,7 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
                 .build(), 1);
 
         handlers.forEach(handler -> {
-            verify(handler).handleResponse("200 OK", emptyMap(), "/app-endpoint/something", "response body");
+            verify(handler).handleResponse("200 OK", emptyMap(), emptyMap(), "/app-endpoint/something", "response body");
         });
     }
 
@@ -96,7 +95,7 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
                 .build(), 1);
 
         handlers.forEach(handler -> {
-            verify(handler).handleResponse("<unresolved status:111>", emptyMap(), "/app-endpoint/something", "response body");
+            verify(handler).handleResponse("<unresolved status:111>", emptyMap(), emptyMap(), "/app-endpoint/something", "response body");
         });
     }
 

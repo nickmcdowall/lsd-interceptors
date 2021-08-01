@@ -36,28 +36,27 @@ public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
     public void handleRequest(String method, Map<String, String> requestHeaders, String path, String body) {
         String sourceName = ValidComponentName.of(deriveSourceName(requestHeaders, path));
         String destinationName = ValidComponentName.of(deriveTargetName(requestHeaders, path));
-        lsdContext.capture(requestOf(method, path, sourceName, destinationName), renderHtmlFor(path, requestHeaders, prettyPrint(body)));
+        lsdContext.capture(requestOf(method, path, sourceName, destinationName), renderHtmlFor(path, requestHeaders, null, prettyPrint(body)));
         lsdContext.capture(new Markup("activate " + destinationName + "#skyblue"));
     }
 
     @Override
-    public void handleResponse(String statusMessage, Map<String, String> requestHeaders, String path, String body) {
+    public void handleResponse(String statusMessage, Map<String, String> requestHeaders, Map<String, String> responseHeaders, String path, String body) {
         String destinationName = ValidComponentName.of(deriveTargetName(requestHeaders, path));
         String sourceName = ValidComponentName.of(deriveSourceName(requestHeaders, path));
-        lsdContext.capture(responseOf(statusMessage, destinationName, sourceName), renderHtmlFor(path, requestHeaders, prettyPrint(body)));
+        lsdContext.capture(responseOf(statusMessage, destinationName, sourceName), renderHtmlFor(path, requestHeaders, responseHeaders, prettyPrint(body)));
         lsdContext.capture(new Markup("deactivate " + destinationName));
     }
 
-    private String renderHtmlFor(String path, Map<String, String> requestHeaders, String prettyBody) {
+    private String renderHtmlFor(String path, Map<String, String> requestHeaders, Map<String, String> responseHeaders, String prettyBody) {
         return p(
                 p(
                         h4("Full Path"),
                         span(path)
-                ),
-                p(
-                        h4("Request Headers"),
-                        code(prettyPrintHeaders(requestHeaders))
-                ), isEmpty(prettyBody)
+                ), isNull(responseHeaders)
+                        ? p(h4("Request Headers"), code(prettyPrintHeaders(requestHeaders)))
+                        : p(h4("Response Headers"), code(prettyPrintHeaders(responseHeaders)))
+                , isEmpty(prettyBody)
                         ? p()
                         : p(h4("Body"), code(prettyBody)
                 )
@@ -66,7 +65,7 @@ public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
 
     private String prettyPrintHeaders(Map<String, String> requestHeaders) {
         return requestHeaders.entrySet().stream().map(entry ->
-                entry.getKey() + ": " + entry.getValue())
+                        entry.getKey() + ": " + entry.getValue())
                 .collect(joining(lineSeparator()));
     }
 

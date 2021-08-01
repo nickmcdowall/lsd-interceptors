@@ -1,11 +1,11 @@
 package io.lsdconsulting.interceptors.http;
 
-import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
 import feign.Logger;
 import feign.Request;
 import feign.Response;
 import feign.Util;
 import io.lsdconsulting.interceptors.http.common.Headers;
+import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
@@ -53,10 +53,11 @@ public class LsdFeignLoggerInterceptor extends Logger.JavaLogger {
 
     private void captureResponseInteraction(Response response, String body) {
         String path = derivePath(response.request().url());
-        var headers = Headers.singleValueMap(response.request().headers());
+        var requestHeaders = Headers.singleValueMap(response.request().headers());
+        var responseHeaders = Headers.singleValueMap(response.headers());
 
         handlers.forEach(handler ->
-                handler.handleResponse(deriveStatus(response.status()), headers, path, body));
+                handler.handleResponse(deriveStatus(response.status()), requestHeaders, responseHeaders, path, body));
     }
 
     private String deriveStatus(int code) {

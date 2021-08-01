@@ -39,12 +39,12 @@ class DefaultHttpInteractionHandlerTest {
 
     @Test
     void usesTestStateToLogResponse() {
-        handler.handleResponse("200 OK", emptyMap(), "/path", "response body");
+        handler.handleResponse("200 OK", emptyMap(), emptyMap(), "/path", "response body");
 
         verify(lsdContext).capture("sync 200 OK response from DestinationName to SourceName",
                 "<p>" +
                         "<p><h4>Full Path</h4><span>/path</span></p>" +
-                        "<p><h4>Request Headers</h4><code></code></p>" +
+                        "<p><h4>Response Headers</h4><code></code></p>" +
                         "<p><h4>Body</h4><code>response body</code></p>" +
                         "</p>");
     }
@@ -58,7 +58,7 @@ class DefaultHttpInteractionHandlerTest {
 
     @Test
     void headerValuesForSourceAndDestinationArePreferredWhenLoggingResponse() {
-        handler.handleResponse("200 OK", serviceNameHeaders, "/path", "response body");
+        handler.handleResponse("200 OK", serviceNameHeaders, emptyMap(), "/path", "response body");
 
         verify(lsdContext).capture(
                 ArgumentMatchers.eq("sync 200 OK response from Target to Source"),

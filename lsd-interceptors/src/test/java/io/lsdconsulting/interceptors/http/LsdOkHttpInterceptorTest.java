@@ -1,6 +1,5 @@
 package io.lsdconsulting.interceptors.http;
 
-import io.lsdconsulting.interceptors.http.LsdOkHttpInterceptor;
 import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
 import okhttp3.*;
 import okio.Buffer;
@@ -49,7 +48,7 @@ public class LsdOkHttpInterceptorTest {
         okHttpInterceptor.intercept(chain);
 
         verify(handler).handleRequest("PUT", emptyMap(), "/user", requestBodyString);
-        verify(handler).handleResponse("200 OK", emptyMap(), "/user", responseBodyString);
+        verify(handler).handleResponse("200 OK", emptyMap(), emptyMap(), "/user", responseBodyString);
     }
 
     @Test

@@ -1,7 +1,7 @@
 package io.lsdconsulting.interceptors.http;
 
-import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
 import io.lsdconsulting.interceptors.http.StubHttpRequest.StubHttpRequestBuilder;
+import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,7 +80,7 @@ public class LsdRestTemplateInterceptorTest {
     void logResponseInteraction() throws IOException {
         interceptor.intercept(stubHttpRequest, requestBodyBytes, execution);
 
-        verify(handler).handleResponse("200 OK", emptyMap(), path, responseBodyString);
+        verify(handler).handleResponse("200 OK", emptyMap(), emptyMap(), path, responseBodyString);
     }
 
     @Test
@@ -89,7 +90,7 @@ public class LsdRestTemplateInterceptorTest {
         interceptor.intercept(request, requestBodyBytes, execution);
 
         verify(handler).handleRequest("GET", emptyMap(), "/another/path", requestBodyString);
-        verify(handler).handleResponse("200 OK", emptyMap(), "/another/path", responseBodyString);
+        verify(handler).handleResponse("200 OK", emptyMap(), emptyMap(), "/another/path", responseBodyString);
     }
 
     @Test
@@ -101,7 +102,7 @@ public class LsdRestTemplateInterceptorTest {
 
         interceptor.intercept(stubHttpRequest, requestBodyBytes, execution);
 
-        verify(handler).handleResponse("200 OK", emptyMap(), "/price/watch", "");
+        verify(handler).handleResponse("200 OK", emptyMap(), Map.of("Content-Length", "0"), "/price/watch", "");
     }
 
     @Test
@@ -109,7 +110,7 @@ public class LsdRestTemplateInterceptorTest {
         interceptor.intercept(aGetRequest(URI.create("/cow?param=yes")).build(), requestBodyBytes, execution);
 
         verify(handler).handleRequest("GET", emptyMap(), "/cow", requestBodyString);
-        verify(handler).handleResponse("200 OK", emptyMap(), "/cow", responseBodyString);
+        verify(handler).handleResponse("200 OK", emptyMap(), emptyMap(), "/cow", responseBodyString);
     }
 
     private StubClientHttpResponse.StubClientHttpResponseBuilder aStubbedOkResponse() {

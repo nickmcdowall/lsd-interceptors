@@ -26,14 +26,15 @@ public class LsdRestTemplateInterceptor implements ClientHttpRequestInterceptor 
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-        String path = request.getURI().getPath();
+        var path = request.getURI().getPath();
         var requestHeaders = request.getHeaders().toSingleValueMap();
         handlers.forEach(handler ->
                 handler.handleRequest(request.getMethodValue(), requestHeaders, path, new String(body)));
 
-        ClientHttpResponse response = execution.execute(request, body);
+        var response = execution.execute(request, body);
+        var responseHeaders = response.getHeaders().toSingleValueMap();
         handlers.forEach(handler ->
-                handler.handleResponse(deriveResponseStatus(response), requestHeaders, path, copyBodyToString(response)));
+                handler.handleResponse(deriveResponseStatus(response), requestHeaders, responseHeaders, path, copyBodyToString(response)));
 
         return response;
     }

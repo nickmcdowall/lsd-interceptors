@@ -12,7 +12,6 @@ import okio.Buffer;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @Value
 @RequiredArgsConstructor
@@ -24,18 +23,19 @@ public class LsdOkHttpInterceptor implements Interceptor {
 
     @Override
     public Response intercept(Chain chain) throws IOException {
-        Request request = chain.request();
-        Request requestCopy = request.newBuilder().build();
-        String path = request.url().encodedPath();
-        Map<String, String> requestHeaders = Headers.singleValueMap(request.headers().toMultimap());
+        var request = chain.request();
+        var requestCopy = request.newBuilder().build();
+        var path = request.url().encodedPath();
+        var requestHeaders = Headers.singleValueMap(request.headers().toMultimap());
 
         handlers.forEach(handler ->
                 handler.handleRequest(request.method(), requestHeaders, path, bodyToString(requestCopy)));
 
-        Response response = chain.proceed(request);
+        var response = chain.proceed(request);
+        var responseHeaders = Headers.singleValueMap(response.headers().toMultimap());
 
         handlers.forEach(handler ->
-                handler.handleResponse(response.code() + " " + response.message(), requestHeaders, path, copyBodyString(response)));
+                handler.handleResponse(response.code() + " " + response.message(), requestHeaders, responseHeaders, path, copyBodyString(response)));
 
         return response;
     }
