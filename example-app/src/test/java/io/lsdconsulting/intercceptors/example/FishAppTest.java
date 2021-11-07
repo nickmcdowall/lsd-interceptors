@@ -1,7 +1,7 @@
 package io.lsdconsulting.intercceptors.example;
 
 import com.lsd.LsdContext;
-import lsd.junit5.LsdExtension;
+import io.lsdconsulting.junit5.LsdExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
