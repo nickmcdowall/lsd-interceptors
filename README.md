@@ -144,8 +144,4 @@ IDE
 
 ### Release
 
-Run script
-
-```
-./release.sh
-```
+Releases are automated via the semantic-release action
