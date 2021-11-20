@@ -1,5 +1,5 @@
 # For an example see: https://github.com/GeekHomeInside/semantic-release-example/blob/master/.releaserc.yaml
-branches: [ "main" ]
+branches: [ "master", "main" ]
 plugins:
   - "@semantic-release/commit-analyzer"
   - "@semantic-release/release-notes-generator"
