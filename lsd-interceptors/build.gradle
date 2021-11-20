@@ -1,16 +1,13 @@
 plugins {
     id 'java-library'
     id 'java'
-    id 'pl.allegro.tech.build.axion-release'
 }
 
 repositories {
     mavenCentral()
 }
 
-group = 'io.github.lsd-consulting'
 sourceCompatibility = '11'
-project.version = scmVersion.version
 
 dependencies {
     implementation 'org.springframework:spring-web:5.1.11.RELEASE'

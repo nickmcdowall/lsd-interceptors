@@ -1,6 +1,7 @@
+[![semantic-release](https://img.shields.io/badge/semantic-release-e10079.svg?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
+
 # lsd-interceptors 
 
-[![Build](https://github.com/lsd-consulting/lsd-interceptors/actions/workflows/macos-build.yml/badge.svg)](https://github.com/lsd-consulting/lsd-interceptors/actions/workflows/macos-build.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.lsd-consulting/lsd-interceptors.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.lsd-consulting%22%20AND%20a:%22lsd-interceptors%22)
 
 A library containing various automated message/event interceptors that can be used along with the [lsd-core](https://github.com/lsd-consulting/lsd-core) library

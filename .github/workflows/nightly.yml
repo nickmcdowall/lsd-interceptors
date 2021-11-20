@@ -1,11 +1,10 @@
-name: Build
-
-on: [ push ]
-
+name: Nightly Build
+on:
+  schedule:
+    - cron: '0 2 * * *' # run at 2 AM UTC
 jobs:
   build:
     runs-on: macos-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -14,8 +13,4 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
       - name: Build with Gradle
-        run: ./gradlew build
-      - uses: actions/upload-artifact@v2
-        with:
-          name: lsd-interceptors
-          path: build/libs
+        run: ./gradlew test
