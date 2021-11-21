@@ -17,7 +17,7 @@ ABORTING commit - Expecting a conventional commit message header:
 ----------------------------------------------------
 Examples:
 1.
-  fix(cache): Fixe nasty caching bug (#123)
+  fix(cache): Fix nasty caching bug (#123)
 2.  
   feat: Enable awesome feature (#456)
 3. 
