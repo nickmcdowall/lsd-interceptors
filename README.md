@@ -126,22 +126,25 @@ application.
 | ----------- | ----------- |------------ |
 | lsd.interceptors.autoconfig.enabled | true | Used to disable the autoconfiguration of interceptors if necessary. |
 
-## Build/Release
+## Build
 
 ### Requirements
 
-JDK
-
 * Java 11
+* Lombok is used so enable annotation processing in your IDE
 
-IDE
+### Git hooks
 
-* Lombok plugin and enable annotation processing
+Install the custom git hook to help validate you commit messages:
+```shell
+./gradlew installGitHooks
+```
 
+### Build
 ```
 ./gradlew clean build
 ```
 
 ### Release
 
-Releases are automated via the semantic-release action
+Releases are automated via the semantic-release github action when commits are merged into the remote master
