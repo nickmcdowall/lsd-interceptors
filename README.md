@@ -135,10 +135,7 @@ application.
 
 ### Git hooks
 
-Install the custom git hook to help validate you commit messages:
-```shell
-./gradlew installGitHooks
-```
+The custom hooks in .githooks will be configured when `gradle clean` is run.
 
 ### Build
 ```
