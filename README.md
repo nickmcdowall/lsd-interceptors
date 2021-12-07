@@ -3,7 +3,6 @@
 # lsd-interceptors 
 [![CI](https://github.com/lsd-consulting/lsd-interceptors/actions/workflows/ci.yml/badge.svg)](https://github.com/lsd-consulting/lsd-interceptors/actions/workflows/ci.yml)
 [![Nightly Build](https://github.com/lsd-consulting/lsd-interceptors/actions/workflows/nightly.yml/badge.svg)](https://github.com/lsd-consulting/lsd-interceptors/actions/workflows/nightly.yml)
-[![Publish](https://github.com/lsd-consulting/lsd-interceptors/actions/workflows/publish.yml/badge.svg)](https://github.com/lsd-consulting/lsd-interceptors/actions/workflows/publish.yml)
 [![GitHub release](https://img.shields.io/github/release/lsd-consulting/lsd-interceptors)](https://github.com/lsd-consulting/lsd-interceptors/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.lsd-consulting/lsd-interceptors.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.lsd-consulting%22%20AND%20a:%22lsd-interceptors%22)
 
