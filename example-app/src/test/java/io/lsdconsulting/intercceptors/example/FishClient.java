@@ -3,10 +3,9 @@ package io.lsdconsulting.intercceptors.example;
 import feign.RequestInterceptor;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @FeignClient(name = "fishClient", url = "${server.url}", configuration = FishClient.FishClientConfig.class)
 public interface FishClient {
@@ -16,6 +15,9 @@ public interface FishClient {
 
     @GetMapping("/fish/{name}")
     String getFishWithName(@PathVariable String name);
+
+    @GetMapping("/fish")
+    List<String> getFishByName(@RequestParam("name") String name);
 
     @DeleteMapping("/fish/{name}")
     void deleteByName(@PathVariable String name);

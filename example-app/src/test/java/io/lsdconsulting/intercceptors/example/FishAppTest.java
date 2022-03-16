@@ -40,6 +40,7 @@ public class FishAppTest {
         fishClient.createFish(System.currentTimeMillis(), "eric");
         safely(() -> fishClient.getFishWithName("ted"));
         safely(() -> fishClient.getFishWithName("nick"));
+        safely(() -> fishClient.getFishByName("nick"));
         fishClient.deleteByName("eric");
         safely((Object) -> fishClient.post(new NewFishRequest("jon")));
         safely((Object) -> fishClient.post(new NewFishRequest("jon")));

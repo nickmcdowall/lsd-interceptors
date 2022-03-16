@@ -1,11 +1,14 @@
 package io.lsdconsulting.intercceptors.example;
 
 import io.lsdconsulting.intercceptors.example.entity.Fish;
-import io.lsdconsulting.intercceptors.example.repository.FishRepositoryJpa;
 import io.lsdconsulting.intercceptors.example.repository.FishRepositoryEntityManager;
+import io.lsdconsulting.intercceptors.example.repository.FishRepositoryJpa;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 
 @RequiredArgsConstructor
@@ -35,6 +38,15 @@ public class FishController {
             throw new FishNotFound();
         }
         return fishByName.toString();
+    }
+
+    @GetMapping(value = "/fish")
+    public List<String> getFishByName(@RequestParam String name) {
+        Fish fishByName = fishRepositoryJpa.findFishByName(name);
+        if (isNull(fishByName)) {
+            throw new FishNotFound();
+        }
+        return singletonList(fishByName.toString());
     }
 
     @PostMapping(value = "/fish/{id}/{name}")
