@@ -17,6 +17,7 @@ sourceCompatibility = '11'
 
 group = 'io.github.lsd-consulting'
 version = gitVersion().replaceAll("^v", "")
+logger.lifecycle("Version:$version")
 
 ext {
     junitJupiter = '5.6.0'
