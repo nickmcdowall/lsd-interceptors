@@ -109,8 +109,8 @@ public class LsdRestTemplateInterceptorTest {
     void removesPathParametersFromUri() throws IOException {
         interceptor.intercept(aGetRequest(URI.create("/cow?param=yes")).build(), requestBodyBytes, execution);
 
-        verify(handler).handleRequest("GET", emptyMap(), "/cow", requestBodyString);
-        verify(handler).handleResponse("200 OK", emptyMap(), emptyMap(), "/cow", responseBodyString);
+        verify(handler).handleRequest("GET", emptyMap(), "/cow?param=yes", requestBodyString);
+        verify(handler).handleResponse("200 OK", emptyMap(), emptyMap(), "/cow?param=yes", responseBodyString);
     }
 
     private StubClientHttpResponse.StubClientHttpResponseBuilder aStubbedOkResponse() {

@@ -22,11 +22,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LsdRestTemplateInterceptor implements ClientHttpRequestInterceptor {
 
-    private final List<HttpInteractionHandler> handlers;
+    List<HttpInteractionHandler> handlers;
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-        var path = request.getURI().getPath();
+        var path = request.getURI().toString();
         var requestHeaders = request.getHeaders().toSingleValueMap();
         handlers.forEach(handler ->
                 handler.handleRequest(request.getMethodValue(), requestHeaders, path, new String(body)));
