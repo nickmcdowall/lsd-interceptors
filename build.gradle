@@ -31,7 +31,7 @@ wrapper {
 allprojects {
     plugins.withId('java') {
         dependencies {
-            implementation 'io.github.lsd-consulting:lsd-core:1.2.4'
+            implementation 'io.github.lsd-consulting:lsd-core:1.2.6'
             implementation 'io.github.lsd-consulting:lsd-formatting-library:1.0.6'
 
             implementation 'org.projectlombok:lombok:1.18.22'
