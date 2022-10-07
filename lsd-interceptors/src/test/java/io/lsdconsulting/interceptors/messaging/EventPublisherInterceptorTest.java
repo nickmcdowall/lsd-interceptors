@@ -16,14 +16,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-class EventConsumerInterceptorTest {
+class EventPublisherInterceptorTest {
     private final ArgumentCaptor<String> patternCaptor = ArgumentCaptor.forClass(String.class);
     private final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
 
     private final LsdContext lsdContext = mock(LsdContext.class);
     private final Message<byte[]> message = mock(Message.class);
 
-    private final EventConsumerInterceptor underTest = new EventConsumerInterceptor(lsdContext);
+    private final EventPublisherInterceptor underTest = new EventPublisherInterceptor(lsdContext);
 
     @Test
     void logInteraction() {
@@ -33,7 +33,7 @@ class EventConsumerInterceptorTest {
         underTest.preSend(message, null);
 
         verify(lsdContext).capture(patternCaptor.capture(), payloadCaptor.capture());
-        assertThat(patternCaptor.getValue()).isEqualTo("Consume event from Source to Target");
+        assertThat(patternCaptor.getValue()).isEqualTo("Publish event from Source to Target");
         assertThat(payloadCaptor.getValue()).isEqualTo(
                 "{\n" +
                 "  \"key\": \"value\"\n" +
