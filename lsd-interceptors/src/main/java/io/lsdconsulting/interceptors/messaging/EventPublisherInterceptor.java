@@ -9,7 +9,8 @@ import org.springframework.messaging.support.ChannelInterceptor;
 
 import static io.lsdconsulting.interceptors.http.common.Headers.HeaderKeys.SOURCE_NAME;
 import static io.lsdconsulting.interceptors.http.common.Headers.HeaderKeys.TARGET_NAME;
-import static io.lsdconsulting.interceptors.messaging.PayloadRetriever.getPayload;
+import static io.lsdconsulting.interceptors.messaging.TypeConverter.convertToString;
+import static lsd.format.PrettyPrinter.prettyPrint;
 
 @RequiredArgsConstructor
 public class EventPublisherInterceptor implements ChannelInterceptor {
@@ -18,9 +19,9 @@ public class EventPublisherInterceptor implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        String payload = getPayload(message);
-        String source = (String) message.getHeaders().get(SOURCE_NAME.key());
-        String target = (String) message.getHeaders().get(TARGET_NAME.key());
+        String payload = prettyPrint(convertToString(message.getPayload()));
+        String source = convertToString(message.getHeaders().get(SOURCE_NAME.key()));
+        String target = convertToString(message.getHeaders().get(TARGET_NAME.key()));
 
         lsdContext.capture("Publish event from " + ValidComponentName.of(source) + " to " + ValidComponentName.of(target), payload);
 
