@@ -1,6 +1,7 @@
 package io.lsdconsulting.interceptors.http.common;
 
 import com.lsd.LsdContext;
+import io.lsdconsulting.interceptors.common.Headers;
 import io.lsdconsulting.interceptors.http.naming.DestinationNameMappings;
 import io.lsdconsulting.interceptors.http.naming.SourceNameMappings;
 import org.junit.jupiter.api.Test;

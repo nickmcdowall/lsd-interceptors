@@ -7,8 +7,8 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.ChannelInterceptor;
 
-import static io.lsdconsulting.interceptors.http.common.Headers.HeaderKeys.SOURCE_NAME;
-import static io.lsdconsulting.interceptors.http.common.Headers.HeaderKeys.TARGET_NAME;
+import static io.lsdconsulting.interceptors.common.Headers.HeaderKeys.SOURCE_NAME;
+import static io.lsdconsulting.interceptors.common.Headers.HeaderKeys.TARGET_NAME;
 import static io.lsdconsulting.interceptors.messaging.TypeConverter.convertToString;
 import static lsd.format.PrettyPrinter.prettyPrint;
 

@@ -1,6 +1,6 @@
 package io.lsdconsulting.interceptors.http;
 
-import io.lsdconsulting.interceptors.http.common.Headers;
+import io.lsdconsulting.interceptors.common.Headers;
 import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

@@ -4,7 +4,7 @@ import feign.Logger;
 import feign.Request;
 import feign.Response;
 import feign.Util;
-import io.lsdconsulting.interceptors.http.common.Headers;
+import io.lsdconsulting.interceptors.common.Headers;
 import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
 import org.springframework.http.HttpStatus;
 

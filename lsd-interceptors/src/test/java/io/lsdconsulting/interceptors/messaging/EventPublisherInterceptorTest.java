@@ -8,8 +8,8 @@ import org.springframework.messaging.MessageHeaders;
 
 import java.util.Map;
 
-import static io.lsdconsulting.interceptors.http.common.Headers.HeaderKeys.SOURCE_NAME;
-import static io.lsdconsulting.interceptors.http.common.Headers.HeaderKeys.TARGET_NAME;
+import static io.lsdconsulting.interceptors.common.Headers.HeaderKeys.SOURCE_NAME;
+import static io.lsdconsulting.interceptors.common.Headers.HeaderKeys.TARGET_NAME;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
