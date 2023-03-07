@@ -4,12 +4,13 @@ import com.lsd.LsdContext;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHeaders;
 
 import java.util.Map;
 
-import static io.lsdconsulting.interceptors.http.common.Headers.HeaderKeys.SOURCE_NAME;
-import static io.lsdconsulting.interceptors.http.common.Headers.HeaderKeys.TARGET_NAME;
+import static io.lsdconsulting.interceptors.common.Headers.HeaderKeys.SOURCE_NAME;
+import static io.lsdconsulting.interceptors.common.Headers.HeaderKeys.TARGET_NAME;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -30,14 +31,17 @@ class EventConsumerInterceptorTest {
         given(message.getPayload()).willReturn("{\"key\":\"value\"}".getBytes(UTF_8));
         given(message.getHeaders()).willReturn(new MessageHeaders(Map.of(SOURCE_NAME.key(), "Source", TARGET_NAME.key(), "Target")));
 
-        underTest.preSend(message, null);
+        underTest.preSend(message, mock(MessageChannel.class));
 
         verify(lsdContext).capture(patternCaptor.capture(), payloadCaptor.capture());
         assertThat(patternCaptor.getValue()).isEqualTo("Consume event from Source to Target");
         assertThat(payloadCaptor.getValue()).isEqualTo(
-                "{\n" +
-                "  \"key\": \"value\"\n" +
-                "}"
+                "<p><p><h4>Message Headers</h4><code>Target-Name: Target\n" +
+                        "Source-Name: Source\n" +
+                        "id: " + message.getHeaders().get("id") + "\n" +
+                        "timestamp: " + message.getHeaders().get("timestamp") + "</code></p><p><h4>Body</h4><code>{\n" +
+                        "  &quot;key&quot;: &quot;value&quot;\n" +
+                        "}</code></p></p>"
         );
     }
 }

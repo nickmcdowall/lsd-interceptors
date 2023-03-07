@@ -7,8 +7,9 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.ChannelInterceptor;
 
-import static io.lsdconsulting.interceptors.http.common.Headers.HeaderKeys.SOURCE_NAME;
-import static io.lsdconsulting.interceptors.http.common.Headers.HeaderKeys.TARGET_NAME;
+import static io.lsdconsulting.interceptors.common.Headers.HeaderKeys.SOURCE_NAME;
+import static io.lsdconsulting.interceptors.common.Headers.HeaderKeys.TARGET_NAME;
+import static io.lsdconsulting.interceptors.messaging.HtmlRenderer.renderHtmlFor;
 import static io.lsdconsulting.interceptors.messaging.TypeConverter.convertToString;
 import static lsd.format.PrettyPrinter.prettyPrint;
 
@@ -23,7 +24,7 @@ public class EventConsumerInterceptor implements ChannelInterceptor {
         String source = convertToString(message.getHeaders().get(SOURCE_NAME.key()));
         String target = convertToString(message.getHeaders().get(TARGET_NAME.key()));
 
-        lsdContext.capture("Consume event from " + ValidComponentName.of(source) + " to " + ValidComponentName.of(target), payload);
+        lsdContext.capture("Consume event from " + ValidComponentName.of(source) + " to " + ValidComponentName.of(target), renderHtmlFor(message.getHeaders(), payload));
 
         return message;
     }

@@ -1,4 +1,4 @@
-package io.lsdconsulting.interceptors.http.common;
+package io.lsdconsulting.interceptors.common;
 
 import java.util.Collection;
 import java.util.Map;
@@ -11,7 +11,7 @@ public class Headers {
         SOURCE_NAME("Source-Name"),
         TARGET_NAME("Target-Name");
 
-        private String headerName;
+        private final String headerName;
 
         HeaderKeys(String headerName) {
             this.headerName = headerName;
@@ -24,7 +24,7 @@ public class Headers {
 
     public static Map<String, String> singleValueMap(Map<String, ? extends Collection<String>> headers) {
         return headers.entrySet().stream()
-                .collect(toMap(entry -> entry.getKey(), entry -> entry.getValue().stream()
+                .collect(toMap(Map.Entry::getKey, entry -> entry.getValue().stream()
                         .findFirst()
                         .orElse("")));
     }
