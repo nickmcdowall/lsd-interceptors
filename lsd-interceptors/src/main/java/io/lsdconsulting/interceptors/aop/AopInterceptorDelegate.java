@@ -1,9 +1,6 @@
 package io.lsdconsulting.interceptors.aop;
 
-import com.lsd.LsdContext;
-import com.lsd.diagram.ValidComponentName;
-import com.lsd.events.Markup;
-import com.lsd.events.ShortMessageInbound;
+import com.lsd.core.LsdContext;
 import io.lsdconsulting.interceptors.common.AppName;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +10,11 @@ import org.aspectj.lang.ProceedingJoinPoint;
 
 import java.time.ZonedDateTime;
 
-import static com.lsd.events.ArrowType.DOTTED_THIN;
+import static com.lsd.core.builders.ActivateLifelineBuilder.activation;
+import static com.lsd.core.builders.DeactivateLifelineBuilder.deactivation;
+import static com.lsd.core.builders.MessageBuilder.messageBuilder;
+import static com.lsd.core.domain.MessageType.SHORT_INBOUND;
+import static com.lsd.core.domain.MessageType.SYNCHRONOUS_RESPONSE;
 import static j2html.TagCreator.*;
 import static java.lang.System.lineSeparator;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
@@ -33,11 +34,13 @@ public class AopInterceptorDelegate {
     }
 
     public void captureInteraction(JoinPoint joinPoint, Object resultValue, String sourceName, String destinationName, String icon) {
-        var args = joinPoint.getArgs();
-        var body = renderHtmlForMethodCall(args, resultValue);
-        var signature = joinPoint.getSignature().toShortString();
-
-        lsdContext.capture(icon + " " + signature + " from " + ValidComponentName.of(sourceName) + " to " + ValidComponentName.of(destinationName), body);
+        lsdContext.capture(messageBuilder()
+                .id(lsdContext.getIdGenerator().next())
+                .from(sourceName)
+                .to(destinationName)
+                .label(icon + " " + joinPoint.getSignature().toShortString())
+                .data(renderHtmlForMethodCall(joinPoint.getArgs(), resultValue))
+                .build());
     }
 
     public void captureInternalException(JoinPoint joinPoint, Throwable throwable, String icon) {
@@ -45,17 +48,23 @@ public class AopInterceptorDelegate {
     }
 
     public void captureException(JoinPoint joinPoint, Throwable throwable, String sourceName, String destinationName, String icon) {
-        var body = renderHtmlForException(joinPoint.getSignature().toShortString(), joinPoint.getArgs(), throwable);
-        var exceptionName = throwable.getClass().getSimpleName();
-        lsdContext.capture(icon + " " + exceptionName + " response from " + ValidComponentName.of(sourceName) + " to " +  ValidComponentName.of(destinationName) + " [#red]", body);
+        lsdContext.capture(messageBuilder()
+                .id(lsdContext.getIdGenerator().next())
+                .from(sourceName)
+                .to(destinationName)
+                .label(icon + " " + throwable.getClass().getSimpleName())
+                .type(SYNCHRONOUS_RESPONSE)
+                .colour("red")
+                .data(renderHtmlForException(joinPoint.getSignature().toShortString(), joinPoint.getArgs(), throwable))
+                .build());
     }
 
     public void captureScheduledStart(ProceedingJoinPoint joinPoint, ZonedDateTime startTime) {
-        lsdContext.capture(ShortMessageInbound.builder()
+        lsdContext.capture(messageBuilder()
                 .id(lsdContext.getIdGenerator().next())
                 .to(appName.getValue())
                 .label("<$clock{scale=0.3}> ")
-                .arrowType(DOTTED_THIN)
+                .type(SHORT_INBOUND)
                 .data(p(
                         p(
                                 h4("Scheduled"),
@@ -66,12 +75,12 @@ public class AopInterceptorDelegate {
                                 code(startTime.format(ISO_DATE_TIME))
                         )).render())
                 .build());
-        lsdContext.capture(new Markup("activate " + appName.getValue() + "#skyblue"));
+        lsdContext.capture(activation().of(appName.getValue()).colour("skyblue").build());
     }
 
     public void captureScheduledEnd(ProceedingJoinPoint joinPoint, ZonedDateTime startTime, ZonedDateTime endTime) {
         String delay = MILLIS.between(startTime, endTime) + "ms";
-        lsdContext.capture(ShortMessageInbound.builder()
+        lsdContext.capture(messageBuilder()
                 .id(lsdContext.getIdGenerator().next())
                 .to(appName.getValue())
                 .label("<$clock{scale=0.3}>")
@@ -79,23 +88,21 @@ public class AopInterceptorDelegate {
                         p(
                                 p(
                                         h4("Scheduler completed"),
-                                        code(joinPoint.getSignature().toShortString())
-                                ),
+                                        code(joinPoint.getSignature().toShortString())),
                                 p(
                                         h4("Duration"),
-                                        span(delay)
-                                )).render())
-                .arrowType(DOTTED_THIN)
+                                        span(delay))).render())
+                .type(SHORT_INBOUND)
                 .build());
-        lsdContext.capture(new Markup("deactivate " + appName.getValue()));
+        lsdContext.capture(deactivation().of(appName.getValue()).build());
     }
 
     public void captureScheduledError(ProceedingJoinPoint joinPoint, ZonedDateTime startTime, ZonedDateTime endTime, Throwable e) {
-        lsdContext.capture(ShortMessageInbound.builder()
+        lsdContext.capture(messageBuilder()
                 .id(lsdContext.getIdGenerator().next())
                 .to(appName.getValue())
                 .label("<$clock{scale=0.3}> ")
-                .arrowType(DOTTED_THIN)
+                .type(SHORT_INBOUND)
                 .colour("red")
                 .data(p(
                         p(
@@ -114,35 +121,22 @@ public class AopInterceptorDelegate {
     }
 
     private String renderHtmlForMethodCall(Object[] args, Object response) {
-        return p(
-                p(
+        return p(p(
                         h4("Arguments"),
-                        code(prettyPrintArgs(args))
-                ),
+                        code(prettyPrintArgs(args))),
                 p(
                         h4("Response"),
                         code(ofNullable(response)
                                 .map(PrettyPrinter::prettyPrintJson)
                                 .orElse("")
-                        )
-                )
-        ).render();
+                        ))).render();
     }
 
     private String renderHtmlForException(String signature, Object[] args, Throwable throwable) {
         return p(
-                p(
-                        h4("Invoked"),
-                        code(signature)
-                ),
-                p(
-                        h4("Arguments"),
-                        code(prettyPrintArgs(args))
-                ),
-                p(
-                        h4("Exception"),
-                        code(throwable.toString())
-                )
+                p(h4("Invoked"), code(signature)),
+                p(h4("Arguments"), code(prettyPrintArgs(args))),
+                p(h4("Exception"), code(throwable.toString()))
         ).render();
     }
 

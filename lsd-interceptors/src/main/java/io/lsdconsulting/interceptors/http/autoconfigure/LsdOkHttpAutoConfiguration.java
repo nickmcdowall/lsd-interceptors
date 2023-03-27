@@ -1,8 +1,8 @@
 package io.lsdconsulting.interceptors.http.autoconfigure;
 
-import com.lsd.LsdContext;
-import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
+import com.lsd.core.LsdContext;
 import io.lsdconsulting.interceptors.http.LsdOkHttpInterceptor;
+import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
 import io.lsdconsulting.interceptors.http.naming.DestinationNameMappings;
 import io.lsdconsulting.interceptors.http.naming.RegexResolvingNameMapper;
 import io.lsdconsulting.interceptors.http.naming.SourceNameMappings;

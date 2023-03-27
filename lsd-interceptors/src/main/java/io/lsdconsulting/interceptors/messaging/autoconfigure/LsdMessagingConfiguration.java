@@ -1,6 +1,6 @@
 package io.lsdconsulting.interceptors.messaging.autoconfigure;
 
-import com.lsd.LsdContext;
+import com.lsd.core.LsdContext;
 import io.lsdconsulting.interceptors.messaging.EventConsumerInterceptor;
 import io.lsdconsulting.interceptors.messaging.EventPublisherInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

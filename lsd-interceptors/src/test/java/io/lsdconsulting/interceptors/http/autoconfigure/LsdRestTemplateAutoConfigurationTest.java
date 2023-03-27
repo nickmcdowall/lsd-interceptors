@@ -1,6 +1,6 @@
 package io.lsdconsulting.interceptors.http.autoconfigure;
 
-import com.lsd.LsdContext;
+import com.lsd.core.LsdContext;
 import io.lsdconsulting.interceptors.common.AppName;
 import io.lsdconsulting.interceptors.http.LsdRestTemplateCustomizer;
 import io.lsdconsulting.interceptors.http.LsdRestTemplateInterceptor;

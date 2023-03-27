@@ -1,12 +1,12 @@
 package io.lsdconsulting.interceptors.http.autoconfigure;
 
-import com.lsd.LsdContext;
-import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
+import com.lsd.core.LsdContext;
+import feign.Logger;
 import io.lsdconsulting.interceptors.http.LsdFeignLoggerInterceptor;
+import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
 import io.lsdconsulting.interceptors.http.naming.DestinationNameMappings;
 import io.lsdconsulting.interceptors.http.naming.RegexResolvingNameMapper;
 import io.lsdconsulting.interceptors.http.naming.SourceNameMappings;
-import feign.Logger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * <p>
- * If a {@link com.lsd.LsdContext} class is available it will automatically autoconfig a {@link LsdFeignLoggerInterceptor}
+ * If a {@link LsdContext} class is available it will automatically autoconfig a {@link LsdFeignLoggerInterceptor}
  * </p>
  * <br>
  * <p>

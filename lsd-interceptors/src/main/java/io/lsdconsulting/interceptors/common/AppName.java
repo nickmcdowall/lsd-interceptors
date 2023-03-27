@@ -1,6 +1,6 @@
 package io.lsdconsulting.interceptors.common;
 
-import com.lsd.diagram.ValidComponentName;
+import com.lsd.core.domain.ComponentName;
 import lombok.Value;
 
 @Value
@@ -8,6 +8,6 @@ public class AppName {
     String value;
 
     public AppName(String value) {
-        this.value = ValidComponentName.of(value);
+        this.value = new ComponentName(value).getName();
     }
 }

@@ -1,6 +1,6 @@
 package io.lsdconsulting.interceptors.http.autoconfigure;
 
-import com.lsd.LsdContext;
+import com.lsd.core.LsdContext;
 import io.lsdconsulting.interceptors.http.common.DefaultHttpInteractionHandler;
 import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
 import io.lsdconsulting.interceptors.http.naming.DestinationNameMappings;

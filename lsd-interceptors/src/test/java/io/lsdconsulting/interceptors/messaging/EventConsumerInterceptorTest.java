@@ -1,6 +1,9 @@
 package io.lsdconsulting.interceptors.messaging;
 
-import com.lsd.LsdContext;
+import com.lsd.core.LsdContext;
+import com.lsd.core.domain.MessageType;
+import org.assertj.core.api.AssertionsForClassTypes;
+import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.messaging.Message;
@@ -12,17 +15,14 @@ import java.util.Map;
 import static io.lsdconsulting.interceptors.common.Headers.HeaderKeys.SOURCE_NAME;
 import static io.lsdconsulting.interceptors.common.Headers.HeaderKeys.TARGET_NAME;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 class EventConsumerInterceptorTest {
-    private final ArgumentCaptor<String> patternCaptor = ArgumentCaptor.forClass(String.class);
-    private final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+    private final ArgumentCaptor<com.lsd.core.domain.Message> messageCaptor = ArgumentCaptor.forClass(com.lsd.core.domain.Message.class);
 
-    private final LsdContext lsdContext = mock(LsdContext.class);
-    private final Message<byte[]> message = mock(Message.class);
+    private final LsdContext lsdContext = spy(LsdContext.class);
+    private final Message<byte[]> message = spy(Message.class);
 
     private final EventConsumerInterceptor underTest = new EventConsumerInterceptor(lsdContext);
 
@@ -33,15 +33,17 @@ class EventConsumerInterceptorTest {
 
         underTest.preSend(message, mock(MessageChannel.class));
 
-        verify(lsdContext).capture(patternCaptor.capture(), payloadCaptor.capture());
-        assertThat(patternCaptor.getValue()).isEqualTo("Consume event from Source to Target");
-        assertThat(payloadCaptor.getValue()).isEqualTo(
-                "<p><p><h4>Message Headers</h4><code>Target-Name: Target\n" +
-                        "Source-Name: Source\n" +
-                        "id: " + message.getHeaders().get("id") + "\n" +
-                        "timestamp: " + message.getHeaders().get("timestamp") + "</code></p><p><h4>Body</h4><code>{\n" +
-                        "  &quot;key&quot;: &quot;value&quot;\n" +
-                        "}</code></p></p>"
-        );
+        verify(lsdContext).capture(messageCaptor.capture());
+        var capturedMessage = messageCaptor.getValue();
+
+        AssertionsForClassTypes.assertThat(capturedMessage.getFrom().getName()).isEqualTo("Source");
+        AssertionsForClassTypes.assertThat(capturedMessage.getTo().getName()).isEqualTo("Target");
+        AssertionsForClassTypes.assertThat(capturedMessage.getLabel()).isEqualTo("Consume event");
+        AssertionsForInterfaceTypes.assertThat(capturedMessage.getType()).isEqualTo(MessageType.ASYNCHRONOUS);
+        AssertionsForClassTypes.assertThat(capturedMessage.getData().toString())
+                .contains("timestamp: " + message.getHeaders().get("timestamp"))
+                .contains("Source-Name: Source")
+                .contains("Target-Name: Target")
+                .contains("id: " + message.getHeaders().get("id"));
     }
 }

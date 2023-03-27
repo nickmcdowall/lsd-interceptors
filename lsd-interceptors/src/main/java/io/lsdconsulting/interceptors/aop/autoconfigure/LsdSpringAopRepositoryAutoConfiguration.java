@@ -1,6 +1,6 @@
 package io.lsdconsulting.interceptors.aop.autoconfigure;
 
-import com.lsd.LsdContext;
+import com.lsd.core.LsdContext;
 import io.lsdconsulting.interceptors.aop.SpringDataRepositoryInterceptor;
 import io.lsdconsulting.interceptors.common.AppName;
 import io.lsdconsulting.interceptors.aop.AopInterceptorDelegate;

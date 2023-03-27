@@ -1,8 +1,9 @@
 package io.lsdconsulting.interceptors.http.common;
 
-import com.lsd.LsdContext;
-import com.lsd.diagram.ValidComponentName;
-import com.lsd.events.Markup;
+import com.lsd.core.IdGenerator;
+import com.lsd.core.LsdContext;
+import com.lsd.core.builders.DeactivateLifelineBuilder;
+import com.lsd.core.domain.ActivateLifeline;
 import io.lsdconsulting.interceptors.common.Headers;
 import io.lsdconsulting.interceptors.http.naming.DestinationNameMappings;
 import io.lsdconsulting.interceptors.http.naming.SourceNameMappings;
@@ -11,8 +12,11 @@ import lombok.ToString;
 
 import java.util.Map;
 
-import static io.lsdconsulting.interceptors.http.common.HttpInteractionMessageTemplates.requestOf;
-import static io.lsdconsulting.interceptors.http.common.HttpInteractionMessageTemplates.responseOf;
+import static com.lsd.core.builders.ActivateLifelineBuilder.activation;
+import static com.lsd.core.builders.DeactivateLifelineBuilder.*;
+import static com.lsd.core.builders.MessageBuilder.messageBuilder;
+import static com.lsd.core.domain.MessageType.SYNCHRONOUS;
+import static com.lsd.core.domain.MessageType.SYNCHRONOUS_RESPONSE;
 import static j2html.TagCreator.*;
 import static java.lang.System.lineSeparator;
 import static java.util.Objects.isNull;
@@ -27,27 +31,45 @@ public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
     private final LsdContext lsdContext;
     private final SourceNameMappings sourceNameMappings;
     private final DestinationNameMappings destinationNameMappings;
+    private final IdGenerator idGenerator;
 
     public DefaultHttpInteractionHandler(LsdContext lsdContext, SourceNameMappings sourceNameMappings, DestinationNameMappings destinationNameMappings) {
         this.lsdContext = lsdContext;
         this.sourceNameMappings = sourceNameMappings;
         this.destinationNameMappings = destinationNameMappings;
+        this.idGenerator = lsdContext.getIdGenerator();
     }
 
     @Override
     public void handleRequest(String method, Map<String, String> requestHeaders, String path, String body) {
-        String sourceName = ValidComponentName.of(deriveSourceName(requestHeaders, path));
-        String destinationName = ValidComponentName.of(deriveTargetName(requestHeaders, path));
-        lsdContext.capture(requestOf(method, path, sourceName, destinationName), renderHtmlFor(path, requestHeaders, null, prettyPrint(body)));
-        lsdContext.capture(new Markup("activate " + destinationName + "#skyblue"));
+        var targetName = deriveTargetName(requestHeaders, path);
+        lsdContext.capture(messageBuilder()
+                .id(idGenerator.next())
+                .from(deriveSourceName(requestHeaders, path))
+                .to(targetName)
+                .label(method + " " + path)
+                .data(renderHtmlFor(path, requestHeaders, null, prettyPrint(body)))
+                .type(SYNCHRONOUS)
+                .build());
+        lsdContext.capture(activation().of(targetName).colour("skyblue").build());
     }
 
     @Override
     public void handleResponse(String statusMessage, Map<String, String> requestHeaders, Map<String, String> responseHeaders, String path, String body) {
-        String destinationName = ValidComponentName.of(deriveTargetName(requestHeaders, path));
-        String sourceName = ValidComponentName.of(deriveSourceName(requestHeaders, path));
-        lsdContext.capture(responseOf(statusMessage, destinationName, sourceName), renderHtmlFor(path, requestHeaders, responseHeaders, prettyPrint(body)));
-        lsdContext.capture(new Markup("deactivate " + destinationName));
+        String colour = "";
+        if (statusMessage.startsWith("4") || statusMessage.startsWith("5")) colour = "red";
+
+        var targetName = deriveTargetName(requestHeaders, path);
+        lsdContext.capture(messageBuilder()
+                .id(idGenerator.next())
+                .from(targetName)
+                .to(deriveSourceName(requestHeaders, path))
+                .label(statusMessage)
+                .data(renderHtmlFor(path, requestHeaders, null, prettyPrint(body)))
+                .type(SYNCHRONOUS_RESPONSE)
+                .colour(colour)
+                .build());
+        lsdContext.capture(deactivation().of(targetName).build());
     }
 
     private String renderHtmlFor(String path, Map<String, String> requestHeaders, Map<String, String> responseHeaders, String prettyBody) {

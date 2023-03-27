@@ -1,8 +1,6 @@
 package io.lsdconsulting.interceptors.http;
 
-import com.lsd.LsdContext;
-import io.lsdconsulting.interceptors.http.LsdRestTemplateCustomizer;
-import io.lsdconsulting.interceptors.http.LsdRestTemplateInterceptor;
+import com.lsd.core.LsdContext;
 import io.lsdconsulting.interceptors.http.common.DefaultHttpInteractionHandler;
 import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
 import org.junit.jupiter.api.Test;

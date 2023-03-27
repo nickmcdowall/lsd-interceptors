@@ -1,17 +1,22 @@
 package io.lsdconsulting.interceptors.http.common;
 
-import com.lsd.LsdContext;
+import com.lsd.core.LsdContext;
+import com.lsd.core.domain.Message;
+import com.lsd.core.domain.MessageType;
+import com.lsd.core.domain.SequenceEvent;
 import io.lsdconsulting.interceptors.common.Headers;
 import io.lsdconsulting.interceptors.http.naming.DestinationNameMappings;
 import io.lsdconsulting.interceptors.http.naming.SourceNameMappings;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.util.Map;
 
 import static java.util.Collections.emptyMap;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 class DefaultHttpInteractionHandlerTest {
@@ -22,7 +27,10 @@ class DefaultHttpInteractionHandlerTest {
     );
     private final SourceNameMappings sourceNameMapping = path -> "sourceName";
     private final DestinationNameMappings destinationNameMapping = path -> "destinationName";
-    private final LsdContext lsdContext = Mockito.mock(LsdContext.class);
+
+    private final ArgumentCaptor<SequenceEvent> messageCaptor = ArgumentCaptor.forClass(SequenceEvent.class);
+
+    private final LsdContext lsdContext = Mockito.spy(LsdContext.class);
 
     private final DefaultHttpInteractionHandler handler = new DefaultHttpInteractionHandler(lsdContext, sourceNameMapping, destinationNameMapping);
 
@@ -30,39 +38,71 @@ class DefaultHttpInteractionHandlerTest {
     void usesTestStateToLogRequest() {
         handler.handleRequest("GET", emptyMap(), "/path", "{\"type\":\"request\"}");
 
-        verify(lsdContext).capture("GET /path from SourceName to DestinationName",
-                "<p>" +
-                        "<p><h4>Full Path</h4><span>/path</span></p>" +
-                        "<p><h4>Request Headers</h4><code></code></p>" +
-                        "<p><h4>Body</h4><code>{\n  &quot;type&quot;: &quot;request&quot;\n}</code></p>" +
-                        "</p>");
+        verify(lsdContext, times(2)).capture(messageCaptor.capture());
+        var message = extractFirstMessageFromCaptor();
+
+        assertThat(message.getFrom().getName()).isEqualTo("SourceName");
+        assertThat(message.getTo().getName()).isEqualTo("DestinationName");
+        assertThat(message.getLabel()).isEqualTo("GET /path");
+        assertThat(message.getType()).isEqualTo(MessageType.SYNCHRONOUS);
+        assertThat(message.getData().toString())
+                .contains("<code>{\n  &quot;type&quot;: &quot;request&quot;\n}</code>");
     }
 
     @Test
     void usesTestStateToLogResponse() {
         handler.handleResponse("200 OK", emptyMap(), emptyMap(), "/path", "response body");
 
-        verify(lsdContext).capture("sync 200 OK response from DestinationName to SourceName",
-                "<p>" +
-                        "<p><h4>Full Path</h4><span>/path</span></p>" +
-                        "<p><h4>Response Headers</h4><code></code></p>" +
-                        "<p><h4>Body</h4><code>response body</code></p>" +
-                        "</p>");
+        verify(lsdContext, times(2)).capture(messageCaptor.capture());
+        var message = extractFirstMessageFromCaptor();
+
+        assertThat(message.getFrom().getName()).isEqualTo("DestinationName");
+        assertThat(message.getTo().getName()).isEqualTo("SourceName");
+        assertThat(message.getLabel()).isEqualTo("200 OK");
+        assertThat(message.getType()).isEqualTo(MessageType.SYNCHRONOUS_RESPONSE);
+        assertThat(message.getData().toString())
+                .contains("<code>response body</code");
     }
 
     @Test
     void headerValuesForSourceAndDestinationArePreferredWhenLoggingRequest() {
         handler.handleRequest("GET", serviceNameHeaders, "/path", "");
 
-        verify(lsdContext).capture(ArgumentMatchers.eq("GET /path from Source to Target"), anyString());
+        verify(lsdContext, times(2)).capture(messageCaptor.capture());
+        var message = extractFirstMessageFromCaptor();
+
+        assertThat(message.getFrom().getName()).isEqualTo("Source");
+        assertThat(message.getTo().getName()).isEqualTo("Target");
+        assertThat(message.getLabel()).isEqualTo("GET /path");
+        assertThat(message.getType()).isEqualTo(MessageType.SYNCHRONOUS);
+        assertThat(message.getData().toString())
+                .contains("Source-Name: source")
+                .contains("Target-Name: target");
+    }
+
+    @NotNull
+    private Message extractFirstMessageFromCaptor() {
+        return messageCaptor.getAllValues().stream()
+                .filter(Message.class::isInstance)
+                .map(Message.class::cast)
+                .findFirst().orElseThrow();
     }
 
     @Test
     void headerValuesForSourceAndDestinationArePreferredWhenLoggingResponse() {
         handler.handleResponse("200 OK", serviceNameHeaders, emptyMap(), "/path", "response body");
 
-        verify(lsdContext).capture(
-                ArgumentMatchers.eq("sync 200 OK response from Target to Source"),
-                ArgumentMatchers.contains("<code>response body</code>"));
+        verify(lsdContext, times(2)).capture(messageCaptor.capture());
+        var message = extractFirstMessageFromCaptor();
+
+        assertThat(message.getFrom().getName()).isEqualTo("Target");
+        assertThat(message.getTo().getName()).isEqualTo("Source");
+        assertThat(message.getLabel()).isEqualTo("200 OK");
+        assertThat(message.getType()).isEqualTo(MessageType.SYNCHRONOUS_RESPONSE);
+        assertThat(message.getData().toString())
+                .contains("<h4>Request Headers</h4>")
+                .contains("Target-Name: target")
+                .contains("Source-Name: source")
+                .contains("<code>response body</code>");
     }
 }

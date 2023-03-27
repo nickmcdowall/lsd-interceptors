@@ -1,6 +1,6 @@
 package io.lsdconsulting.intercceptors.example;
 
-import com.lsd.LsdContext;
+import com.lsd.core.LsdContext;
 import io.lsdconsulting.junit5.LsdExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static com.lsd.ParticipantType.ACTOR;
-import static com.lsd.ParticipantType.PARTICIPANT;
+import static com.lsd.core.domain.ParticipantType.ACTOR;
+import static com.lsd.core.domain.ParticipantType.PARTICIPANT;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 @ImportAutoConfiguration({FeignAutoConfiguration.class})
