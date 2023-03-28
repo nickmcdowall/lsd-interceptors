@@ -1,5 +1,6 @@
 package io.lsdconsulting.interceptors.http;
 
+import com.lsd.core.LsdContext;
 import feign.Logger;
 import feign.Request;
 import feign.Response;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Intercepts Feign {@link Request} and {@link Response} messages to add them to the {@link com.lsd.LsdContext} class.
+ * Intercepts Feign {@link Request} and {@link Response} messages to add them to the {@link LsdContext} class.
  * <p>
  * (This allows lsd-core to display them on the sequence diagrams).
  */
