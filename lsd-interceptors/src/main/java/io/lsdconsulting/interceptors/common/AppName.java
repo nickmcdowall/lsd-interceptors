@@ -8,6 +8,6 @@ public class AppName {
     String value;
 
     public AppName(String value) {
-        this.value = new ComponentName(value).getName();
+        this.value = new ComponentName(value).getNormalisedName();
     }
 }

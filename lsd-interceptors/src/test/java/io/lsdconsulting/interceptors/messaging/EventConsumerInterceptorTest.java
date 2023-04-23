@@ -12,6 +12,7 @@ import org.springframework.messaging.MessageHeaders;
 
 import java.util.Map;
 
+import static com.lsd.core.domain.ParticipantType.PARTICIPANT;
 import static io.lsdconsulting.interceptors.common.Headers.HeaderKeys.SOURCE_NAME;
 import static io.lsdconsulting.interceptors.common.Headers.HeaderKeys.TARGET_NAME;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -36,8 +37,8 @@ class EventConsumerInterceptorTest {
         verify(lsdContext).capture(messageCaptor.capture());
         var capturedMessage = messageCaptor.getValue();
 
-        AssertionsForClassTypes.assertThat(capturedMessage.getFrom().getName()).isEqualTo("Source");
-        AssertionsForClassTypes.assertThat(capturedMessage.getTo().getName()).isEqualTo("Target");
+        AssertionsForClassTypes.assertThat(capturedMessage.getFrom()).isEqualTo(PARTICIPANT.called("Source"));
+        AssertionsForClassTypes.assertThat(capturedMessage.getTo()).isEqualTo(PARTICIPANT.called("Target"));
         AssertionsForClassTypes.assertThat(capturedMessage.getLabel()).isEqualTo("Consume event");
         AssertionsForInterfaceTypes.assertThat(capturedMessage.getType()).isEqualTo(MessageType.ASYNCHRONOUS);
         AssertionsForClassTypes.assertThat(capturedMessage.getData().toString())
