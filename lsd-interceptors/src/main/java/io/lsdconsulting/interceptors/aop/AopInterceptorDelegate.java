@@ -61,40 +61,44 @@ public class AopInterceptorDelegate {
 
     public void captureScheduledStart(ProceedingJoinPoint joinPoint, ZonedDateTime startTime) {
         lsdContext.capture(messageBuilder()
-                .id(lsdContext.getIdGenerator().next())
-                .to(appName.getValue())
-                .label("<$clock{scale=0.3}> ")
-                .type(SHORT_INBOUND)
-                .data(p(
-                        p(
-                                h4("Scheduled"),
-                                code(joinPoint.getSignature().toShortString())
-                        ),
-                        p(
-                                h4("Timestamp"),
-                                code(startTime.format(ISO_DATE_TIME))
-                        )).render())
-                .build());
-        lsdContext.capture(activation().of(appName.getValue()).colour("skyblue").build());
+                        .id(lsdContext.getIdGenerator().next())
+                        .to(appName.getValue())
+                        .label("<$clock{scale=0.3}> ")
+                        .type(SHORT_INBOUND)
+                        .data(div(
+                                section(
+                                        h3("Scheduled"),
+                                        span(joinPoint.getSignature().toShortString())
+                                ),
+                                section(
+                                        h3("Timestamp"),
+                                        span(startTime.format(ISO_DATE_TIME))
+                                )).render())
+                        .build(),
+                activation().of(appName.getValue()).colour("skyblue").build()
+        );
     }
 
     public void captureScheduledEnd(ProceedingJoinPoint joinPoint, ZonedDateTime startTime, ZonedDateTime endTime) {
         String delay = MILLIS.between(startTime, endTime) + "ms";
-        lsdContext.capture(messageBuilder()
-                .id(lsdContext.getIdGenerator().next())
-                .to(appName.getValue())
-                .label("<$clock{scale=0.3}>")
-                .data(
-                        p(
-                                p(
-                                        h4("Scheduler completed"),
-                                        code(joinPoint.getSignature().toShortString())),
-                                p(
-                                        h4("Duration"),
-                                        span(delay))).render())
-                .type(SHORT_INBOUND)
-                .build());
-        lsdContext.capture(deactivation().of(appName.getValue()).build());
+        lsdContext.capture(
+                messageBuilder()
+                        .id(lsdContext.getIdGenerator().next())
+                        .to(appName.getValue())
+                        .label("<$clock{scale=0.3}>")
+                        .data(
+                                div(
+                                        section(
+                                                h3("Scheduler completed"),
+                                                span(joinPoint.getSignature().toShortString())),
+                                        section(
+                                                h3("Duration"),
+                                                span(delay))
+                                ).render())
+                        .type(SHORT_INBOUND)
+                        .build(),
+                deactivation().of(appName.getValue()).build()
+        );
     }
 
     public void captureScheduledError(ProceedingJoinPoint joinPoint, ZonedDateTime startTime, ZonedDateTime endTime, Throwable e) {
@@ -104,39 +108,39 @@ public class AopInterceptorDelegate {
                 .label("<$clock{scale=0.3}> ")
                 .type(SHORT_INBOUND)
                 .colour("red")
-                .data(p(
-                        p(
-                                h4("Scheduler Error"),
-                                code(joinPoint.getSignature().toShortString())
+                .data(div(
+                        section(
+                                h3("Scheduler Error"),
+                                span(joinPoint.getSignature().toShortString())
                         ),
-                        p(
-                                h4("Exception"),
-                                code(e.toString())
+                        section(
+                                h3("Exception"),
+                                span(e.toString())
                         ),
-                        p(
-                                h4("Duration"),
+                        section(
+                                h3("Duration"),
                                 span(MILLIS.between(startTime, endTime) + "ms")
                         )).render())
                 .build());
     }
 
     private String renderHtmlForMethodCall(Object[] args, Object response) {
-        return p(p(
-                        h4("Arguments"),
-                        code(prettyPrintArgs(args))),
-                p(
-                        h4("Response"),
-                        code(ofNullable(response)
+        return div(section(
+                        h3("Arguments"),
+                        span(prettyPrintArgs(args))),
+                section(
+                        h3("Response"),
+                        p(ofNullable(response)
                                 .map(PrettyPrinter::prettyPrintJson)
                                 .orElse("")
                         ))).render();
     }
 
     private String renderHtmlForException(String signature, Object[] args, Throwable throwable) {
-        return p(
-                p(h4("Invoked"), code(signature)),
-                p(h4("Arguments"), code(prettyPrintArgs(args))),
-                p(h4("Exception"), code(throwable.toString()))
+        return div(
+                section(h3("Invoked"), span(signature)),
+                section(h3("Arguments"), span(prettyPrintArgs(args))),
+                section(h3("Exception"), p(throwable.toString()))
         ).render();
     }
 

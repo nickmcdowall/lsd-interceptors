@@ -41,7 +41,7 @@ class DefaultHttpInteractionHandlerTest {
     void usesTestStateToLogRequest() {
         handler.handleRequest("GET", emptyMap(), "/path", "{\"type\":\"request\"}");
 
-        verify(lsdContext, times(2)).capture(messageCaptor.capture());
+        verify(lsdContext, times(1)).capture(messageCaptor.capture());
         var message = extractFirstMessageFromCaptor();
 
         assertThat(message.getFrom()).isEqualTo(andrea);
@@ -49,14 +49,14 @@ class DefaultHttpInteractionHandlerTest {
         assertThat(message.getLabel()).isEqualTo("GET /path");
         assertThat(message.getType()).isEqualTo(MessageType.SYNCHRONOUS);
         assertThat(message.getData().toString())
-                .contains("<code>{\n  &quot;type&quot;: &quot;request&quot;\n}</code>");
+                .contains("<p>{\n  &quot;type&quot;: &quot;request&quot;\n}</p>");
     }
 
     @Test
     void usesTestStateToLogResponse() {
         handler.handleResponse("200 OK", emptyMap(), emptyMap(), "/path", "response body");
 
-        verify(lsdContext, times(2)).capture(messageCaptor.capture());
+        verify(lsdContext, times(1)).capture(messageCaptor.capture());
         var message = extractFirstMessageFromCaptor();
 
         assertThat(message.getFrom()).isEqualTo(bren);
@@ -64,14 +64,14 @@ class DefaultHttpInteractionHandlerTest {
         assertThat(message.getLabel()).isEqualTo("200 OK");
         assertThat(message.getType()).isEqualTo(MessageType.SYNCHRONOUS_RESPONSE);
         assertThat(message.getData().toString())
-                .contains("<code>response body</code");
+                .contains("<p>response body</p");
     }
 
     @Test
     void headerValuesForSourceAndDestinationArePreferredWhenLoggingRequest() {
         handler.handleRequest("GET", serviceNameHeaders, "/path", "");
 
-        verify(lsdContext, times(2)).capture(messageCaptor.capture());
+        verify(lsdContext, times(1)).capture(messageCaptor.capture());
         var message = extractFirstMessageFromCaptor();
 
         assertThat(message.getFrom()).isEqualTo(juliet);
@@ -95,7 +95,7 @@ class DefaultHttpInteractionHandlerTest {
     void headerValuesForSourceAndDestinationArePreferredWhenLoggingResponse() {
         handler.handleResponse("200 OK", serviceNameHeaders, emptyMap(), "/path", "response body");
 
-        verify(lsdContext, times(2)).capture(messageCaptor.capture());
+        verify(lsdContext, times(1)).capture(messageCaptor.capture());
         var message = extractFirstMessageFromCaptor();
 
         assertThat(message.getFrom()).isEqualTo(bob);
@@ -103,9 +103,9 @@ class DefaultHttpInteractionHandlerTest {
         assertThat(message.getLabel()).isEqualTo("200 OK");
         assertThat(message.getType()).isEqualTo(MessageType.SYNCHRONOUS_RESPONSE);
         assertThat(message.getData().toString())
-                .contains("<h4>Request Headers</h4>")
+                .contains("<h3>Request Headers</h3>")
                 .contains("Target-Name: bob")
                 .contains("Source-Name: juliet")
-                .contains("<code>response body</code>");
+                .contains("<p>response body</p>");
     }
 }

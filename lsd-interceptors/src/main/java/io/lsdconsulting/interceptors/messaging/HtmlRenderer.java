@@ -9,12 +9,9 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 public class HtmlRenderer {
     public static String renderHtmlFor(MessageHeaders messageHeaders, String prettyBody) {
-        return p(
-                p(h4("Message Headers"), code(prettyPrintHeaders(messageHeaders)))
-                , isEmpty(prettyBody)
-                        ? p()
-                        : p(h4("Body"), code(prettyBody)
-                )
+        return div(
+                section(h3("Message Headers"), p(prettyPrintHeaders(messageHeaders))),
+                isEmpty(prettyBody) ? p() : section(h3("Body"), p(prettyBody))
         ).render();
     }
 
