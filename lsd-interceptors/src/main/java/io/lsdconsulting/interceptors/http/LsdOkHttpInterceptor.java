@@ -11,7 +11,10 @@ import okhttp3.Response;
 import okio.Buffer;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
+
+import static java.lang.System.currentTimeMillis;
 
 @Value
 @RequiredArgsConstructor
@@ -31,11 +34,14 @@ public class LsdOkHttpInterceptor implements Interceptor {
         handlers.forEach(handler ->
                 handler.handleRequest(request.method(), requestHeaders, path, bodyToString(requestCopy)));
 
+        long start = currentTimeMillis();
         var response = chain.proceed(request);
+        var duration = Duration.ofMillis(currentTimeMillis() - start);
+        
         var responseHeaders = Headers.singleValueMap(response.headers().toMultimap());
 
         handlers.forEach(handler ->
-                handler.handleResponse(response.code() + " " + response.message(), requestHeaders, responseHeaders, path, copyBodyString(response)));
+                handler.handleResponse(response.code() + " " + response.message(), requestHeaders, responseHeaders, path, copyBodyString(response), duration));
 
         return response;
     }

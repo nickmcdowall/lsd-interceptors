@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
+import java.time.Duration;
 import java.util.Map;
 
 import static com.lsd.core.domain.ParticipantType.*;
@@ -54,17 +55,17 @@ class DefaultHttpInteractionHandlerTest {
 
     @Test
     void usesTestStateToLogResponse() {
-        handler.handleResponse("200 OK", emptyMap(), emptyMap(), "/path", "response body");
+        handler.handleResponse("200 OK", emptyMap(), emptyMap(), "/path", "response body", Duration.ofMillis(5));
 
         verify(lsdContext, times(1)).capture(messageCaptor.capture());
         var message = extractFirstMessageFromCaptor();
 
         assertThat(message.getFrom()).isEqualTo(bren);
         assertThat(message.getTo()).isEqualTo(andrea);
-        assertThat(message.getLabel()).isEqualTo("200 OK");
+        assertThat(message.getLabel()).isEqualTo("200 OK (5ms)");
         assertThat(message.getType()).isEqualTo(MessageType.SYNCHRONOUS_RESPONSE);
-        assertThat(message.getData().toString())
-                .contains("<p>response body</p");
+        assertThat(message.getData().toString()).contains("<p>response body</p");
+        assertThat(message.getDuration()).isEqualTo(Duration.ofMillis(5));
     }
 
     @Test
@@ -93,15 +94,16 @@ class DefaultHttpInteractionHandlerTest {
 
     @Test
     void headerValuesForSourceAndDestinationArePreferredWhenLoggingResponse() {
-        handler.handleResponse("200 OK", serviceNameHeaders, emptyMap(), "/path", "response body");
+        handler.handleResponse("200 OK", serviceNameHeaders, emptyMap(), "/path", "response body", Duration.ofMillis(3));
 
         verify(lsdContext, times(1)).capture(messageCaptor.capture());
         var message = extractFirstMessageFromCaptor();
 
         assertThat(message.getFrom()).isEqualTo(bob);
         assertThat(message.getTo()).isEqualTo(juliet);
-        assertThat(message.getLabel()).isEqualTo("200 OK");
+        assertThat(message.getLabel()).isEqualTo("200 OK (3ms)");
         assertThat(message.getType()).isEqualTo(MessageType.SYNCHRONOUS_RESPONSE);
+        assertThat(message.getDuration()).isEqualTo(Duration.ofMillis(3));
         assertThat(message.getData().toString())
                 .contains("<h3>Request Headers</h3>")
                 .contains("Target-Name: bob")

@@ -16,12 +16,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.EMPTY;
@@ -80,7 +82,7 @@ public class LsdRestTemplateInterceptorTest {
     void logResponseInteraction() throws IOException {
         interceptor.intercept(stubHttpRequest, requestBodyBytes, execution);
 
-        verify(handler).handleResponse("200 OK", emptyMap(), emptyMap(), path, responseBodyString);
+        verify(handler).handleResponse(eq("200 OK"), eq(emptyMap()), eq(emptyMap()), eq(path), eq(responseBodyString), any(Duration.class));
     }
 
     @Test
@@ -90,7 +92,7 @@ public class LsdRestTemplateInterceptorTest {
         interceptor.intercept(request, requestBodyBytes, execution);
 
         verify(handler).handleRequest("GET", emptyMap(), "/another/path", requestBodyString);
-        verify(handler).handleResponse("200 OK", emptyMap(), emptyMap(), "/another/path", responseBodyString);
+        verify(handler).handleResponse(eq("200 OK"), eq(emptyMap()), eq(emptyMap()), eq("/another/path"), eq(responseBodyString), any(Duration.class));
     }
 
     @Test
@@ -102,7 +104,7 @@ public class LsdRestTemplateInterceptorTest {
 
         interceptor.intercept(stubHttpRequest, requestBodyBytes, execution);
 
-        verify(handler).handleResponse("200 OK", emptyMap(), Map.of("Content-Length", "0"), "/price/watch", "");
+        verify(handler).handleResponse(eq("200 OK"), eq(emptyMap()), eq(Map.of("Content-Length", "0")), eq("/price/watch"), eq(""), any(Duration.class));
     }
 
     @Test
@@ -110,7 +112,7 @@ public class LsdRestTemplateInterceptorTest {
         interceptor.intercept(aGetRequest(URI.create("/cow?param=yes")).build(), requestBodyBytes, execution);
 
         verify(handler).handleRequest("GET", emptyMap(), "/cow?param=yes", requestBodyString);
-        verify(handler).handleResponse("200 OK", emptyMap(), emptyMap(), "/cow?param=yes", responseBodyString);
+        verify(handler).handleResponse(eq("200 OK"), eq(emptyMap()), eq(emptyMap()), eq("/cow?param=yes"), eq(responseBodyString), any(Duration.class));
     }
 
     private StubClientHttpResponse.StubClientHttpResponseBuilder aStubbedOkResponse() {

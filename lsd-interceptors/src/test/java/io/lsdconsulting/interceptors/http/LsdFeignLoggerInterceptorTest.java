@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.Charset.defaultCharset;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -69,7 +71,12 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
                 .build(), 1);
 
         handlers.forEach(handler -> {
-            verify(handler).handleResponse("200 OK", emptyMap(), emptyMap(), "/app-endpoint/something", "response body");
+            verify(handler).handleResponse(
+                    startsWith("200 OK"),
+                    eq(emptyMap()),
+                    eq(emptyMap()),
+                    eq("/app-endpoint/something"),
+                    eq("response body"),  any(Duration.class));
         });
     }
 
@@ -82,7 +89,13 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
                 .build(), 1);
 
         handlers.forEach(handler -> {
-            verify(handler).handleResponse("200 OK", emptyMap(), emptyMap(), "/app-endpoint/something", "response body");
+            verify(handler).handleResponse(
+                    startsWith("200 OK"), 
+                    eq(emptyMap()), 
+                    eq(emptyMap()), 
+                    eq("/app-endpoint/something"), 
+                    eq("response body"), 
+                    any(Duration.class));
         });
     }
 
@@ -95,7 +108,13 @@ public class LsdFeignLoggerInterceptorTest extends LsdFeignLoggerInterceptor {
                 .build(), 1);
 
         handlers.forEach(handler -> {
-            verify(handler).handleResponse("<unresolved status:111>", emptyMap(), emptyMap(), "/app-endpoint/something", "response body");
+            verify(handler).handleResponse(
+                    startsWith("<unresolved status:111>"), 
+                    eq(emptyMap()), 
+                    eq(emptyMap()), 
+                    eq("/app-endpoint/something"),
+                    eq("response body"),
+                    any(Duration.class));
         });
     }
 

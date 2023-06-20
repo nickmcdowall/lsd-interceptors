@@ -8,6 +8,7 @@ import io.lsdconsulting.interceptors.http.naming.SourceNameMappings;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.time.Duration;
 import java.util.Map;
 
 import static com.lsd.core.builders.ActivateLifelineBuilder.activation;
@@ -46,7 +47,7 @@ public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
                         .from(deriveSourceName(requestHeaders, path))
                         .to(targetName)
                         .label(method + " " + path)
-                        .data(renderHtmlFor(path, requestHeaders, null, prettyPrint(body)))
+                        .data(renderHtmlFor(path, requestHeaders, null, prettyPrint(body), null))
                         .type(SYNCHRONOUS)
                         .build(),
                 activation().of(targetName).colour("skyblue").build()
@@ -54,7 +55,7 @@ public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
     }
 
     @Override
-    public void handleResponse(String statusMessage, Map<String, String> requestHeaders, Map<String, String> responseHeaders, String path, String body) {
+    public void handleResponse(String statusMessage, Map<String, String> requestHeaders, Map<String, String> responseHeaders, String path, String body, Duration duration) {
         String colour = "";
         if (statusMessage.startsWith("4") || statusMessage.startsWith("5")) colour = "red";
 
@@ -64,16 +65,17 @@ public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
                         .id(idGenerator.next())
                         .from(targetName)
                         .to(deriveSourceName(requestHeaders, path))
-                        .label(statusMessage)
-                        .data(renderHtmlFor(path, requestHeaders, responseHeaders, prettyPrint(body)))
+                        .label(statusMessage + " (" + duration.toMillis() + "ms)")
+                        .data(renderHtmlFor(path, requestHeaders, responseHeaders, prettyPrint(body), duration))
                         .type(SYNCHRONOUS_RESPONSE)
                         .colour(colour)
+                        .duration(duration)
                         .build(),
                 deactivation().of(targetName).build()
         );
     }
 
-    private String renderHtmlFor(String path, Map<String, String> requestHeaders, Map<String, String> responseHeaders, String prettyBody) {
+    private String renderHtmlFor(String path, Map<String, String> requestHeaders, Map<String, String> responseHeaders, String prettyBody, Duration duration) {
         return div(
                 section(
                         h3("Full Path"),
@@ -87,6 +89,9 @@ public class DefaultHttpInteractionHandler implements HttpInteractionHandler {
                 , isEmpty(prettyBody)
                         ? p()
                         : section(h3("Body"), p(prettyBody)
+                , null == duration
+                        ? p()
+                        : section(h3("Duration"), p(duration.toMillis() + "ms"))
                 )
         ).render();
     }

@@ -10,6 +10,7 @@ import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +39,7 @@ public class LsdFeignLoggerInterceptor extends Logger.JavaLogger {
     protected Response logAndRebufferResponse(String configKey, Level logLevel, Response response, long elapsedTime) throws IOException {
         super.logAndRebufferResponse(configKey, logLevel, response, elapsedTime);
         String body = extractResponseBodyToString(response);
-        captureResponseInteraction(response, body);
+        captureResponseInteraction(response, body, Duration.ofMillis(elapsedTime));
         return resetBodyData(response, body.getBytes());
     }
 
@@ -52,13 +53,13 @@ public class LsdFeignLoggerInterceptor extends Logger.JavaLogger {
                 handler.handleRequest(request.httpMethod().name(), headers, path, body));
     }
 
-    private void captureResponseInteraction(Response response, String body) {
+    private void captureResponseInteraction(Response response, String body, Duration duration) {
         String path = derivePath(response.request().url());
         var requestHeaders = Headers.singleValueMap(response.request().headers());
         var responseHeaders = Headers.singleValueMap(response.headers());
 
         handlers.forEach(handler ->
-                handler.handleResponse(deriveStatus(response.status()), requestHeaders, responseHeaders, path, body));
+                handler.handleResponse(deriveStatus(response.status()), requestHeaders, responseHeaders, path, body, duration));
     }
 
     private String deriveStatus(int code) {

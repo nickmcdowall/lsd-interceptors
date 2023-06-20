@@ -12,7 +12,10 @@ import org.springframework.http.client.ClientHttpResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.List;
+
+import static java.lang.System.*;
 
 /**
  * Created to intercept rest template calls for lsd interactions.
@@ -31,10 +34,12 @@ public class LsdRestTemplateInterceptor implements ClientHttpRequestInterceptor 
         handlers.forEach(handler ->
                 handler.handleRequest(request.getMethodValue(), requestHeaders, path, new String(body)));
 
+        long start = currentTimeMillis();
         var response = execution.execute(request, body);
+        var duration = Duration.ofMillis(currentTimeMillis() - start);
         var responseHeaders = response.getHeaders().toSingleValueMap();
         handlers.forEach(handler ->
-                handler.handleResponse(deriveResponseStatus(response), requestHeaders, responseHeaders, path, copyBodyToString(response)));
+                handler.handleResponse(deriveResponseStatus(response), requestHeaders, responseHeaders, path, copyBodyToString(response), duration));
 
         return response;
     }

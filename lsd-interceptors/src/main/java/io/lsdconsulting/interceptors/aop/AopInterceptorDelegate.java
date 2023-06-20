@@ -17,6 +17,7 @@ import static com.lsd.core.domain.MessageType.SHORT_INBOUND;
 import static com.lsd.core.domain.MessageType.SYNCHRONOUS_RESPONSE;
 import static j2html.TagCreator.*;
 import static java.lang.System.lineSeparator;
+import static java.time.Duration.ofMillis;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.Arrays.stream;
@@ -80,7 +81,7 @@ public class AopInterceptorDelegate {
     }
 
     public void captureScheduledEnd(ProceedingJoinPoint joinPoint, ZonedDateTime startTime, ZonedDateTime endTime) {
-        String delay = MILLIS.between(startTime, endTime) + "ms";
+        long duration = MILLIS.between(startTime, endTime);
         lsdContext.capture(
                 messageBuilder()
                         .id(lsdContext.getIdGenerator().next())
@@ -93,15 +94,17 @@ public class AopInterceptorDelegate {
                                                 span(joinPoint.getSignature().toShortString())),
                                         section(
                                                 h3("Duration"),
-                                                span(delay))
+                                                span(duration + "ms"))
                                 ).render())
                         .type(SHORT_INBOUND)
+                        .duration(ofMillis(duration))
                         .build(),
                 deactivation().of(appName.getValue()).build()
         );
     }
 
     public void captureScheduledError(ProceedingJoinPoint joinPoint, ZonedDateTime startTime, ZonedDateTime endTime, Throwable e) {
+        var duration = MILLIS.between(startTime, endTime);
         lsdContext.capture(messageBuilder()
                 .id(lsdContext.getIdGenerator().next())
                 .to(appName.getValue())
@@ -119,8 +122,9 @@ public class AopInterceptorDelegate {
                         ),
                         section(
                                 h3("Duration"),
-                                span(MILLIS.between(startTime, endTime) + "ms")
+                                span(duration + "ms")
                         )).render())
+                .duration(ofMillis(duration))
                 .build());
     }
 

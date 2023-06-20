@@ -10,12 +10,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 
 import static java.util.Collections.emptyMap;
 import static okhttp3.RequestBody.create;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,7 +50,7 @@ public class LsdOkHttpInterceptorTest {
         okHttpInterceptor.intercept(chain);
 
         verify(handler).handleRequest("PUT", emptyMap(), "/user", requestBodyString);
-        verify(handler).handleResponse("200 OK", emptyMap(), emptyMap(), "/user", responseBodyString);
+        verify(handler).handleResponse(eq("200 OK"), eq(emptyMap()), eq(emptyMap()), eq("/user"), eq(responseBodyString), any(Duration.class));
     }
 
     @Test

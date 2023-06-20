@@ -1,9 +1,10 @@
 package io.lsdconsulting.interceptors.http.common;
 
+import java.time.Duration;
 import java.util.Map;
 
 public interface HttpInteractionHandler {
     void handleRequest(String method, Map<String, String> requestHeaders, String path, String body);
 
-    void handleResponse(String statusMessage, Map<String, String> requestHeaders, Map<String, String> responseHeaders, String path, String body);
+    void handleResponse(String statusMessage, Map<String, String> requestHeaders, Map<String, String> responseHeaders, String path, String body, Duration duration);
 }
