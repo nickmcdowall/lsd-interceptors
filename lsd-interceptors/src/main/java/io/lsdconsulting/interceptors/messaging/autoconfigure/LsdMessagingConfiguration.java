@@ -1,8 +1,10 @@
 package io.lsdconsulting.interceptors.messaging.autoconfigure;
 
 import com.lsd.core.LsdContext;
+import io.lsdconsulting.interceptors.messaging.ErrorPublisherInterceptor;
 import io.lsdconsulting.interceptors.messaging.EventConsumerInterceptor;
 import io.lsdconsulting.interceptors.messaging.EventPublisherInterceptor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +24,9 @@ import org.springframework.messaging.support.ChannelInterceptor;
 @ConditionalOnProperty(name = "lsd.interceptors.autoconfig.enabled", havingValue = "true", matchIfMissing = true)
 public class LsdMessagingConfiguration {
 
+    @Value("${info.app.name}")
+    private String appName;
+
     private final LsdContext lsdContext = LsdContext.getInstance();
 
     @Bean
@@ -34,5 +39,11 @@ public class LsdMessagingConfiguration {
     @GlobalChannelInterceptor(patterns = "*-out-*", order = 101)
     public EventPublisherInterceptor eventPublisherInterceptor() {
         return new EventPublisherInterceptor(lsdContext);
+    }
+
+    @Bean
+    @GlobalChannelInterceptor(patterns = "*errorChannel", order = 101)
+    public ErrorPublisherInterceptor errorPublisherInterceptor() {
+        return new ErrorPublisherInterceptor(lsdContext, appName);
     }
 }
