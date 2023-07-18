@@ -12,7 +12,7 @@ import static io.lsdconsulting.interceptors.common.Headers.HeaderKeys.SOURCE_NAM
 import static io.lsdconsulting.interceptors.common.Headers.HeaderKeys.TARGET_NAME;
 import static io.lsdconsulting.interceptors.messaging.HtmlRenderer.renderHtmlFor;
 import static io.lsdconsulting.interceptors.messaging.TypeConverter.convertToString;
-import static lsd.format.PrettyPrinter.prettyPrint;
+import static lsd.format.PrettyPrinterKt.prettyPrint;
 
 @RequiredArgsConstructor
 public class EventPublisherInterceptor implements ChannelInterceptor {

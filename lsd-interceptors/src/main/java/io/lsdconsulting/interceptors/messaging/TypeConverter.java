@@ -1,7 +1,8 @@
 package io.lsdconsulting.interceptors.messaging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import lsd.format.json.ObjectMapperCreator;
+
+import static lsd.format.json.ObjectMapperCreatorKt.createObjectMapper;
 
 public class TypeConverter {
     static String convertToString(Object payload) {
@@ -12,7 +13,7 @@ public class TypeConverter {
             payloadString = new String((byte[]) payload);
         } else {
             try {
-                payloadString = ObjectMapperCreator.create().writeValueAsString(payload);
+                payloadString = createObjectMapper().writeValueAsString(payload);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }

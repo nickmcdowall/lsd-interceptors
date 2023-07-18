@@ -4,7 +4,7 @@ import com.lsd.core.LsdContext;
 import io.lsdconsulting.interceptors.common.AppName;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lsd.format.PrettyPrinter;
+import lsd.format.PrettyPrinterKt;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 
@@ -135,7 +135,7 @@ public class AopInterceptorDelegate {
                 section(
                         h3("Response"),
                         p(ofNullable(response)
-                                .map(PrettyPrinter::prettyPrintJson)
+                                .map(PrettyPrinterKt::prettyPrint)
                                 .orElse("")
                         ))).render();
     }
@@ -150,7 +150,7 @@ public class AopInterceptorDelegate {
 
     private String prettyPrintArgs(Object[] args) {
         return stream(args)
-                .map(PrettyPrinter::prettyPrintJson)
+                .map(PrettyPrinterKt::prettyPrint)
                 .collect(joining(lineSeparator()));
     }
 }
