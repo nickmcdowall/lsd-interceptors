@@ -19,7 +19,7 @@ import static com.lsd.core.domain.MessageType.SYNCHRONOUS_RESPONSE;
 import static j2html.TagCreator.*;
 import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
-import static lsd.format.PrettyPrinter.prettyPrint;
+import static lsd.format.PrettyPrinterKt.prettyPrint;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @ToString
