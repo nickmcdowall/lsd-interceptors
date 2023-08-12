@@ -16,6 +16,6 @@ public class FishRepositoryEntityManager {
     }
 
     public void persist(long id, String name) {
-        entityManager.persist(Fish.builder().id(id).name(name).build());
+        entityManager.persist(new Fish(id, name));
     }
 }
