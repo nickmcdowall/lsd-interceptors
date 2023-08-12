@@ -9,7 +9,7 @@ class AppNameTest {
 
     @Test
     void removesSpecialCharacters() {
-        var alwaysAppName = new AlwaysAppName(new AppName("App/Service (Dev)"));
+        var alwaysAppName = new AlwaysAppName(AppName.Factory.create("App/Service (Dev)"));
 
         assertThat(alwaysAppName.mapForPath("/")).isEqualTo("AppServiceDev");
     }

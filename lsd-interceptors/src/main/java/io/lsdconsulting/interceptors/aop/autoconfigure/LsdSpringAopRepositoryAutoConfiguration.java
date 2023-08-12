@@ -1,9 +1,9 @@
 package io.lsdconsulting.interceptors.aop.autoconfigure;
 
 import com.lsd.core.LsdContext;
+import io.lsdconsulting.interceptors.aop.AopInterceptorDelegate;
 import io.lsdconsulting.interceptors.aop.SpringDataRepositoryInterceptor;
 import io.lsdconsulting.interceptors.common.AppName;
-import io.lsdconsulting.interceptors.aop.AopInterceptorDelegate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -42,7 +42,7 @@ public class LsdSpringAopRepositoryAutoConfiguration {
 
     @Bean
     public AopInterceptorDelegate aopInterceptorDelegate() {
-        return new AopInterceptorDelegate(lsdContext, new AppName(appName));
+        return new AopInterceptorDelegate(lsdContext, AppName.Factory.create(appName));
     }
 
     @PostConstruct

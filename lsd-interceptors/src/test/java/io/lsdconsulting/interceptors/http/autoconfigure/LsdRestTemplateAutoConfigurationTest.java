@@ -23,7 +23,7 @@ class LsdRestTemplateAutoConfigurationTest {
             .withConfiguration(AutoConfigurations.of(
                     LsdRestTemplateAutoConfiguration.class
             ));
-    private AlwaysAppName alwaysAppName = new AlwaysAppName(new AppName("App"));
+    private final AlwaysAppName alwaysAppName = new AlwaysAppName(AppName.Factory.create("App"));
 
     @Test
     public void noInterceptorAddedWhenNoTestStateBeanExists() {

@@ -16,7 +16,7 @@ class NamingConfig {
     @Bean
     @ConditionalOnMissingBean(name = "defaultSourceNameMapping")
     public SourceNameMappings defaultSourceNameMapping() {
-        return new AlwaysAppName(new AppName(appName));
+        return new AlwaysAppName(AppName.Factory.create(appName));
     }
 
     @Bean

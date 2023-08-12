@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LsdOkHttpAutoConfigurationTest {
 
     private final LsdContext lsdContext = LsdContext.getInstance();
-    private final AlwaysAppName alwaysAppName = new AlwaysAppName(new AppName("App"));
+    private final AlwaysAppName alwaysAppName = new AlwaysAppName(AppName.Factory.create("App"));
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
