@@ -44,7 +44,8 @@ allprojects {
             testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiter"
             testImplementation "org.junit.jupiter:junit-jupiter-params:$junitJupiter"
             testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitJupiter"
-            
+            testImplementation 'io.mockk:mockk-jvm:1.13.5'
+
             annotationProcessor 'org.projectlombok:lombok:1.18.22'
             testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
         }
