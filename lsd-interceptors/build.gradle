@@ -2,6 +2,7 @@ plugins {
     id 'java-library'
     id 'java'
     id 'jacoco'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 repositories {
@@ -9,7 +10,9 @@ repositories {
     mavenLocal()
 }
 
-sourceCompatibility = '11'
+kotlin {
+    jvmToolchain(17)
+}
 
 dependencies {
     implementation 'org.springframework:spring-web:5.3.16.RELEASE'
