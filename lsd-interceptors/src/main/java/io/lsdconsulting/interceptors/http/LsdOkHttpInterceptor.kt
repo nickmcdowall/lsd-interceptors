@@ -1,6 +1,6 @@
 package io.lsdconsulting.interceptors.http
 
-import io.lsdconsulting.interceptors.common.Headers
+import io.lsdconsulting.interceptors.common.singleValueMap
 import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler
 import okhttp3.Interceptor
 import okhttp3.Request
@@ -21,7 +21,7 @@ data class LsdOkHttpInterceptor(
         val request = chain.request()
         val requestCopy = request.newBuilder().build()
         val path = request.url().encodedPath()
-        val requestHeaders = Headers.singleValueMap(request.headers().toMultimap())
+        val requestHeaders = singleValueMap(request.headers().toMultimap())
         handlers.forEach(Consumer { handler: HttpInteractionHandler ->
             handler.handleRequest(
                 request.method(),
@@ -35,7 +35,7 @@ data class LsdOkHttpInterceptor(
         val response = chain.proceed(request)
 
         val duration = Duration.ofMillis(System.currentTimeMillis() - start)
-        val responseHeaders = Headers.singleValueMap(response.headers().toMultimap())
+        val responseHeaders = singleValueMap(response.headers().toMultimap())
         handlers.forEach(Consumer { handler: HttpInteractionHandler ->
             handler.handleResponse(
                 response.code().toString() + " " + response.message(),

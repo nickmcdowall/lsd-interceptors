@@ -4,7 +4,7 @@ import feign.Logger.JavaLogger
 import feign.Request
 import feign.Response
 import feign.Util
-import io.lsdconsulting.interceptors.common.Headers
+import io.lsdconsulting.interceptors.common.singleValueMap
 import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler
 import org.springframework.http.HttpStatus
 import java.io.IOException
@@ -15,7 +15,7 @@ import java.util.function.Consumer
 const val EXTRACT_PATH = "https?://.*?(/.*)"
 
 /**
- * Intercepts Feign [Request] and [Response] messages to add them to the [LsdContext] class.
+ * Intercepts Feign [Request] and [Response] messages to add them to the [com.lsd.core.LsdContext] class.
  *
  *
  * (This allows lsd-core to display them on the sequence diagrams).
@@ -49,7 +49,7 @@ open class LsdFeignLoggerInterceptor(val handlers: List<HttpInteractionHandler>)
             )
         }.orElse("")
         val path = derivePath(request.url())
-        val headers = Headers.singleValueMap(request.headers())
+        val headers = singleValueMap(request.headers())
         handlers.forEach(Consumer { handler: HttpInteractionHandler ->
             handler.handleRequest(
                 request.httpMethod().name,
@@ -62,8 +62,8 @@ open class LsdFeignLoggerInterceptor(val handlers: List<HttpInteractionHandler>)
 
     private fun captureResponseInteraction(response: Response, body: String, duration: Duration) {
         val path = derivePath(response.request().url())
-        val requestHeaders = Headers.singleValueMap(response.request().headers())
-        val responseHeaders = Headers.singleValueMap(response.headers())
+        val requestHeaders = singleValueMap(response.request().headers())
+        val responseHeaders = singleValueMap(response.headers())
         handlers.forEach(Consumer { handler: HttpInteractionHandler ->
             handler.handleResponse(
                 deriveStatus(response.status()),

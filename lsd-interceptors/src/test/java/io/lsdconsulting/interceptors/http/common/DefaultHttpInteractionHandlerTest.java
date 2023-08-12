@@ -1,8 +1,11 @@
 package io.lsdconsulting.interceptors.http.common;
 
 import com.lsd.core.LsdContext;
-import com.lsd.core.domain.*;
-import io.lsdconsulting.interceptors.common.Headers;
+import com.lsd.core.domain.Message;
+import com.lsd.core.domain.MessageType;
+import com.lsd.core.domain.Participant;
+import com.lsd.core.domain.SequenceEvent;
+import io.lsdconsulting.interceptors.common.HeaderKeys;
 import io.lsdconsulting.interceptors.http.naming.DestinationNameMappings;
 import io.lsdconsulting.interceptors.http.naming.SourceNameMappings;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +16,7 @@ import org.mockito.Mockito;
 import java.time.Duration;
 import java.util.Map;
 
-import static com.lsd.core.domain.ParticipantType.*;
+import static com.lsd.core.domain.ParticipantType.PARTICIPANT;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.times;
@@ -22,8 +25,8 @@ import static org.mockito.Mockito.verify;
 class DefaultHttpInteractionHandlerTest {
 
     private final Map<String, String> serviceNameHeaders = Map.of(
-            Headers.HeaderKeys.TARGET_NAME.key(), "bob",
-            Headers.HeaderKeys.SOURCE_NAME.key(), "juliet"
+            HeaderKeys.TARGET_NAME.key(), "bob",
+            HeaderKeys.SOURCE_NAME.key(), "juliet"
     );
     private final SourceNameMappings sourceNameMapping = path -> "andrea";
     private final DestinationNameMappings destinationNameMapping = path -> "bren";

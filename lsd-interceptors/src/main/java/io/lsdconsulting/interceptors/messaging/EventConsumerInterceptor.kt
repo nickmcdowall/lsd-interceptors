@@ -3,7 +3,7 @@ package io.lsdconsulting.interceptors.messaging
 import com.lsd.core.LsdContext
 import com.lsd.core.builders.MessageBuilder.Companion.messageBuilder
 import com.lsd.core.domain.MessageType
-import io.lsdconsulting.interceptors.common.Headers.HeaderKeys
+import io.lsdconsulting.interceptors.common.HeaderKeys
 import lombok.RequiredArgsConstructor
 import lsd.format.prettyPrint
 import org.springframework.messaging.Message

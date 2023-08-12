@@ -13,15 +13,14 @@ import org.springframework.messaging.MessageHeaders;
 import java.util.Map;
 
 import static com.lsd.core.domain.ParticipantType.PARTICIPANT;
-import static io.lsdconsulting.interceptors.common.Headers.HeaderKeys.SOURCE_NAME;
-import static io.lsdconsulting.interceptors.common.Headers.HeaderKeys.TARGET_NAME;
+import static io.lsdconsulting.interceptors.common.HeaderKeys.SOURCE_NAME;
+import static io.lsdconsulting.interceptors.common.HeaderKeys.TARGET_NAME;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 class EventPublisherInterceptorTest {
     private final ArgumentCaptor<com.lsd.core.domain.Message> messageCaptor = ArgumentCaptor.forClass(com.lsd.core.domain.Message.class);
-    private final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
 
     private final LsdContext lsdContext = spy(LsdContext.class);
     private final Message<byte[]> message = spy(Message.class);

@@ -6,8 +6,8 @@ import com.lsd.core.builders.ActivateLifelineBuilder
 import com.lsd.core.builders.DeactivateLifelineBuilder
 import com.lsd.core.builders.MessageBuilder.Companion.messageBuilder
 import com.lsd.core.domain.MessageType
-import io.lsdconsulting.interceptors.common.Headers
-import io.lsdconsulting.interceptors.common.Headers.HeaderKeys.TARGET_NAME
+import io.lsdconsulting.interceptors.common.HeaderKeys
+import io.lsdconsulting.interceptors.common.HeaderKeys.TARGET_NAME
 import io.lsdconsulting.interceptors.http.naming.DestinationNameMappings
 import io.lsdconsulting.interceptors.http.naming.SourceNameMappings
 import j2html.TagCreator
@@ -107,7 +107,7 @@ data class DefaultHttpInteractionHandler(
     }
 
     private fun deriveSourceName(headers: Map<String, String>, path: String): String {
-        return if (headers.containsKey(Headers.HeaderKeys.SOURCE_NAME.key())) headers[Headers.HeaderKeys.SOURCE_NAME.key()]!! else sourceNameMappings.mapForPath(
+        return if (headers.containsKey(HeaderKeys.SOURCE_NAME.key())) headers[HeaderKeys.SOURCE_NAME.key()]!! else sourceNameMappings.mapForPath(
             path
         )
     }
