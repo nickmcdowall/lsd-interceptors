@@ -8,8 +8,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.spyk
-import org.assertj.core.api.AssertionsForClassTypes
-import org.assertj.core.api.AssertionsForInterfaceTypes
+import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.messaging.Message
 import org.springframework.messaging.MessageChannel
@@ -37,11 +36,11 @@ internal class EventConsumerInterceptorTest {
 
         underTest.preSend(message, mockk<MessageChannel>())
         val (_, from, to, label, type, _, data) = messageSlot.captured
-        AssertionsForClassTypes.assertThat(from).isEqualTo(ParticipantType.PARTICIPANT.called("Source"))
-        AssertionsForClassTypes.assertThat(to).isEqualTo(ParticipantType.PARTICIPANT.called("Target"))
-        AssertionsForClassTypes.assertThat(label).isEqualTo("Consume event")
-        AssertionsForInterfaceTypes.assertThat(type).isEqualTo(MessageType.ASYNCHRONOUS)
-        AssertionsForClassTypes.assertThat(data.toString())
+        assertThat(from).isEqualTo(ParticipantType.PARTICIPANT.called("Source"))
+        assertThat(to).isEqualTo(ParticipantType.PARTICIPANT.called("Target"))
+        assertThat(label).isEqualTo("Consume event")
+        assertThat(type).isEqualTo(MessageType.ASYNCHRONOUS)
+        assertThat(data.toString())
             .contains("timestamp: " + message.headers["timestamp"])
             .contains("Source-Name: Source")
             .contains("Target-Name: Target")

@@ -1,7 +1,5 @@
 package io.lsdconsulting.interceptors.http
 
-import io.lsdconsulting.interceptors.http.StubClientHttpResponse.StubClientHttpResponseBuilder
-import io.lsdconsulting.interceptors.http.StubHttpRequest.StubHttpRequestBuilder
 import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler
 import io.mockk.every
 import io.mockk.mockk
@@ -25,10 +23,10 @@ class LsdRestTemplateInterceptorTest {
     private val uri = URI.create(path)
     private val requestBodyString = "a request body"
     private val requestBodyBytes = requestBodyString.toByteArray()
-    private val stubHttpRequest = aGetRequest(uri).build()
+    private val stubHttpRequest = aGetRequest(uri)
     private val responseBodyString = "a response body"
     private val responseBodyStream: InputStream = ByteArrayInputStream(responseBodyString.toByteArray())
-    private val httpResponse: ClientHttpResponse = aStubbedOkResponse().build()
+    private val httpResponse: ClientHttpResponse = aStubbedOkResponse()
 
     private val execution = mockk<ClientHttpRequestExecution>()
     private val handler = mockk<HttpInteractionHandler>(relaxed = true)
@@ -83,7 +81,7 @@ class LsdRestTemplateInterceptorTest {
     @Test
     @Throws(IOException::class)
     fun handleUnknownDestinationMappingByFallingBackToPathNameResolver() {
-        val request: HttpRequest = aGetRequest(uri).uri(URI.create("/another/path")).build()
+        val request: HttpRequest = aGetRequest(uri).copy(uri = URI.create("/another/path"))
         interceptor.intercept(request, requestBodyBytes, execution)
         verify { handler.handleRequest("GET", emptyMap(), "/another/path", requestBodyString) }
         verify {
@@ -103,7 +101,7 @@ class LsdRestTemplateInterceptorTest {
     fun emptyStringOnZeroLengthResponse() {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentLength = 0
-        every { execution.execute(any(), any()) } returns aStubbedOkResponse().headers(httpHeaders).build()
+        every { execution.execute(any(), any()) } returns aStubbedOkResponse().copy(headers = httpHeaders)
         interceptor.intercept(stubHttpRequest, requestBodyBytes, execution)
         verify {
             handler.handleResponse(
@@ -120,7 +118,7 @@ class LsdRestTemplateInterceptorTest {
     @Test
     @Throws(IOException::class)
     fun removesPathParametersFromUri() {
-        interceptor.intercept(aGetRequest(URI.create("/cow?param=yes")).build(), requestBodyBytes, execution)
+        interceptor.intercept(aGetRequest(URI.create("/cow?param=yes")), requestBodyBytes, execution)
         verify { handler.handleRequest("GET", emptyMap(), "/cow?param=yes", requestBodyString) }
         verify {
             handler.handleResponse(
@@ -134,15 +132,17 @@ class LsdRestTemplateInterceptorTest {
         }
     }
 
-    private fun aStubbedOkResponse(): StubClientHttpResponseBuilder {
-        return StubClientHttpResponse.builder()
-            .body(responseBodyStream)
-            .statusCode(HttpStatus.OK)
-            .headers(HttpHeaders.EMPTY)
-    }
+    private fun aStubbedOkResponse() =
+        StubClientHttpResponse(
+            body = responseBodyStream,
+            statusCode = HttpStatus.OK,
+            headers = HttpHeaders.EMPTY,
+        )
 
-    private fun aGetRequest(uri: URI): StubHttpRequestBuilder {
-        return StubHttpRequest.builder()
-            .uri(uri).methodValue("GET").httpHeaders(HttpHeaders.EMPTY)
-    }
+    private fun aGetRequest(uri: URI) =
+        StubHttpRequest(
+            uri = uri,
+            methodValue = "GET",
+            httpHeaders = HttpHeaders.EMPTY,
+        )
 }
