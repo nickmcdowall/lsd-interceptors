@@ -2,11 +2,16 @@ plugins {
     id 'org.springframework.boot' version '2.6.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 repositories {
     mavenCentral()
     mavenLocal()
+}
+
+kotlin {
+    jvmToolchain(11)
 }
 
 dependencies {

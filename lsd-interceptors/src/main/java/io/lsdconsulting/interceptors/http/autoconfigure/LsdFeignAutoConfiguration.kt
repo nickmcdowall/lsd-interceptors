@@ -4,7 +4,6 @@ import com.lsd.core.LsdContext
 import feign.Logger.Level
 import io.lsdconsulting.interceptors.http.LsdFeignLoggerInterceptor
 import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler
-import lombok.RequiredArgsConstructor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -37,7 +36,6 @@ import org.springframework.context.annotation.PropertySource
 @ConditionalOnProperty(name = ["lsd.interceptors.autoconfig.enabled"], havingValue = "true", matchIfMissing = true)
 @ConditionalOnClass(value = [LsdContext::class, FeignClientBuilder::class, Level::class])
 @Import(NamingConfig::class, HttpHandlerConfig::class)
-@RequiredArgsConstructor
 open class LsdFeignAutoConfiguration(
     private val httpInteractionHandlers: List<HttpInteractionHandler>
 ) {

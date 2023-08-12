@@ -3,7 +3,6 @@ package io.lsdconsulting.intercceptors.example;
 import io.lsdconsulting.intercceptors.example.entity.Fish;
 import io.lsdconsulting.intercceptors.example.repository.FishRepositoryEntityManager;
 import io.lsdconsulting.intercceptors.example.repository.FishRepositoryJpa;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,11 +10,15 @@ import java.util.List;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 
-@RequiredArgsConstructor
 @RestController
 public class FishController {
     private final FishRepositoryJpa fishRepositoryJpa;
     private final FishRepositoryEntityManager fishRepositoryEntityManager;
+
+    public FishController(FishRepositoryJpa fishRepositoryJpa, FishRepositoryEntityManager fishRepositoryEntityManager) {
+        this.fishRepositoryJpa = fishRepositoryJpa;
+        this.fishRepositoryEntityManager = fishRepositoryEntityManager;
+    }
 
     @PostMapping(value = "/fish")
     public void add(@RequestBody NewFishRequest request) {
