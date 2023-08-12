@@ -13,8 +13,6 @@ data class Fish(
     var name: String?,
 ) {
 
-    constructor() : this(null, null)
-
     override fun toString(): String {
         return "Fish(id=$id, name=$name)"
     }
