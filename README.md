@@ -130,7 +130,6 @@ application.
 ### Requirements
 
 * Java 11
-* Lombok is used so enable annotation processing in your IDE
 
 ### Git hooks
 
