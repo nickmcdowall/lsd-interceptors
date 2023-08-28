@@ -14,7 +14,7 @@ class EventPublisherInterceptor(
 ) : ChannelInterceptor {
 
     override fun preSend(message: Message<*>, channel: MessageChannel): Message<*> {
-        val payload = prettyPrint(convertToString(message.payload))
+        val payload = prettyPrint(message.payload)
         val source = convertToString(message.headers[HeaderKeys.SOURCE_NAME.key()])
         val target = convertToString(message.headers[HeaderKeys.TARGET_NAME.key()])
         lsdContext.capture(
