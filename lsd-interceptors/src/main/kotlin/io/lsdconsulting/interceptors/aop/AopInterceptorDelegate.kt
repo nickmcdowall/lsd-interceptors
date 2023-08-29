@@ -27,7 +27,7 @@ class AopInterceptorDelegate(
         captureInteraction(joinPoint, resultValue, appName.value, appName.value, icon)
     }
 
-    private fun captureInteraction(
+    fun captureInteraction(
         joinPoint: JoinPoint,
         resultValue: Any?,
         sourceName: String,
@@ -49,7 +49,7 @@ class AopInterceptorDelegate(
         captureException(joinPoint, throwable, appName.value, appName.value, icon)
     }
 
-    private fun captureException(
+    fun captureException(
         joinPoint: JoinPoint,
         throwable: Throwable,
         sourceName: String,
