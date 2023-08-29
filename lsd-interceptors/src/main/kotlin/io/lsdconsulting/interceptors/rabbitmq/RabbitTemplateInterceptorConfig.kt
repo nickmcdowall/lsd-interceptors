@@ -12,18 +12,22 @@ import lsd.format.prettyPrint
 import org.springframework.amqp.core.Message
 import org.springframework.amqp.core.MessagePostProcessor
 import org.springframework.amqp.rabbit.core.RabbitTemplate
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Configuration
 import java.util.function.Consumer
 import javax.annotation.PostConstruct
 
 @Configuration
-@ConditionalOnClass(RabbitTemplate::class)
+@ConditionalOnClass(RabbitTemplate::class, LsdContext::class)
 open class RabbitTemplateInterceptorConfig(
     private val rabbitTemplates: List<RabbitTemplate>,
-    private val appName: String,
-    private val lsdContext: LsdContext,
 ) {
+
+    @Value("\${info.app.name}")
+    private lateinit var appName: String
+
+    private val lsdContext = LsdContext.instance
 
     @PostConstruct
     fun configureRabbitTemplatePublishInterceptor() {
