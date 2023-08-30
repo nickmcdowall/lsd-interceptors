@@ -1,13 +1,12 @@
-package io.lsdconsulting.lsd.distributed.interceptor.config
+package io.lsdconsulting.interceptors.rabbitmq
 
 import com.lsd.core.LsdContext
 import com.lsd.core.domain.MessageType
+import com.lsd.core.sanitiseMarkup
 import io.lsdconsulting.interceptors.common.HeaderKeys
 import io.lsdconsulting.interceptors.common.log
+import io.lsdconsulting.interceptors.http.naming.PLANT_UML_CRYPTONITE
 import io.lsdconsulting.interceptors.messaging.convertToString
-import io.lsdconsulting.interceptors.rabbitmq.deriveExchangeName
-import io.lsdconsulting.interceptors.rabbitmq.renderHtmlFor
-import io.lsdconsulting.interceptors.rabbitmq.retrieve
 import lsd.format.prettyPrint
 import org.springframework.amqp.core.Message
 import org.springframework.amqp.core.MessagePostProcessor
@@ -41,8 +40,8 @@ open class RabbitTemplateInterceptorConfig(
                 try {
                     val exchangeName = deriveExchangeName(message.messageProperties, rabbitTemplate.exchange)
                     val payload = prettyPrint(message.body)
-                    val source = convertToString(message.messageProperties.headers[HeaderKeys.SOURCE_NAME.key()] ?: appName)
-                    val target = convertToString(message.messageProperties.headers[HeaderKeys.TARGET_NAME.key()] ?: exchangeName)
+                    val source = convertToString(message.messageProperties.headers[HeaderKeys.SOURCE_NAME.key()] ?: appName).sanitiseMarkup().replace(PLANT_UML_CRYPTONITE.toRegex(), "_")
+                    val target = convertToString(message.messageProperties.headers[HeaderKeys.TARGET_NAME.key()] ?: exchangeName).sanitiseMarkup().replace(PLANT_UML_CRYPTONITE.toRegex(), "_")
                     lsdContext.capture(
                         com.lsd.core.builders.MessageBuilder.messageBuilder()
                             .id(lsdContext.idGenerator.next())
@@ -70,14 +69,14 @@ open class RabbitTemplateInterceptorConfig(
                         message.messageProperties.receivedExchange
                     )
                     val payload = prettyPrint(message.body)
-                    val source = convertToString(message.messageProperties.headers[HeaderKeys.SOURCE_NAME.key()] ?: exchangeName)
-                    val target = convertToString(message.messageProperties.headers[HeaderKeys.TARGET_NAME.key()] ?: appName)
+                    val source = convertToString(message.messageProperties.headers[HeaderKeys.SOURCE_NAME.key()] ?: exchangeName).sanitiseMarkup().replace(PLANT_UML_CRYPTONITE.toRegex(), "_")
+                    val target = convertToString(message.messageProperties.headers[HeaderKeys.TARGET_NAME.key()] ?: appName).sanitiseMarkup().replace(PLANT_UML_CRYPTONITE.toRegex(), "_")
                     lsdContext.capture(
                         com.lsd.core.builders.MessageBuilder.messageBuilder()
                             .id(lsdContext.idGenerator.next())
                             .from(source)
                             .to(target)
-                            .label("Publish event")
+                            .label("Consume event")
                             .data(renderHtmlFor(headers, payload))
                             .type(MessageType.ASYNCHRONOUS)
                             .build()
