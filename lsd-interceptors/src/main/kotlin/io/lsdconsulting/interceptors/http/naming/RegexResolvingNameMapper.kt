@@ -1,7 +1,7 @@
 package io.lsdconsulting.interceptors.http.naming
 
 private const val FIRST_PART_OF_PATH = "^/?(.*?)([/?].*|$)"
-private const val PLANT_UML_CRYPTONITE = "[-]" //Characters that blow up PlantUml need to be replaced
+const val PLANT_UML_CRYPTONITE = "[-]" //Characters that blow up PlantUml need to be replaced
 
 class RegexResolvingNameMapper : DestinationNameMappings {
     override fun mapForPath(path: String): String = path
