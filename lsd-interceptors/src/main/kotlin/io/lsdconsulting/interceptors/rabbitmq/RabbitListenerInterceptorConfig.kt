@@ -3,7 +3,8 @@ package io.lsdconsulting.interceptors.rabbitmq
 import com.lsd.core.LsdContext
 import com.lsd.core.domain.MessageType
 import com.lsd.core.sanitiseMarkup
-import io.lsdconsulting.interceptors.common.HeaderKeys
+import io.lsdconsulting.interceptors.common.HeaderKeys.SOURCE_NAME
+import io.lsdconsulting.interceptors.common.HeaderKeys.TARGET_NAME
 import io.lsdconsulting.interceptors.common.log
 import io.lsdconsulting.interceptors.http.naming.PLANT_UML_CRYPTONITE
 import lsd.format.prettyPrint
@@ -42,13 +43,12 @@ open class RabbitListenerInterceptorConfig(
 
     private fun postProcessMessage(message: Message): Message {
         try {
-            val exchangeName =
-                deriveExchangeName(message.messageProperties, message.messageProperties.consumerQueue)
+            val eventName = deriveEventName(message.messageProperties, message.messageProperties.consumerQueue)
             val headers = retrieve(message)
 
             val payload = prettyPrint(message.body)
-            val source = prettyPrint(headers[HeaderKeys.SOURCE_NAME.key()] ?: exchangeName).sanitiseMarkup().replace(PLANT_UML_CRYPTONITE.toRegex(), "_")
-            val target = prettyPrint(headers[HeaderKeys.TARGET_NAME.key()] ?: appName).sanitiseMarkup().replace(PLANT_UML_CRYPTONITE.toRegex(), "_")
+            val source = prettyPrint(headers[SOURCE_NAME.key()] ?: eventName).sanitiseMarkup().replace(PLANT_UML_CRYPTONITE.toRegex(), "_")
+            val target = prettyPrint(headers[TARGET_NAME.key()] ?: appName).sanitiseMarkup().replace(PLANT_UML_CRYPTONITE.toRegex(), "_")
 
             lsdContext.capture(
                 com.lsd.core.builders.MessageBuilder.messageBuilder()
