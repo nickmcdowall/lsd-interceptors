@@ -4,7 +4,7 @@ import org.springframework.amqp.core.MessageProperties
 
 fun deriveEventName(messageProperties: MessageProperties, alternativeExchangeName: String?): String =
     getDefaultExchangeName(alternativeExchangeName).let { defaultExchangeName ->
-        if ((messageProperties.getHeader(TYPE_ID_HEADER) as String).isNotBlank()) {
+        if (!(messageProperties.getHeader(TYPE_ID_HEADER) as String?).isNullOrBlank()) {
             deriveFromTypeIdHeader(messageProperties.getHeader(TYPE_ID_HEADER))
         } else defaultExchangeName
     }
