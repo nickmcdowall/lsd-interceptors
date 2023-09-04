@@ -15,8 +15,8 @@ class EventConsumerInterceptor(
 
     override fun preSend(message: Message<*>, channel: MessageChannel): Message<*> {
         val payload = prettyPrint(message.payload)
-        val source = convertToString(message.headers[HeaderKeys.SOURCE_NAME.key()])
-        val target = convertToString(message.headers[HeaderKeys.TARGET_NAME.key()])
+        val source = prettyPrint(message.headers[HeaderKeys.SOURCE_NAME.key()])
+        val target = prettyPrint(message.headers[HeaderKeys.TARGET_NAME.key()])
         lsdContext.capture(
             messageBuilder()
                 .id(lsdContext.idGenerator.next())
