@@ -1,12 +1,10 @@
 package io.lsdconsulting.interceptors.rabbitmq
 
 import com.lsd.core.LsdContext
+import com.lsd.core.builders.MessageBuilder.Companion.messageBuilder
 import com.lsd.core.domain.MessageType
-import com.lsd.core.sanitiseMarkup
-import io.lsdconsulting.interceptors.common.HeaderKeys.SOURCE_NAME
 import io.lsdconsulting.interceptors.common.HeaderKeys.TARGET_NAME
 import io.lsdconsulting.interceptors.common.log
-import io.lsdconsulting.interceptors.http.naming.PLANT_UML_CRYPTONITE
 import lsd.format.prettyPrint
 import org.springframework.amqp.core.Message
 import org.springframework.amqp.core.MessagePostProcessor
@@ -47,11 +45,11 @@ open class RabbitListenerInterceptorConfig(
             val headers = retrieve(message)
 
             val payload = prettyPrint(message.body)
-            val source = prettyPrint(headers[SOURCE_NAME.key()] ?: eventName).sanitiseMarkup().replace(PLANT_UML_CRYPTONITE.toRegex(), "_")
-            val target = prettyPrint(headers[TARGET_NAME.key()] ?: appName).sanitiseMarkup().replace(PLANT_UML_CRYPTONITE.toRegex(), "_")
+            val source = prettyPrint(headers[TARGET_NAME.key()] ?: eventName)
+            val target = appName
 
             lsdContext.capture(
-                com.lsd.core.builders.MessageBuilder.messageBuilder()
+                messageBuilder()
                     .id(lsdContext.idGenerator.next())
                     .from(source)
                     .to(target)

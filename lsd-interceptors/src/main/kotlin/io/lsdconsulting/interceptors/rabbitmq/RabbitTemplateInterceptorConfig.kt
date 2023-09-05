@@ -2,11 +2,9 @@ package io.lsdconsulting.interceptors.rabbitmq
 
 import com.lsd.core.LsdContext
 import com.lsd.core.domain.MessageType
-import com.lsd.core.sanitiseMarkup
 import io.lsdconsulting.interceptors.common.HeaderKeys.SOURCE_NAME
 import io.lsdconsulting.interceptors.common.HeaderKeys.TARGET_NAME
 import io.lsdconsulting.interceptors.common.log
-import io.lsdconsulting.interceptors.http.naming.PLANT_UML_CRYPTONITE
 import lsd.format.prettyPrint
 import org.springframework.amqp.core.Message
 import org.springframework.amqp.core.MessagePostProcessor
@@ -32,16 +30,13 @@ open class RabbitTemplateInterceptorConfig(
     fun configureRabbitTemplatePublishInterceptor() {
         rabbitTemplates.forEach(Consumer { rabbitTemplate: RabbitTemplate ->
             rabbitTemplate.addBeforePublishPostProcessors(MessagePostProcessor { message: Message ->
-                log().info(
-                    "Rabbit message properties before publishing:{}",
-                    message.messageProperties
-                )
+                log().debug("Rabbit message properties before publishing:{}", message.messageProperties)
                 val headers = retrieve(message)
                 try {
                     val eventName = deriveEventName(message.messageProperties, rabbitTemplate.exchange)
                     val payload = prettyPrint(message.body)
-                    val source = prettyPrint(message.messageProperties.headers[SOURCE_NAME.key()] ?: appName).sanitiseMarkup().replace(PLANT_UML_CRYPTONITE.toRegex(), "_")
-                    val target = prettyPrint(message.messageProperties.headers[TARGET_NAME.key()] ?: eventName).sanitiseMarkup().replace(PLANT_UML_CRYPTONITE.toRegex(), "_")
+                    val source = prettyPrint(message.messageProperties.headers[SOURCE_NAME.key()] ?: appName)
+                    val target = prettyPrint(message.messageProperties.headers[TARGET_NAME.key()] ?: eventName)
                     lsdContext.capture(
                         com.lsd.core.builders.MessageBuilder.messageBuilder()
                             .id(lsdContext.idGenerator.next())
@@ -58,16 +53,13 @@ open class RabbitTemplateInterceptorConfig(
                 message
             })
             rabbitTemplate.addAfterReceivePostProcessors(MessagePostProcessor { message: Message ->
-                log().info(
-                    "Rabbit message properties after receiving:{}",
-                    message.messageProperties
-                )
+                log().debug("Rabbit message properties after receiving:{}", message.messageProperties)
                 val headers = retrieve(message)
                 try {
                     val eventName = deriveEventName(message.messageProperties, message.messageProperties.consumerQueue)
                     val payload = prettyPrint(message.body)
-                    val source = prettyPrint(message.messageProperties.headers[SOURCE_NAME.key()] ?: eventName).sanitiseMarkup().replace(PLANT_UML_CRYPTONITE.toRegex(), "_")
-                    val target = prettyPrint(message.messageProperties.headers[TARGET_NAME.key()] ?: appName).sanitiseMarkup().replace(PLANT_UML_CRYPTONITE.toRegex(), "_")
+                    val source = prettyPrint(message.messageProperties.headers[TARGET_NAME.key()] ?: eventName)
+                    val target = appName
                     lsdContext.capture(
                         com.lsd.core.builders.MessageBuilder.messageBuilder()
                             .id(lsdContext.idGenerator.next())

@@ -5,7 +5,8 @@ import j2html.TagCreator
 fun renderHtmlFor(messageHeaders: Map<String, Collection<String>>, prettyBody: String?): String {
     return TagCreator.div(
         TagCreator.section(TagCreator.h3("Message Headers"), TagCreator.p(prettyPrintHeaders(messageHeaders))),
-        if (prettyBody.isNullOrEmpty()) TagCreator.p() else TagCreator.section(
+        if (prettyBody.isNullOrEmpty()) TagCreator.p()
+        else TagCreator.section(
             TagCreator.h3("Body"),
             TagCreator.p(prettyBody)
         )
