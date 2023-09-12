@@ -84,8 +84,7 @@ open class LsdFeignLoggerInterceptor(val handlers: List<HttpInteractionHandler>)
 
     @Throws(IOException::class)
     private fun extractResponseBodyToString(response: Response): String {
-        val bytes = Util.toByteArray(response.body().asInputStream())
-        return String(bytes)
+        return response.body()?.let { String(Util.toByteArray(it.asInputStream())) } ?: ""
     }
 
     private fun resetBodyData(response: Response, bodyData: ByteArray): Response {
