@@ -18,7 +18,7 @@ dependencies {
     implementation 'org.springframework:spring-web:5.3.16.RELEASE'
     implementation 'org.springframework:spring-messaging:5.3.23'
     implementation 'org.springframework.integration:spring-integration-core:5.5.15'
-    implementation 'com.squareup.okhttp3:okhttp:3.8.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 
     testCompileOnly 'org.springframework:spring-web:5.1.11.RELEASE'
     

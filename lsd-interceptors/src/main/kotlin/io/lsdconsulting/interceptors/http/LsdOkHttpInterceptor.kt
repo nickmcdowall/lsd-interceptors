@@ -20,11 +20,11 @@ data class LsdOkHttpInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val requestCopy = request.newBuilder().build()
-        val path = request.url().encodedPath()
-        val requestHeaders = singleValueMap(request.headers().toMultimap())
+        val path = request.url.encodedPath
+        val requestHeaders = singleValueMap(request.headers.toMultimap())
         handlers.forEach(Consumer { handler: HttpInteractionHandler ->
             handler.handleRequest(
-                request.method(),
+                request.method,
                 requestHeaders,
                 path,
                 bodyToString(requestCopy)
@@ -35,10 +35,10 @@ data class LsdOkHttpInterceptor(
         val response = chain.proceed(request)
 
         val duration = Duration.ofMillis(System.currentTimeMillis() - start)
-        val responseHeaders = singleValueMap(response.headers().toMultimap())
+        val responseHeaders = singleValueMap(response.headers.toMultimap())
         handlers.forEach(Consumer { handler: HttpInteractionHandler ->
             handler.handleResponse(
-                response.code().toString() + " " + response.message(),
+                response.code.toString() + " " + response.message,
                 requestHeaders,
                 responseHeaders,
                 path,
@@ -56,9 +56,10 @@ data class LsdOkHttpInterceptor(
         return response.peekBody(RESPONSE_MAXY_BYTES.toLong()).string()
     }
 
-    private fun bodyToString(copy: Request): String {
-        val buffer = Buffer()
-        copy.body()!!.writeTo(buffer)
-        return buffer.readUtf8()
-    }
+    private fun bodyToString(request: Request): String =
+        request.body?.let {
+            val buffer = Buffer()
+            it.writeTo(buffer)
+            buffer.readUtf8()
+        } ?: ""
 }

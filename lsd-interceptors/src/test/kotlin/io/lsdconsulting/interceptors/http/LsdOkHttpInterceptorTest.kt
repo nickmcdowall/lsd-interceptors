@@ -5,11 +5,12 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import okio.Buffer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.io.IOException
 import java.time.Duration
 
 class LsdOkHttpInterceptorTest {
@@ -23,7 +24,6 @@ class LsdOkHttpInterceptorTest {
     private lateinit var okHttpInterceptor: Interceptor
 
     @BeforeEach
-    @Throws(IOException::class)
     fun setUp() {
         okHttpInterceptor = LsdOkHttpInterceptor(listOf(handler))
         every { chain.request() } returns requestFor("PUT", "/user")
@@ -31,7 +31,6 @@ class LsdOkHttpInterceptorTest {
     }
 
     @Test
-    @Throws(IOException::class)
     fun delegatesMessageHandling() {
         okHttpInterceptor.intercept(chain)
         verify { handler.handleRequest("PUT", emptyMap(), "/user", requestBodyString) }
@@ -48,33 +47,34 @@ class LsdOkHttpInterceptorTest {
     }
 
     @Test
-    @Throws(IOException::class)
     fun requestIsStillIntactAfterIntercept() {
         okHttpInterceptor.intercept(chain)
         val buffer = Buffer()
-        chain.request().body()!!.writeTo(buffer)
+        
+        chain.request().body!!.writeTo(buffer)
+        
         assertThat(buffer.readUtf8()).isEqualTo(requestBodyString)
     }
 
     @Test
-    @Throws(IOException::class)
     fun returnsExpectedResponse() {
         val response = okHttpInterceptor.intercept(chain)
         assertThat(response).isEqualTo(okResponse)
     }
 
     @Test
-    @Throws(IOException::class)
     fun doesNotCloseResponseBody() {
         every { chain.proceed(any()) } returns anOkResponse()
+        
         val response = okHttpInterceptor.intercept(chain)
-        assertThat(response.body()!!.string()).isEqualTo(responseBodyString)
+        
+        assertThat(response.body!!.string()).isEqualTo(responseBodyString)
     }
 
     private fun requestFor(method: String, path: String): Request {
         return Request.Builder()
             .url("https://localhost:8080$path")
-            .method(method, RequestBody.create(MEDIA_TYPE, requestBodyString))
+            .method(method, requestBodyString.toRequestBody(MEDIA_TYPE))
             .build()
     }
 
@@ -89,6 +89,6 @@ class LsdOkHttpInterceptorTest {
     }
 
     companion object {
-        val MEDIA_TYPE = MediaType.parse("application/json")
+        val MEDIA_TYPE = "application/json".toMediaTypeOrNull()
     }
 }
