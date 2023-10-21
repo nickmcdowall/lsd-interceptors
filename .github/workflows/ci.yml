@@ -18,12 +18,14 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
       - uses: actions/upload-artifact@v3
+        if: always()
         with:
-          name: build-directory
-          path: build
+          retention-days: 30
+          name: build-reports
+          path: build/reports
       - uses: codecov/codecov-action@v3
         with:
-          files: lsd-interceptors/build/reports/jacoco/test/jacocoTestReport.xml
+          files: build/reports/jacoco/test/jacocoTestReport.xml
           verbose: true
   release:
     needs: build
@@ -31,11 +33,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          persist-credentials: false
       - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v3
+        uses: cycjimmy/semantic-release-action@v4
         id: semantic
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
       - name: Publish to Sonatype
         if: steps.semantic.outputs.new_release_published == 'true'
         env:
