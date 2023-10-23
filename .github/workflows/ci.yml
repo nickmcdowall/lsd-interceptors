@@ -29,10 +29,12 @@ jobs:
         with:
           retention-days: 30
           name: build-reports
-          path: build/reports
+          path: |
+            example-app/build/reports
+            lsd-interceptors/build/reports
       - uses: codecov/codecov-action@v3
         with:
-          files: build/reports/jacoco/test/jacocoTestReport.xml
+          files: lsd-interceptors/build/reports/jacoco/test/jacocoTestReport.xml
           verbose: true
   release:
     needs: build
