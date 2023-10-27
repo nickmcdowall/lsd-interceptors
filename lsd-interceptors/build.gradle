@@ -31,7 +31,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.3'
     implementation 'org.springframework:spring-webmvc:5.3.16'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.33'
-    implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'org.apache.commons:commons-lang3:3.13.0'
     implementation 'com.j2html:j2html:1.6.0'
     implementation 'org.springframework.data:spring-data-commons:2.6.2'
 
