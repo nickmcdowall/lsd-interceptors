@@ -1,7 +1,6 @@
 name: Auto Merge Dependency Updates
 on:
   pull_request_target:
-    types: [opened, reopened]
     branches:
       - master
 jobs:
