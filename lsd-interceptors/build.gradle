@@ -11,32 +11,32 @@ repositories {
 }
 
 kotlin {
-    jvmToolchain(11)
+    jvmToolchain(17)
 }
 
 dependencies {
-    implementation 'org.springframework:spring-web:5.3.16.RELEASE'
+    implementation 'org.springframework:spring-websocket:5.3.29'
     implementation 'org.springframework:spring-messaging:5.3.23'
     implementation 'org.springframework.integration:spring-integration-core:5.5.15'
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 
-    testCompileOnly 'org.springframework:spring-web:5.1.11.RELEASE'
+    testCompileOnly 'org.springframework:spring-websocket:5.3.29'
     
-    implementation 'org.springframework:spring-context:5.3.16.RELEASE'
-    implementation 'org.springframework.boot:spring-boot-autoconfigure:2.6.4'
-    implementation 'org.springframework.boot:spring-boot-test:2.6.4'
+    implementation 'org.springframework:spring-context:5.3.29'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure:3.1.2'
+    implementation 'org.springframework.boot:spring-boot-test:3.1.2'
     implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
     implementation 'com.squareup.okhttp3:okhttp:3.4.2'
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:3.1.1'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:3.1.8'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.3'
-    implementation 'org.springframework:spring-webmvc:5.3.16'
+    implementation 'org.springframework:spring-webmvc:5.3.29'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.33'
     implementation 'org.apache.commons:commons-lang3:3.13.0'
     implementation 'com.j2html:j2html:1.6.0'
-    implementation 'org.springframework.data:spring-data-commons:2.6.2'
+    implementation 'org.springframework.data:spring-data-commons:3.1.2'
 
-    implementation 'org.springframework.amqp:spring-amqp:2.4.12'
-    implementation 'org.springframework.amqp:spring-rabbit:2.4.12'
+    implementation 'org.springframework.amqp:spring-amqp:3.0.6'
+    implementation 'org.springframework.amqp:spring-rabbit:3.0.6'
 
 }
 
