@@ -4,4 +4,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   io.lsdconsulting.interceptors.http.autoconfigure.LsdFeignAutoConfiguration,\
   io.lsdconsulting.interceptors.aop.autoconfigure.LsdSpringAopRepositoryAutoConfiguration,\
   io.lsdconsulting.interceptors.rabbitmq.RabbitListenerInterceptorConfig,\
-  io.lsdconsulting.interceptors.rabbitmq.RabbitTemplateInterceptorConfig
+  io.lsdconsulting.interceptors.rabbitmq.RabbitTemplateInterceptorConfig,\
+  io.lsdconsulting.interceptors.messaging.autoconfigure.LsdMessagingConfiguration
