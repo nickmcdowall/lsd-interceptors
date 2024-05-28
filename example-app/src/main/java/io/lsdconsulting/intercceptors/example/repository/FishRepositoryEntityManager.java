@@ -1,10 +1,9 @@
 package io.lsdconsulting.intercceptors.example.repository;
 
 import io.lsdconsulting.intercceptors.example.entity.Fish;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
-
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 
 @Transactional
 @Repository

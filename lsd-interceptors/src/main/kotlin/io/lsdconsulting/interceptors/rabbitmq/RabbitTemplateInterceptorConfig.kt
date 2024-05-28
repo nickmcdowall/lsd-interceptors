@@ -5,6 +5,7 @@ import com.lsd.core.domain.MessageType
 import io.lsdconsulting.interceptors.common.HeaderKeys.SOURCE_NAME
 import io.lsdconsulting.interceptors.common.HeaderKeys.TARGET_NAME
 import io.lsdconsulting.interceptors.common.log
+import jakarta.annotation.PostConstruct
 import lsd.format.prettyPrint
 import org.springframework.amqp.core.Message
 import org.springframework.amqp.core.MessagePostProcessor
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Configuration
 import java.util.function.Consumer
-import javax.annotation.PostConstruct
 
 @Configuration
 @ConditionalOnClass(RabbitTemplate::class, LsdContext::class)

@@ -4,6 +4,7 @@ import com.lsd.core.LsdContext
 import io.lsdconsulting.interceptors.aop.AopInterceptorDelegate
 import io.lsdconsulting.interceptors.aop.SpringDataRepositoryInterceptor
 import io.lsdconsulting.interceptors.common.AppName.Factory.create
+import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -11,7 +12,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.data.repository.Repository
-import javax.annotation.PostConstruct
 
 /**
  *

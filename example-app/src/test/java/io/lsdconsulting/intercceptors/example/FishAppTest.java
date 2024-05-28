@@ -2,6 +2,7 @@ package io.lsdconsulting.intercceptors.example;
 
 import com.lsd.core.LsdContext;
 import io.lsdconsulting.junit5.LsdExtension;
+import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
