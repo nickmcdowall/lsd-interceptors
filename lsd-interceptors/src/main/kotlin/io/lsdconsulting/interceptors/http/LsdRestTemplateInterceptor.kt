@@ -29,7 +29,7 @@ data class LsdRestTemplateInterceptor(
         val requestHeaders = request.headers.toSingleValueMap()
         handlers.forEach(Consumer { handler: HttpInteractionHandler ->
             handler.handleRequest(
-                request.methodValue,
+                request.method.name(),
                 requestHeaders,
                 path,
                 String(body)

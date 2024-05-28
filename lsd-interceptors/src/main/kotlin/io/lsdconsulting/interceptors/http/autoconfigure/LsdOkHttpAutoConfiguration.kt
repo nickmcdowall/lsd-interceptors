@@ -3,13 +3,13 @@ package io.lsdconsulting.interceptors.http.autoconfigure
 import com.lsd.core.LsdContext
 import io.lsdconsulting.interceptors.http.LsdOkHttpInterceptor
 import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler
+import jakarta.annotation.PostConstruct
 import okhttp3.OkHttpClient
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
-import javax.annotation.PostConstruct
 
 /**
  *
