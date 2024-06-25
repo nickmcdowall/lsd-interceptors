@@ -25,12 +25,12 @@ import org.springframework.messaging.support.ChannelInterceptor
 open class LsdMessagingConfiguration {
 
     @Value("\${info.app.name}")
-    private val appName: String? = null
+    private lateinit var appName: String
     private val lsdContext: LsdContext = LsdContext.instance
     @Bean
     @GlobalChannelInterceptor(patterns = ["*-in-*"], order = 100)
     open fun eventConsumerInterceptor(): EventConsumerInterceptor {
-        return EventConsumerInterceptor(lsdContext)
+        return EventConsumerInterceptor(lsdContext, appName)
     }
 
     @Bean
@@ -42,6 +42,6 @@ open class LsdMessagingConfiguration {
     @Bean
     @GlobalChannelInterceptor(patterns = ["*errorChannel"], order = 101)
     open fun errorPublisherInterceptor(): ErrorPublisherInterceptor {
-        return ErrorPublisherInterceptor(lsdContext, appName!!)
+        return ErrorPublisherInterceptor(lsdContext, appName)
     }
 }

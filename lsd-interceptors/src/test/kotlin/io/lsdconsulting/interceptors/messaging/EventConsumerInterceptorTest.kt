@@ -8,6 +8,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.spyk
+import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.messaging.Message
@@ -19,8 +20,9 @@ internal class EventConsumerInterceptorTest {
     private val messageSlot = slot<com.lsd.core.domain.Message>()
     private val lsdContext = spyk<LsdContext>()
     private val message = spyk<Message<ByteArray>>()
+    private val appName = randomAlphanumeric(10)
 
-    private val underTest = EventConsumerInterceptor(lsdContext)
+    private val underTest = EventConsumerInterceptor(lsdContext, appName)
 
     @Test
     fun logInteraction() {
@@ -36,8 +38,8 @@ internal class EventConsumerInterceptorTest {
 
         underTest.preSend(message, mockk<MessageChannel>())
         val (_, from, to, label, type, _, data) = messageSlot.captured
-        assertThat(from).isEqualTo(ParticipantType.PARTICIPANT.called("Source"))
-        assertThat(to).isEqualTo(ParticipantType.PARTICIPANT.called("Target"))
+        assertThat(from).isEqualTo(ParticipantType.PARTICIPANT.called("Target"))
+        assertThat(to).isEqualTo(ParticipantType.PARTICIPANT.called(appName))
         assertThat(label).isEqualTo("Consume event")
         assertThat(type).isEqualTo(MessageType.ASYNCHRONOUS)
         assertThat(data.toString())
