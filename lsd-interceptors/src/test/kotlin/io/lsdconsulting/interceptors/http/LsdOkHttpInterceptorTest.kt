@@ -4,9 +4,13 @@ import io.lsdconsulting.interceptors.http.common.HttpInteractionHandler
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import okhttp3.*
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.Protocol
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -50,9 +54,9 @@ class LsdOkHttpInterceptorTest {
     fun requestIsStillIntactAfterIntercept() {
         okHttpInterceptor.intercept(chain)
         val buffer = Buffer()
-        
+
         chain.request().body!!.writeTo(buffer)
-        
+
         assertThat(buffer.readUtf8()).isEqualTo(requestBodyString)
     }
 
@@ -65,9 +69,9 @@ class LsdOkHttpInterceptorTest {
     @Test
     fun doesNotCloseResponseBody() {
         every { chain.proceed(any()) } returns anOkResponse()
-        
+
         val response = okHttpInterceptor.intercept(chain)
-        
+
         assertThat(response.body!!.string()).isEqualTo(responseBodyString)
     }
 
@@ -84,7 +88,7 @@ class LsdOkHttpInterceptorTest {
             .code(200)
             .message("OK")
             .request(requestFor("PUT", "/user"))
-            .body(ResponseBody.create(MEDIA_TYPE, responseBodyString.toByteArray()))
+            .body(responseBodyString.toByteArray().toResponseBody(MEDIA_TYPE))
             .build()
     }
 
