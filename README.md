@@ -121,9 +121,9 @@ If this header is not set the library will attempt to derive a destination name 
 The following properties can be overridden by adding a properties file called `lsd.properties` on the classpath of your
 application.
 
-| Property Name        | Default     | Description |
-| ----------- | ----------- |------------ |
-| lsd.interceptors.autoconfig.enabled | true | Used to disable the autoconfiguration of interceptors if necessary. |
+| Property Name                       | Default | Description                                                         |
+|-------------------------------------|---------|---------------------------------------------------------------------|
+| lsd.interceptors.autoconfig.enabled | true    | Used to disable the autoconfiguration of interceptors if necessary. |
 
 ## Build
 
